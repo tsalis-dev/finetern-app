@@ -24,7 +24,7 @@ export default function AppNavigator() {
       <View style={styles.loadingContainer}>
         <Text style={styles.brandTitle}>Finetern</Text>
         <Text style={styles.brandSubtitle}>AI Micro-Skills Matching Platform</Text>
-        <ActivityIndicator size="large" color={colors.primary.main} style={styles.spinner} />
+        <ActivityIndicator size="large" color={colors.primary} style={styles.spinner} />
       </View>
     );
   }
@@ -49,14 +49,14 @@ export default function AppNavigator() {
 const styles = StyleSheet.create({
   loadingContainer: {
     flex: 1,
-    backgroundColor: colors.neutral.white,
+    backgroundColor: colors.white,
     justifyContent: 'center',
     alignItems: 'center',
   },
   brandTitle: {
     fontSize: 28,
     fontWeight: '800',
-    color: colors.primary.main,
+    color: colors.primary,
     letterSpacing: -0.5,
   },
   brandSubtitle: {

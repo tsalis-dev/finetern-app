@@ -32,7 +32,7 @@ export default function IndustryDashboardScreen({ navigation }) {
               <Text style={styles.miniLabel}>Lowongan Aktif</Text>
             </View>
             <View style={styles.metricMiniCard}>
-              <Text style={[styles.miniVal, { color: colors.primary.main }]}>24</Text>
+              <Text style={[styles.miniVal, { color: colors.primary }]}>24</Text>
               <Text style={styles.miniLabel}>Total Pelamar</Text>
             </View>
             <View style={styles.metricMiniCard}>
@@ -158,7 +158,7 @@ export default function IndustryDashboardScreen({ navigation }) {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: colors.background.secondary,
+    backgroundColor: colors.background,
   },
   scrollContent: {
     padding: spacing.lg,
@@ -183,7 +183,7 @@ const styles = StyleSheet.create({
   metricMainValue: {
     fontSize: 32,
     fontWeight: '800',
-    color: colors.neutral.white,
+    color: colors.white,
     marginVertical: spacing.xs,
   },
   metricMainSub: {
@@ -196,12 +196,12 @@ const styles = StyleSheet.create({
   },
   metricMiniCard: {
     flex: 1,
-    backgroundColor: colors.neutral.white,
+    backgroundColor: colors.white,
     borderRadius: borderRadius.md,
     padding: spacing.md,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: colors.border.light,
+    borderColor: colors.border,
     ...shadows.sm,
   },
   miniVal: {
@@ -235,15 +235,15 @@ const styles = StyleSheet.create({
   sectionLink: {
     fontSize: 13,
     fontWeight: '600',
-    color: colors.primary.main,
+    color: colors.primary,
   },
   candidateCard: {
-    backgroundColor: colors.neutral.white,
+    backgroundColor: colors.white,
     borderRadius: borderRadius.lg,
     padding: spacing.lg,
     marginBottom: spacing.md,
     borderWidth: 1,
-    borderColor: colors.border.light,
+    borderColor: colors.border,
     ...shadows.sm,
   },
   candidateTop: {
@@ -268,7 +268,7 @@ const styles = StyleSheet.create({
   },
   candidateTarget: {
     fontSize: 12,
-    color: colors.primary.main,
+    color: colors.primary,
     fontWeight: '600',
     marginTop: 3,
   },
@@ -322,13 +322,13 @@ const styles = StyleSheet.create({
   },
   btnActionPrimary: {
     flex: 2,
-    backgroundColor: colors.primary.main,
+    backgroundColor: colors.primary,
     paddingVertical: spacing.sm + 2,
     borderRadius: borderRadius.md,
     alignItems: 'center',
   },
   btnActionPrimaryText: {
-    color: colors.neutral.white,
+    color: colors.white,
     fontSize: 13,
     fontWeight: '700',
   },
@@ -345,12 +345,12 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   vacancyRowCard: {
-    backgroundColor: colors.neutral.white,
+    backgroundColor: colors.white,
     borderRadius: borderRadius.lg,
     padding: spacing.md,
     marginBottom: spacing.sm,
     borderWidth: 1,
-    borderColor: colors.border.light,
+    borderColor: colors.border,
     ...shadows.sm,
   },
   vacHeader: {
@@ -369,8 +369,8 @@ const styles = StyleSheet.create({
   vacQuotaBadge: {
     fontSize: 11,
     fontWeight: '700',
-    color: colors.primary.main,
-    backgroundColor: colors.primary.light,
+    color: colors.primary,
+    backgroundColor: colors.primaryLight,
     paddingHorizontal: spacing.sm,
     paddingVertical: 2,
     borderRadius: borderRadius.full,

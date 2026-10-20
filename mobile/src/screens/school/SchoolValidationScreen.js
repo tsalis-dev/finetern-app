@@ -186,15 +186,15 @@ export default function SchoolValidationScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: colors.background.secondary,
+    backgroundColor: colors.background,
   },
   filterContainer: {
     flexDirection: 'row',
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.sm,
-    backgroundColor: colors.neutral.white,
+    backgroundColor: colors.white,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border.light,
+    borderBottomColor: colors.border,
     gap: spacing.sm,
   },
   filterTab: {
@@ -204,7 +204,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.neutral[100],
   },
   filterTabActive: {
-    backgroundColor: colors.primary.main,
+    backgroundColor: colors.primary,
   },
   filterTabText: {
     fontSize: 13,
@@ -212,7 +212,7 @@ const styles = StyleSheet.create({
     color: colors.neutral[600],
   },
   filterTabTextActive: {
-    color: colors.neutral.white,
+    color: colors.white,
   },
   scrollContent: {
     padding: spacing.lg,
@@ -239,12 +239,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.xl,
   },
   itemCard: {
-    backgroundColor: colors.neutral.white,
+    backgroundColor: colors.white,
     borderRadius: borderRadius.lg,
     padding: spacing.lg,
     marginBottom: spacing.md,
     borderWidth: 1,
-    borderColor: colors.border.light,
+    borderColor: colors.border,
     ...shadows.sm,
   },
   itemTopRow: {
@@ -288,7 +288,7 @@ const styles = StyleSheet.create({
     color: colors.status.success,
   },
   skillBox: {
-    backgroundColor: colors.primary.light,
+    backgroundColor: colors.primaryLight,
     padding: spacing.sm,
     borderRadius: borderRadius.sm,
     marginBottom: spacing.sm,
@@ -296,13 +296,13 @@ const styles = StyleSheet.create({
   skillLabel: {
     fontSize: 10,
     fontWeight: '700',
-    color: colors.primary.dark,
+    color: colors.primaryDark,
     letterSpacing: 0.5,
   },
   skillName: {
     fontSize: 13,
     fontWeight: '700',
-    color: colors.primary.dark,
+    color: colors.primaryDark,
     marginTop: 2,
   },
   projectTitle: {
@@ -330,7 +330,7 @@ const styles = StyleSheet.create({
   },
   proofUrl: {
     fontSize: 12,
-    color: colors.primary.main,
+    color: colors.primary,
     fontWeight: '600',
   },
   actionRow: {
@@ -339,13 +339,13 @@ const styles = StyleSheet.create({
   },
   approveButton: {
     flex: 2,
-    backgroundColor: colors.primary.main,
+    backgroundColor: colors.primary,
     paddingVertical: spacing.sm + 2,
     borderRadius: borderRadius.md,
     alignItems: 'center',
   },
   approveButtonText: {
-    color: colors.neutral.white,
+    color: colors.white,
     fontSize: 13,
     fontWeight: '700',
   },
@@ -363,7 +363,7 @@ const styles = StyleSheet.create({
   },
   validatedFooter: {
     borderTopWidth: 1,
-    borderTopColor: colors.border.light,
+    borderTopColor: colors.border,
     paddingTop: spacing.xs,
   },
   validatedDate: {

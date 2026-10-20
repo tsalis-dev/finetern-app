@@ -147,7 +147,7 @@ export default function SchoolDashboardScreen({ navigation }) {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: colors.background.secondary,
+    backgroundColor: colors.background,
   },
   scrollContent: {
     padding: spacing.lg,
@@ -157,7 +157,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xl,
   },
   metricCardPrimary: {
-    backgroundColor: colors.primary.main,
+    backgroundColor: colors.primary,
     borderRadius: borderRadius.lg,
     padding: spacing.lg,
     marginBottom: spacing.sm,
@@ -173,7 +173,7 @@ const styles = StyleSheet.create({
   metricPrimaryValue: {
     fontSize: 36,
     fontWeight: '800',
-    color: colors.neutral.white,
+    color: colors.white,
     marginVertical: spacing.xs,
   },
   metricPrimarySub: {
@@ -186,12 +186,12 @@ const styles = StyleSheet.create({
   },
   metricSmallCard: {
     flex: 1,
-    backgroundColor: colors.neutral.white,
+    backgroundColor: colors.white,
     borderRadius: borderRadius.md,
     padding: spacing.md,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: colors.border.light,
+    borderColor: colors.border,
     ...shadows.sm,
   },
   metricSmallValue: {
@@ -226,15 +226,15 @@ const styles = StyleSheet.create({
   sectionLink: {
     fontSize: 13,
     fontWeight: '600',
-    color: colors.primary.main,
+    color: colors.primary,
   },
   pendingCard: {
-    backgroundColor: colors.neutral.white,
+    backgroundColor: colors.white,
     borderRadius: borderRadius.lg,
     padding: spacing.md,
     marginBottom: spacing.md,
     borderWidth: 1,
-    borderColor: colors.border.light,
+    borderColor: colors.border,
     ...shadows.sm,
   },
   cardHeader: {
@@ -269,7 +269,7 @@ const styles = StyleSheet.create({
   skillTag: {
     fontSize: 13,
     fontWeight: '600',
-    color: colors.primary.main,
+    color: colors.primary,
   },
   projectDesc: {
     fontSize: 13,
@@ -287,13 +287,13 @@ const styles = StyleSheet.create({
   },
   btnApprove: {
     flex: 2,
-    backgroundColor: colors.primary.main,
+    backgroundColor: colors.primary,
     paddingVertical: spacing.sm,
     borderRadius: borderRadius.md,
     alignItems: 'center',
   },
   btnApproveText: {
-    color: colors.neutral.white,
+    color: colors.white,
     fontSize: 13,
     fontWeight: '600',
   },
@@ -310,11 +310,11 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   statusList: {
-    backgroundColor: colors.neutral.white,
+    backgroundColor: colors.white,
     borderRadius: borderRadius.lg,
     padding: spacing.md,
     borderWidth: 1,
-    borderColor: colors.border.light,
+    borderColor: colors.border,
     ...shadows.sm,
   },
   statusItem: {
@@ -322,13 +322,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: spacing.sm,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border.light,
+    borderBottomColor: colors.border,
   },
   statusDot: {
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: colors.primary.main,
+    backgroundColor: colors.primary,
     marginRight: spacing.sm,
   },
   statusContent: {
@@ -350,8 +350,8 @@ const styles = StyleSheet.create({
   statusBadgeText: {
     fontSize: 11,
     fontWeight: '600',
-    color: colors.primary.main,
-    backgroundColor: colors.primary.light,
+    color: colors.primary,
+    backgroundColor: colors.primaryLight,
     paddingHorizontal: spacing.sm,
     paddingVertical: 3,
     borderRadius: borderRadius.full,

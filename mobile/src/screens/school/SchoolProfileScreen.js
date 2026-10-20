@@ -114,20 +114,20 @@ export default function SchoolProfileScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: colors.background.secondary,
+    backgroundColor: colors.background,
   },
   scrollContent: {
     padding: spacing.lg,
     paddingBottom: spacing['3xl'],
   },
   profileCard: {
-    backgroundColor: colors.neutral.white,
+    backgroundColor: colors.white,
     borderRadius: borderRadius.lg,
     padding: spacing.xl,
     alignItems: 'center',
     marginBottom: spacing.lg,
     borderWidth: 1,
-    borderColor: colors.border.light,
+    borderColor: colors.border,
     ...shadows.sm,
   },
   avatarContainer: {
@@ -162,12 +162,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   infoCard: {
-    backgroundColor: colors.neutral.white,
+    backgroundColor: colors.white,
     borderRadius: borderRadius.lg,
     padding: spacing.lg,
     marginBottom: spacing.lg,
     borderWidth: 1,
-    borderColor: colors.border.light,
+    borderColor: colors.border,
     ...shadows.sm,
   },
   sectionTitle: {
@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
   },
   divider: {
     height: 1,
-    backgroundColor: colors.border.light,
+    backgroundColor: colors.border,
     marginVertical: spacing.sm,
   },
   switcherCard: {
@@ -222,7 +222,7 @@ const styles = StyleSheet.create({
   },
   switchBtn: {
     flex: 1,
-    backgroundColor: colors.neutral.white,
+    backgroundColor: colors.white,
     paddingVertical: spacing.sm,
     borderRadius: borderRadius.md,
     alignItems: 'center',
@@ -230,8 +230,8 @@ const styles = StyleSheet.create({
     borderColor: '#93C5FD',
   },
   switchBtnActive: {
-    backgroundColor: colors.primary.main,
-    borderColor: colors.primary.main,
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
   },
   switchBtnText: {
     fontSize: 11,
@@ -239,7 +239,7 @@ const styles = StyleSheet.create({
     color: colors.neutral[700],
   },
   switchBtnTextActive: {
-    color: colors.neutral.white,
+    color: colors.white,
   },
   logoutButton: {
     backgroundColor: '#FEE2E2',

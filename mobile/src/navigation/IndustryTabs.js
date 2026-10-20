@@ -60,9 +60,9 @@ export default function IndustryTabs() {
 
 const styles = StyleSheet.create({
   tabBar: {
-    backgroundColor: colors.neutral.white,
+    backgroundColor: colors.white,
     borderTopWidth: 1,
-    borderTopColor: colors.border.light,
+    borderTopColor: colors.border,
     height: 60,
     paddingBottom: 6,
     paddingTop: 6,

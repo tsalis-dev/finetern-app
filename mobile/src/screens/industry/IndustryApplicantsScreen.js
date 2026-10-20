@@ -193,15 +193,15 @@ export default function IndustryApplicantsScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: colors.background.secondary,
+    backgroundColor: colors.background,
   },
   filterContainer: {
     flexDirection: 'row',
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.sm,
-    backgroundColor: colors.neutral.white,
+    backgroundColor: colors.white,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border.light,
+    borderBottomColor: colors.border,
     gap: spacing.xs,
   },
   filterTab: {
@@ -211,7 +211,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.neutral[100],
   },
   filterTabActive: {
-    backgroundColor: colors.primary.main,
+    backgroundColor: colors.primary,
   },
   filterTabText: {
     fontSize: 12,
@@ -219,19 +219,19 @@ const styles = StyleSheet.create({
     color: colors.neutral[600],
   },
   filterTabTextActive: {
-    color: colors.neutral.white,
+    color: colors.white,
   },
   scrollContent: {
     padding: spacing.lg,
     paddingBottom: spacing['3xl'],
   },
   applicantCard: {
-    backgroundColor: colors.neutral.white,
+    backgroundColor: colors.white,
     borderRadius: borderRadius.lg,
     padding: spacing.lg,
     marginBottom: spacing.md,
     borderWidth: 1,
-    borderColor: colors.border.light,
+    borderColor: colors.border,
     ...shadows.sm,
   },
   cardTop: {
@@ -257,7 +257,7 @@ const styles = StyleSheet.create({
   position: {
     fontSize: 12,
     fontWeight: '600',
-    color: colors.primary.main,
+    color: colors.primary,
     marginTop: 3,
   },
   matchScoreBox: {
@@ -294,7 +294,7 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
   },
   skillChip: {
-    backgroundColor: colors.primary.light,
+    backgroundColor: colors.primaryLight,
     paddingHorizontal: spacing.sm,
     paddingVertical: 3,
     borderRadius: borderRadius.sm,
@@ -302,7 +302,7 @@ const styles = StyleSheet.create({
   skillChipText: {
     fontSize: 11,
     fontWeight: '600',
-    color: colors.primary.dark,
+    color: colors.primaryDark,
   },
   portfolioBox: {
     backgroundColor: colors.neutral[50],
@@ -323,7 +323,7 @@ const styles = StyleSheet.create({
   },
   portfolioUrl: {
     fontSize: 11,
-    color: colors.primary.main,
+    color: colors.primary,
     marginTop: 2,
   },
   cardActions: {
@@ -336,13 +336,13 @@ const styles = StyleSheet.create({
   },
   btnInterview: {
     flex: 2,
-    backgroundColor: colors.primary.main,
+    backgroundColor: colors.primary,
     paddingVertical: spacing.sm,
     borderRadius: borderRadius.md,
     alignItems: 'center',
   },
   btnInterviewText: {
-    color: colors.neutral.white,
+    color: colors.white,
     fontSize: 12,
     fontWeight: '700',
   },
@@ -354,7 +354,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   btnAcceptText: {
-    color: colors.neutral.white,
+    color: colors.white,
     fontSize: 12,
     fontWeight: '700',
   },

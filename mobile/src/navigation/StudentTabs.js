@@ -16,7 +16,7 @@ export default function StudentTabs() {
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: colors.primary.main,
+        tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.neutral[400],
         tabBarStyle: styles.tabBar,
         tabBarLabelStyle: styles.tabLabel,
@@ -68,9 +68,9 @@ export default function StudentTabs() {
 
 const styles = StyleSheet.create({
   tabBar: {
-    backgroundColor: colors.neutral.white,
+    backgroundColor: colors.white,
     borderTopWidth: 1,
-    borderTopColor: colors.border.light,
+    borderTopColor: colors.border,
     height: 60,
     paddingBottom: 6,
     paddingTop: 6,

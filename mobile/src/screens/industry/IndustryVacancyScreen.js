@@ -112,7 +112,7 @@ export default function IndustryVacancyScreen({ navigation }) {
               </View>
               <View style={styles.statBox}>
                 <Text style={styles.statLabel}>Pelamar</Text>
-                <Text style={[styles.statValue, { color: colors.primary.main }]}>
+                <Text style={[styles.statValue, { color: colors.primary }]}>
                   {item.applicants} Siswa
                 </Text>
               </View>
@@ -157,23 +157,23 @@ export default function IndustryVacancyScreen({ navigation }) {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: colors.background.secondary,
+    backgroundColor: colors.background,
   },
   topActionContainer: {
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.sm,
-    backgroundColor: colors.neutral.white,
+    backgroundColor: colors.white,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border.light,
+    borderBottomColor: colors.border,
   },
   createButton: {
-    backgroundColor: colors.primary.main,
+    backgroundColor: colors.primary,
     borderRadius: borderRadius.md,
     paddingVertical: spacing.sm + 2,
     alignItems: 'center',
   },
   createButtonText: {
-    color: colors.neutral.white,
+    color: colors.white,
     fontSize: 14,
     fontWeight: '700',
   },
@@ -182,12 +182,12 @@ const styles = StyleSheet.create({
     paddingBottom: spacing['3xl'],
   },
   card: {
-    backgroundColor: colors.neutral.white,
+    backgroundColor: colors.white,
     borderRadius: borderRadius.lg,
     padding: spacing.lg,
     marginBottom: spacing.md,
     borderWidth: 1,
-    borderColor: colors.border.light,
+    borderColor: colors.border,
     ...shadows.sm,
   },
   cardHeader: {
@@ -267,7 +267,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   skillBadge: {
-    backgroundColor: colors.primary.light,
+    backgroundColor: colors.primaryLight,
     paddingHorizontal: spacing.sm,
     paddingVertical: 3,
     borderRadius: borderRadius.sm,
@@ -275,11 +275,11 @@ const styles = StyleSheet.create({
   skillText: {
     fontSize: 11,
     fontWeight: '600',
-    color: colors.primary.dark,
+    color: colors.primaryDark,
   },
   cardFooter: {
     borderTopWidth: 1,
-    borderTopColor: colors.border.light,
+    borderTopColor: colors.border,
     paddingTop: spacing.sm,
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -305,7 +305,7 @@ const styles = StyleSheet.create({
     color: colors.neutral[700],
   },
   viewApplicantsBtn: {
-    backgroundColor: colors.primary.main,
+    backgroundColor: colors.primary,
     paddingHorizontal: spacing.md,
     paddingVertical: 6,
     borderRadius: borderRadius.sm,
@@ -313,6 +313,6 @@ const styles = StyleSheet.create({
   viewApplicantsText: {
     fontSize: 11,
     fontWeight: '700',
-    color: colors.neutral.white,
+    color: colors.white,
   },
 });
