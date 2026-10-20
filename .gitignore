@@ -35,6 +35,12 @@ web-build/
 backend/uploads/*
 !backend/uploads/.gitkeep
 
+# Local AI Skills & Internal Documentations (Do not push to GitHub)
+.agents/
+*.pdf
+gemini.md
+panduan_pengembangan_teknis_finetern.md
+
 # OS generated
 .DS_Store
 Thumbs.db
