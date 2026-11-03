@@ -14,6 +14,8 @@ Tahap 4 tersedia: industri terverifikasi mengelola lowongan, siswa melihat kecoc
 
 Pengujian backend/database dan mobile lulus, bundling Android/Hermes berhasil. **Pengguna meminta crosscheck langsung di HP dilakukan pada akhir pengembangan; jangan menjadikannya prasyarat untuk melanjutkan tahap berikutnya.** Revisi desain lengkap di Figma masih draft; warna primer kode burgundy `#842D3E` dengan permukaan putih/netral.
 
+Untuk presentasi 5 November, data demo terpisah sudah disiapkan melalui API pada `finetern_demo_class`, backend port 5001, dengan akun siswa/guru/industri dan satu modul Gemini nyata tersimpan. Perintah `npm run demo:start` dari backend; akun/password hanya pada `backend/.local/finetern_demo_class/credentials.json`. Seluruh 51 tes backend lulus. Percobaan AVD `Medium_Phone_API_37.0` gagal boot karena driver akselerasi belum terpasang; belum ada verifikasi tampilan native. Pilihan HP Android/Expo Go ditawarkan; jangan menyatakan emulator siap atau mengubah pengaturan Windows/BIOS tanpa arahan pemilik.
+
 Tahap 5 tersedia: AI Mentor membuat materi Gemini dari kekurangan keterampilan pada lowongan, menyediakan mini proyek dan tiga soal latihan, serta menyimpan progres pribadi. Pembuatan materi nyata dengan key lokal berhasil diuji. Kuis tidak mengubah nilai guru atau matching. Seluruh fitur tersebut memakai data nyata. Guru mempunyai antrean “Verifikasi Akun”, “Bukti Karya”, serta pemantauan lamaran siswa yang terpisah. Akun pending hanya dapat membuka status/perbaikan pengajuan akun.
 
 ## Keputusan produk dan arsitektur
@@ -54,6 +56,7 @@ Role SQL `sekolah` berarti guru pribadi, bukan akun institusi bersama. Koordinat
 - [Alur karya, aturan nilai keterampilan, bukti privat, dan API Tahap 3](docs/TAHAP_3_PORTOFOLIO_DAN_VALIDASI.md)
 - [Lowongan, matching, persetujuan berbagi bukti, dan seleksi Tahap 4](docs/TAHAP_4_LOWONGAN_MATCHING_DAN_LAMARAN.md)
 - [Materi Gemini, kuis, konfigurasi key, dan batas permintaan Tahap 5](docs/TAHAP_5_GEMINI_DAN_KUIS.md)
+- [Data terpisah dan urutan demo kelas 5 November 2026](docs/DEMO_KELAS.md)
 - [Model database, migrasi, backup, dan seed](database/README.md)
 
 Backend: `cd backend`, `npm ci`, konfigurasi `.env`, `npm start`. Admin lokal: [http://localhost:5000/admin/](http://localhost:5000/admin/). Jangan membagikan password di chat/Git; buat/reset melalui `npm run admin:create -- --email <alamat> [--reset-password]` pada terminal interaktif.

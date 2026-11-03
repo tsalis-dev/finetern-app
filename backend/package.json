@@ -14,7 +14,9 @@
     "test:portfolio": "node --test test/portfolioFlow.test.js",
     "test:recruitment": "node --test test/matching.test.js test/recruitmentFlow.test.js",
     "gemini:check": "node scripts/checkGemini.js",
-    "test:learning": "node --test test/gemini.test.js test/learningFlow.test.js"
+    "test:learning": "node --test test/gemini.test.js test/learningFlow.test.js",
+    "demo:prepare": "node scripts/prepareDemo.js",
+    "demo:start": "node scripts/startDemo.js"
   },
   "keywords": [],
   "author": "",
