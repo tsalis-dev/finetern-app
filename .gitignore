@@ -23,6 +23,8 @@ backend/.env
 mobile/.expo/
 dist/
 web-build/
+.playwright-cli/
+output/playwright/
 *.orig.*
 
 # Android / Native Artifacts
@@ -37,6 +39,8 @@ backend/uploads/*
 
 # Local database snapshots may contain account and student data
 database/backups/
+backend/private-verifications/
+backend/.local/
 
 # Local AI Skills & Internal Documentations (Do not push to GitHub)
 .agents/

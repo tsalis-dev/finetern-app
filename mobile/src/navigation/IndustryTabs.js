@@ -43,7 +43,6 @@ export default function IndustryTabs() {
         options={{
           tabBarLabel: 'Pelamar AI',
           tabBarIcon: ({ color }) => <Text style={[styles.tabIcon, { color }]}>👥</Text>,
-          tabBarBadge: 4,
         }}
       />
       <Tab.Screen

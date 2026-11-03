@@ -4,15 +4,16 @@
  * { "success": false, "message": "...", "data": {} }
  */
 function errorHandler(err, req, res, next) {
-  console.error('[Error Handler]', err);
-
-  const statusCode = err.statusCode || (res.statusCode !== 200 ? res.statusCode : 500);
-  const message = err.message || 'Terjadi kesalahan internal pada server.';
+  const statusCode = err.code === 'ENOENT' ? 404 : err.code === 'ER_DUP_ENTRY' ? 409 : err.name === 'MulterError' ? 400 : (err.statusCode || err.status || 500);
+  if (statusCode >= 500) console.error('[API Error]', err.code || err.name);
+  const message = err.code === 'ENOENT' ? 'Berkas tidak ditemukan.' : err.code === 'ER_DUP_ENTRY' ? 'Data identitas sudah digunakan.' : err.name === 'MulterError'
+    ? 'Unggah satu berkas JPG, PNG, atau PDF maksimal 5 MB.' : statusCode >= 500
+      ? 'Terjadi gangguan layanan. Silakan coba lagi.' : err.type === 'entity.parse.failed' ? 'Format JSON tidak valid.' : err.message;
 
   res.status(statusCode).json({
     success: false,
     message,
-    data: process.env.NODE_ENV === 'development' ? { stack: err.stack } : {},
+    data: {},
   });
 }
 

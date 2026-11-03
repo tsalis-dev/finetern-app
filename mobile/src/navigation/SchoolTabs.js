@@ -4,7 +4,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { colors } from '../utils/theme';
 
 import SchoolDashboardScreen from '../screens/school/SchoolDashboardScreen';
-import SchoolValidationScreen from '../screens/school/SchoolValidationScreen';
+import VerificationQueueScreen from '../screens/school/VerificationQueueScreen';
 import SchoolProfileScreen from '../screens/school/SchoolProfileScreen';
 
 const Tab = createBottomTabNavigator();
@@ -30,11 +30,10 @@ export default function SchoolTabs() {
       />
       <Tab.Screen
         name="Validasi"
-        component={SchoolValidationScreen}
+        component={VerificationQueueScreen}
         options={{
-          tabBarLabel: 'Validasi Skill',
+          tabBarLabel: 'Verifikasi Akun',
           tabBarIcon: ({ color }) => <Text style={[styles.tabIcon, { color }]}>✅</Text>,
-          tabBarBadge: 3,
         }}
       />
       <Tab.Screen

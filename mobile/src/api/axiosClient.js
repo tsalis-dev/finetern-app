@@ -1,54 +1,26 @@
 import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
+import { getToken } from '../store/sessionStorage';
 
-// Di Android Emulator: 10.0.2.2 merujuk ke localhost laptop
-// Di iOS Simulator: localhost
-// Di Physical Device Expo Go: ganti dengan IP laptop di jaringan Wi-Fi lokal
-const getDefaultBaseURL = () => {
-  if (Platform.OS === 'android') {
-    return 'http://10.0.2.2:5000/api';
-  }
-  return 'http://localhost:5000/api';
-};
+export const API_BASE_URL = (process.env.EXPO_PUBLIC_API_URL || (Platform.OS === 'android'
+  ? 'http://10.0.2.2:5000/api' : 'http://localhost:5000/api')).replace(/\/$/, '');
+const axiosClient = axios.create({ baseURL: API_BASE_URL, timeout: 15000 });
+let onUnauthorized = () => {};
+export const setUnauthorizedHandler = handler => { onUnauthorized = handler; };
 
-export const API_BASE_URL = getDefaultBaseURL();
-
-const axiosClient = axios.create({
-  baseURL: API_BASE_URL,
-  timeout: 10000,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
-// Interceptor Request: Sisipkan Bearer Token JWT otomatis
-axiosClient.interceptors.request.use(
-  async (config) => {
-    try {
-      const token = await AsyncStorage.getItem('finetern_token');
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-      }
-    } catch (error) {
-      console.warn('[Axios Request Interceptor] Gagal membaca token:', error);
+axiosClient.interceptors.request.use(async config => {
+  if (!config.url?.startsWith('/auth/')) {
+    const token = await getToken();
+    if (token) {
+      config.headers.Authorization = 'Bearer ' + token;
+      config.sessionToken = token;
     }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
-
-// Interceptor Response: Tangani pesan error terpusat
-axiosClient.interceptors.response.use(
-  (response) => response.data,
-  (error) => {
-    const errorResponse = error.response?.data || {
-      success: false,
-      message: error.message || 'Terjadi gangguan jaringan atau server tidak merespons.',
-      data: {},
-    };
-    return Promise.reject(errorResponse);
   }
-);
-
+  return config;
+});
+axiosClient.interceptors.response.use(response => response.data, error => {
+  const status = error.response?.status;
+  if (status === 401 && error.config?.sessionToken) onUnauthorized(error.config.sessionToken);
+  return Promise.reject({ status, message: error.response?.data?.message || 'Tidak dapat terhubung ke server. Periksa jaringan dan alamat API.', data: error.response?.data?.data || {} });
+});
 export default axiosClient;

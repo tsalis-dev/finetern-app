@@ -1,9 +1,8 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Pressable, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, spacing, borderRadius, shadows } from '../../utils/theme';
 import ScreenHeader from '../../components/common/ScreenHeader';
-import RoleBadge from '../../components/common/RoleBadge';
 import { useAuthStore } from '../../store/useAuthStore';
 
 export default function IndustryDashboardScreen({ navigation }) {
@@ -11,10 +10,9 @@ export default function IndustryDashboardScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <ScreenHeader
-        title={`${user?.nama || 'PT Telkom Indonesia'} 🏢`}
+      <ScreenHeader demo
+        title={`${user?.nama || 'Industri'} 🏢`}
         subtitle="Portal Rekrutmen Magang & AI Micro-Skills Matching"
-        rightAction={<RoleBadge role="mitra_industri" />}
       />
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
@@ -112,7 +110,7 @@ export default function IndustryDashboardScreen({ navigation }) {
             <View style={styles.cardActions}>
               <Pressable
                 style={styles.btnActionPrimary}
-                onPress={() => alert(`Undangan wawancara dikirim ke ${candidate.name}!`)}
+                onPress={() => Alert.alert('Pratinjau fitur', 'Seleksi pelamar sedang disiapkan. Belum ada undangan yang dikirim.')}
               >
                 <Text style={styles.btnActionPrimaryText}>Undang Wawancara</Text>
               </Pressable>

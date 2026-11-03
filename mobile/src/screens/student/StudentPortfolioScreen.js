@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Pressable, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, spacing, borderRadius, shadows } from '../../utils/theme';
 import ScreenHeader from '../../components/common/ScreenHeader';
@@ -40,7 +40,7 @@ export default function StudentPortfolioScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <ScreenHeader
+      <ScreenHeader demo
         title="Portofolio Bukti Karya"
         subtitle="Validasi dua arah oleh Guru Pembimbing SMK"
       />
@@ -76,7 +76,7 @@ export default function StudentPortfolioScreen() {
           </View>
           <PrimaryButton
             title="+ Unggah"
-            onPress={() => alert('Fitur upload berkas (expo-image-picker / expo-document-picker) siap diintegrasikan!')}
+            onPress={() => Alert.alert('Pratinjau fitur', 'Unggah portofolio sedang disiapkan. Belum ada berkas yang disimpan.')}
             style={{ minHeight: 40, paddingHorizontal: spacing.md }}
           />
         </View>

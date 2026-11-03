@@ -1,147 +1,97 @@
-# Tahap 2: Autentikasi Multi-Peran dan Profil Dasar
+# Tahap 2: Autentikasi, Profil, dan Verifikasi
 
-Status: rancangan sebelum implementasi. Fitur pada dokumen ini belum selesai dibuat.
+Status 3 November 2026: implementasi backend dan mobile tersedia. Database lokal sudah dimigrasi setelah backup dipulihkan dan diuji pada salinan. Pengujian API/database, sesi mobile, dan bundling Android lulus. Uji pada HP fisik masih perlu dilakukan sebelum menyatakan pengalaman perangkat selesai.
 
-Progres 2A: schema v2, migrasi dari v1, seed dua guru, dan tes integrasi database sudah tersedia. Panduan ada di [database/README.md](../database/README.md). Migrasi belum diterapkan pada database aplikasi; login, sesi, otorisasi, dan verifikasi melalui API/UI belum dibuat.
+## Hasil tahap ini
 
-> Keputusan pengguna: setiap guru memiliki akun sendiri; admin platform memverifikasi sekolah/industri; koordinator sekolah menyetujui guru; guru memverifikasi siswa sekolahnya. Baca [rancangan verifikasi akun dan institusi](VERIFIKASI_AKUN_DAN_INSTITUSI.md). Login/sesi/profil tetap diperlukan; cakupan verifikasi memperluas Tahap 2 menjadi 2A, 2B, dan 2C pada dokumen pendamping. Alur sudah disetujui; rincian operasional dan implementasi belum selesai.
+- Masuk dengan email dan kata sandi asli; pendaftaran siswa, guru, sekolah baru, dan industri.
+- Setiap guru mempunyai akun pribadi. Role SQL `sekolah` berarti akun guru, sedangkan koordinator adalah posisi keanggotaan.
+- Admin memeriksa institusi, koordinator memeriksa guru, guru memeriksa siswa sekolahnya sendiri.
+- Akun pending dapat masuk untuk melihat status, catatan, melengkapi data, dan mengunggah bukti institusi.
+- Profil menampilkan data sendiri dari database; data yang belum tersedia ditulis “Belum diisi”.
+- Token native disimpan melalui Expo SecureStore. Identitas selalu diperiksa kembali melalui `GET /api/profile/me` saat pembukaan aplikasi dan saat kembali aktif.
+- HTTP 401 membersihkan sesi terkait. Gangguan jaringan mempertahankan token dan menampilkan pilihan mencoba kembali.
+- Keluar menghapus sesi perangkat. JWT masih stateless: belum ada pencabutan per token atau keluar dari semua perangkat. Penonaktifan akun/institusi tetap diperiksa backend pada setiap permintaan terlindungi.
+- Simulator role dan token dummy telah dihapus. Layar portofolio, lowongan, seleksi, matching, dan AI masih pratinjau berlabel data contoh; tindakannya tidak mengaku menyimpan/mengirim sesuatu.
 
-Dokumen ini menjabarkan Tahap 2 pada `PROGRES_DAN_PANDUAN_AI.md` berdasarkan kode dan schema yang tersedia. Tujuannya adalah menyepakati perilaku aplikasi sebelum menulis kode fitur.
+## Menjalankan secara lokal
 
-## 1. Hasil yang ingin dicapai
+Node.js yang kompatibel dengan Expo SDK 57 dan MySQL 8 diperlukan. Konfigurasi database berada pada `backend/.env`, contoh tersedia di `backend/.env.example`.
 
-Siswa, sekolah, dan industri dapat masuk memakai akun yang tersimpan di MySQL. Backend memeriksa kata sandi dan mengeluarkan JWT. Aplikasi menampilkan navigasi serta profil berdasarkan identitas yang dikonfirmasi backend. Pengguna bisa membuka ulang aplikasi, mengetahui bahwa sesinya berakhir, dan keluar dari akun.
+Dari folder backend:
 
-Contoh hasil: Ahmad masuk menggunakan akun siswa, melihat profil Ahmad dari database, menutup dan membuka aplikasi, lalu tetap dikenali selama tokennya valid. Memilih tab industri di formulir tidak memberikan hak akses industri kepada akun Ahmad.
-
-Profil dasar pada tahap ini berarti membaca dan menampilkan data akun sendiri. Pengubahan profil, email, atau kata sandi memerlukan cakupan tersendiri dan belum termasuk kontrak awal tahap ini.
-
-## 2. Kondisi awal yang sudah diperiksa (sebelum schema v2)
-
-- Branch pengembangan: `develop`. Remote `origin`: `https://github.com/tsalis-dev/finetern-app.git`.
-- Backend baru memasang `/api/health`. Controller login, register, dan profil belum ada.
-- Login biasa dan demo sama-sama menjalankan `switchRole()` dengan token dummy.
-- `useAuthStore` sudah memiliki penyimpanan lokal, tetapi belum mengonfirmasi sesi ke backend saat aplikasi dibuka.
-- Ketiga layar profil masih mencampurkan state pengguna dengan contoh data yang ditulis di kode.
-- Schema memiliki `users`, `students`, `schools`, dan `industries`. Kolom aktual menggunakan `sekolah_id`, `nama_lengkap`, `nama_sekolah`, `sektor_industri`, dan `kota_domisili`.
-- `schools.user_id` unik: model saat ini mendukung satu akun institusi untuk satu sekolah. Nama guru pribadi dan NIP belum disimpan dalam schema.
-- Pekerjaan perapian fondasi sebelumnya masih berupa temuan dan rancangan; belum ada migrasi atau perbaikan kode yang diterapkan.
-- Revisi burgundy di Figma masih draft. Perbaikan beberapa label tombol tertunda karena batas penggunaan koneksi Figma. Warna dan layout Figma tidak membuktikan bahwa alur autentikasi sudah berjalan.
-
-## 3. Alur pengguna
-
-### Masuk
-
-1. Pengguna mengisi email dan kata sandi.
-2. Mobile memvalidasi isian dasar dan menampilkan proses permintaan.
-3. Backend memeriksa input, mencari akun, lalu membandingkan kata sandi dengan hash bcrypt.
-4. Jika sesuai, backend mengembalikan token dan identitas pengguna tanpa hash kata sandi.
-5. Mobile menyimpan sesi dan menampilkan status pengajuan atau dashboard berdasarkan role, keanggotaan, dan verifikasi yang dikonfirmasi backend.
-6. Jika gagal, formulir menampilkan pesan yang sesuai. Tidak ada perpindahan role atau keberhasilan login palsu.
-
-Role pada database saat ini adalah `siswa`, `sekolah`, dan `industri`. Migrasi perlu mendukung akun guru pribadi, kewenangan koordinator, dan admin platform; representasi teknisnya ditetapkan sebelum implementasi. Alias lama `guru_smk` dan `mitra_industri` perlu dibersihkan dari alur akun nyata. Tab pemilih peran bukan sumber otorisasi.
-
-### Pendaftaran dan verifikasi (alur yang disetujui)
-
-Siswa mengisi nama lengkap, email, kata sandi dan konfirmasinya, sekolah terverifikasi, jurusan, kelas, serta NISN opsional sesuai schema. Backend memvalidasi sekolah dan membuat `users` bersama `students` dalam satu transaksi: keduanya berhasil atau keduanya dibatalkan. Email atau NISN duplikat ditangani sebagai konflik. Keanggotaan siswa menunggu persetujuan sekolah.
-
-Guru memiliki akun sendiri dan mengajukan keanggotaan pada sekolah untuk disetujui koordinator. Perwakilan sekolah/industri mengajukan institusinya untuk diperiksa admin platform. Guru yang telah disetujui memverifikasi siswa sekolahnya. Pembagian pemeriksa, koordinator sekolah, dan hak akun pending dijelaskan dalam dokumen pendamping. Admin tidak dapat dibuat melalui pendaftaran publik.
-
-Pendaftaran publik tidak langsung memberikan hak memvalidasi siswa/karya atau menerbitkan lowongan. Pemeriksa dan bukti yang diperlukan harus ditetapkan sebelum endpoint pemeriksaan dibuat.
-
-### Membuka ulang aplikasi dan keluar
-
-- Saat aplikasi dibuka, sesi yang tersimpan dikonfirmasi melalui `/api/profile/me` sebelum dianggap sebagai identitas yang sah.
-- Token tidak valid atau kedaluwarsa mengembalikan pengguna ke login dan membersihkan sesi.
-- Gangguan jaringan dibedakan dari penolakan token; jangan menyatakan kredensial salah atau menghapus sesi hanya karena server tidak terjangkau.
-- Keluar membersihkan sesi aktif dan penyimpanan lokal, lalu membuka layar login.
-- Pada kontrak awal JWT stateless, keluar menghapus token di perangkat. Pencabutan token di server dan keluar dari seluruh perangkat belum dijanjikan oleh tahap ini.
-
-### Profil dasar
-
-| Peran | Data yang ditampilkan berdasarkan schema aktual |
-| --- | --- |
-| Siswa | Nama lengkap, email, NISN bila ada, sekolah, jurusan, kelas, biodata bila ada |
-| Guru / sekolah | Nama dan email guru, sekolah tempat bergabung, kewenangan serta status keanggotaan; identitas institusi sesuai schema hasil migrasi |
-| Industri | Nama perusahaan, email akun, sektor, kota, deskripsi perusahaan |
-
-Data yang belum tersedia ditampilkan sebagai belum diisi. Jangan menampilkan NIP, nama pembimbing, jumlah siswa, website perusahaan, atau status magang contoh seolah berasal dari database.
-
-## 4. Kontrak API yang direncanakan
-
-Seluruh respons mengikuti `{ success, message, data }`.
-
-| Endpoint | Akses | Tanggung jawab |
-| --- | --- | --- |
-| `POST /api/auth/login` | Publik | Periksa email/kata sandi; kembalikan JWT dan user |
-| `POST /api/auth/register` | Publik sesuai kebijakan verifikasi yang ditetapkan | Buat akun, profil, dan pengajuan keanggotaan/institusi yang sesuai dalam transaksi |
-| `GET /api/profile/me` | JWT valid | Kembalikan identitas akun dan profil sendiri |
-| `GET /api/schools` | Publik untuk formulir pendaftaran | Daftar ID dan nama sekolah terverifikasi; jangan keluarkan data akun institusi |
-
-Pola data identitas yang diusulkan:
-
-```json
-{
-  "id": 4,
-  "profileId": 1,
-  "role": "siswa",
-  "email": "siswa1@finetern.id",
-  "nama": "Ahmad Pratama",
-  "profile": {
-    "sekolah_id": 1,
-    "sekolah": "SMKN 1 Bandung",
-    "nama_lengkap": "Ahmad Pratama",
-    "nisn": "0061234561",
-    "jurusan": "Rekayasa Perangkat Lunak",
-    "kelas": "XII RPL 1",
-    "biodata": null
-  }
-}
+```powershell
+npm ci
+npm run db:migrate
+npm start
 ```
 
-`id` adalah ID `users`; `profileId` adalah ID profil pada tabel peran. Jangan menyamakan keduanya hanya karena data demo memiliki ID yang serupa. Field `nama` dipetakan dari nama siswa, guru pribadi, atau perwakilan industri sesuai hasil perancangan profil. Contoh di atas belum memuat status verifikasi, keanggotaan, dan kewenangan yang harus ditambahkan untuk kebutuhan terbaru. Seluruh pemanggil `user` di mobile harus disesuaikan dengan kontrak yang sama. Endpoint pemeriksaan admin/koordinator/sekolah dirinci setelah kontrak verifikasi ditetapkan.
+Migrasi hanya untuk v1 yang sudah ada. Instalasi kosong memakai `database/schema.sql`; lihat [panduan database](../database/README.md). Server menolak schema yang belum siap atau JWT secret kosong/contoh. Isi `JWT_SECRET` dengan nilai acak setidaknya 32 byte; durasi default `JWT_EXPIRES_IN=7d`.
 
-Status yang perlu dibedakan: `201` untuk akun baru, `200` untuk login/profil berhasil, `400` untuk input salah, `401` untuk kredensial atau sesi tidak valid, `403` untuk akses yang tidak diizinkan, `409` untuk duplikasi, dan kegagalan jaringan/server untuk kondisi layanan bermasalah.
+Dari folder mobile:
 
-## 5. Perapian fondasi yang menyertai tahap ini
+```powershell
+npm ci
+# Salin .env.example menjadi .env dan sesuaikan alamat API bila memakai HP fisik.
+npx expo start
+```
 
-- Pakai nama kolom SQL aktual dan selaraskan handover yang masih berbeda. Tidak perlu mengganti seluruh schema hanya untuk menyeragamkan bahasa nama kolom.
-- Hilangkan fallback secret JWT yang sudah tertulis dalam kode. Konfigurasi yang diperlukan harus divalidasi sebelum server dipakai untuk autentikasi.
-- Gunakan parameter query SQL dan transaksi untuk pembuatan akun beserta profil. Jangan mengirim password/hash dalam respons atau log.
-- Tetapkan validasi input, durasi token, pembatasan percobaan login, dan penyimpanan token sebelum implementasi. AsyncStorage yang ada belum berarti penyimpanan terenkripsi; pilihan penyimpanan token perlu ditinjau pada implementasi.
-- Endpoint profil mengambil identitas dari token yang diverifikasi, bukan ID pengguna yang dikirim mobile.
-- Alamat API mobile dibuat dapat dikonfigurasi untuk HP fisik; `10.0.2.2` saat ini khusus emulator Android.
-- Simulator role dan tombol demo tidak boleh memberi sesi nyata atau mengubah hak akses akun yang sudah masuk.
-- Perbaiki nama tujuan navigasi beranda siswa yang tidak cocok dengan tab terdaftar jika jalur tersebut disentuh ketika integrasi.
-- Gunakan file migrasi untuk database yang sudah ada. `schema.sql` v2 hanya untuk instalasi kosong dan tidak lagi menghapus database; versi v1 historis bersifat reset total.
+`EXPO_PUBLIC_API_URL=http://<IP-LAN-laptop>:5000/api` untuk HP di jaringan yang sama. Default Android `10.0.2.2` khusus emulator; `localhost` default platform lain. Gunakan HTTPS saat dipasang pada server publik. Target implementasi adalah Android/iOS; penyimpanan token web hanya memori dan tidak bertahan setelah reload. Dependensi pendukung Expo web belum ditambahkan.
 
-Perbaikan relasi asesmen ke modul, identitas pemeriksa karya, dan pemisahan nilai kuis dari kemahiran tervalidasi tetap dicatat untuk tahap portofolio/pembelajaran. Hal itu belum dikerjakan hanya karena rencana Tahap 2 sudah dibuat.
+## Menyiapkan admin
 
-## 6. Urutan implementasi setelah pemahaman dikunci
+Admin tidak bisa didaftarkan melalui API publik. Dari backend, gunakan terminal interaktif:
 
-1. Selaraskan dokumentasi, kebijakan pendaftaran, kontrak identitas, dan konfigurasi autentikasi.
-2. Buat login serta profil backend; uji tiga peran dan kasus penolakan.
-3. Tambahkan transaksi pendaftaran, daftar sekolah, pengajuan keanggotaan, dan alur pemeriksaan sesuai rancangan verifikasi yang ditetapkan.
-4. Sambungkan mobile: formulir login/daftar, status pengajuan, antrean pemeriksa yang sesuai, konfirmasi sesi, penanganan error, logout, dan profil nyata. Sediakan antrean institusi untuk admin melalui halaman internal sederhana.
-5. Uji alur menyeluruh dan bundling mobile; catat mana yang diuji di perangkat nyata dan mana yang belum.
+```powershell
+npm run admin:create -- --email admin@example.com
+# Untuk akun admin yang sudah ada:
+npm run admin:create -- --email admin@example.com --reset-password
+```
 
-Layar login, pendaftaran, status pengajuan, pemeriksaan, dan profil merupakan fokus UI tahap ini. Perubahan desain menyeluruh sembilan layar tidak termasuk prasyarat agar backend autentikasi dapat dibuat.
+Input password disembunyikan. Alternatif `--generate` menulis password acak ke `backend/.local/admin-onboarding.txt` yang diabaikan Git; password tidak dicetak ke log. Pengaturan ulang interaktif menghapus file tersebut. Akun biasa tidak dapat dipromosikan lewat script ini.
 
-## 7. Kriteria selesai
+Buka [halaman admin lokal](http://localhost:5000/admin/). Admin login lagi di browser; token hanya di memori halaman dan hilang saat reload. Pilih pengajuan, periksa data/bukti, lalu isi catatan dan pilih setujui, minta perbaikan, atau tolak. Pada daftar approved tersedia penghentian/pemulihan akses institusi. Form akses akun memakai ID akun pada rincian pengajuan dan tidak dapat menonaktifkan admin.
 
-- Akun seed ketiga peran bisa login, melihat profil yang benar, dan masuk ke navigasi yang sesuai.
-- Salah password, akun tidak dikenal, token palsu/kedaluwarsa, dan permintaan tanpa token ditolak secara konsisten.
-- Role dan identitas tidak bisa dinaikkan lewat tab mobile, body request, atau simulator.
-- Pendaftaran yang disepakati menghasilkan akun dan profil yang konsisten. Duplikasi dan kegagalan profil tidak meninggalkan akun setengah jadi.
-- Membuka ulang aplikasi mengonfirmasi sesi; logout membersihkan sesi; gangguan jaringan memberi penjelasan yang benar.
-- Tampilan profil tidak memakai identitas contoh sebagai pengganti data yang belum tersedia.
-- Guru memiliki sesi pribadi; akun pending dan anggota sekolah lain tidak dapat menjalankan aksi pemeriksaan yang bukan kewenangannya. Status institusi/keanggotaan dan penonaktifan diperiksa backend pada aksi terlindungi.
-- Pengujian backend untuk autentikasi/otorisasi dan transaksi lolos; mobile berhasil di-bundle. Hasil uji perangkat dilaporkan apa adanya.
-- Setiap perubahan utuh yang selesai diperiksa di-commit dan di-push ke `origin/develop`; kegagalan push dilaporkan. File `.env`, token, password lokal, dan berkas upload tidak dimasukkan ke commit.
+## Kontrak API
 
-## 8. Keputusan produk yang diperbarui
+Respons JSON: `{ success, message, data }`. Berkas bukti dikirim sebagai attachment, bukan JSON. Endpoint terlindungi memakai `Authorization: Bearer <token>`.
 
-1. Setiap guru memiliki akun sendiri yang terhubung ke sekolah, sesuai pilihan pengguna. Schema satu akun institusi per sekolah harus direvisi sebelum implementasi.
-2. Pengguna menyetujui verifikasi bertingkat: admin memeriksa sekolah/industri, koordinator sekolah menyetujui guru, dan guru memverifikasi siswa. Alur ini sudah menjadi keputusan produk; kode, migrasi, dan rincian operasionalnya belum selesai.
+| Endpoint | Akses dan hasil |
+| --- | --- |
+| `POST /api/auth/login` | Publik; email/password menghasilkan `{token,user}` |
+| `POST /api/auth/register` | Publik; akun, profil, dan pengajuan dibuat dalam satu transaksi; hasil `{token,user}` |
+| `GET /api/profile/me` | Akun aktif; identitas dan profil sendiri |
+| `GET /api/schools?q=nama` | Publik; maksimal 200 ID/nama sekolah aktif approved yang cocok |
+| `GET /api/verification/queue?status=pending&offset=0` | Pemeriksa berwenang; 30 pengajuan per halaman |
+| `GET /api/verification/:id` | Pemilik atau pemeriksa; rincian, riwayat, dan `can_review` |
+| `POST /api/verification/:id/review` | Pemeriksa; `{status,note}`; hanya pengajuan pending |
+| `PATCH /api/verification/:id/resubmit` | Pemilik; perbaikan data pada pending/needs_revision, kembali pending |
+| `POST /api/verification/:id/evidence` | Pemilik pengajuan institusi pending/needs_revision; multipart field `file` |
+| `GET /api/verification/:id/evidence` | Pemilik/pemeriksa; bukti terbaru. `?eventId=<id>` untuk versi historis dari pengajuan yang sama |
+| `PATCH /api/verification/:id/activity` | Admin; `{active:boolean,note}`, institusi approved |
+| `PATCH /api/admin/accounts/:id/activity` | Admin; `{active:boolean,note}`, akun selain admin |
 
-Unggah portofolio, validasi guru, matching, lowongan nyata, modul Gemini, kuis, dan status lamaran adalah tahap berikutnya. Semua itu belum menjadi fitur yang selesai hanya dengan berhasil login.
+Pendaftaran selalu memerlukan `role,email,password,passwordConfirmation,nama`. Kata sandi minimal 8 karakter dan maksimal 72 byte UTF-8, tanpa trim. Email dinormalisasi ke huruf kecil.
+
+| Jenis | Field tambahan |
+| --- | --- |
+| Siswa (`role=siswa`) | `schoolId,jurusan,kelas`, `nisn` opsional |
+| Guru (`role=sekolah`) | `schoolId` sekolah aktif approved |
+| Sekolah baru (`role=sekolah,newSchool=true`) | `schoolName,npsn,alamat,contactPhone`; guru pribadi dibuat bersama institusi |
+| Industri (`role=industri`) | `companyName,sektor,kota,nomorRegistrasi,contactPhone` |
+
+NPSN pendaftaran baru wajib 8 angka dan unik; nomor registrasi industri wajib, unik, dinormalisasi huruf besar. Data legacy boleh NULL hingga diperbaiki. Pengajuan ulang menggunakan field yang sama untuk subjek terkait, tanpa mengganti email, role, atau sekolah. Admin/koordinator tidak dapat dipilih melalui request publik.
+
+Identitas memuat `id` pengguna, `profileId`, `role,email,nama,profile,verification,canUseApp,accessMessage`, dan data ringkas sekolah/jurusan/kelas/posisi bila relevan. `id` pengguna berbeda dari ID profil dan ID pengajuan. Password/hash tidak dikirim. Status aktif, keanggotaan, dan persetujuan dibaca ulang dari database, bukan dipercaya dari claim role JWT.
+
+Kode status: 200 berhasil, 201 dibuat, 400 input tidak valid, 401 kredensial/token tidak valid atau akun nonaktif, 403 tidak berwenang, 404 tidak ditemukan, 409 konflik/keputusan sudah diproses, 413 isi terlalu besar, 429 terlalu banyak percobaan, 500 gangguan internal. Login dibatasi 50/15 menit dan daftar 200/jam per IP per proses. Siapkan shared store limiter sebelum menjalankan beberapa instance.
+
+## Pemeriksaan dan batas tahap
+
+Dari backend: `npm test` menguji schema/migrasi dan HTTP auth/verifikasi pada database lokal acak yang terpisah. Dari mobile: `npm test` menguji store sesi sebenarnya dengan batas penyimpanan/HTTP diganti simulasi; `npx expo export --platform android --output-dir dist` memeriksa bundling native beserta Hermes.
+
+Uji manual perangkat yang perlu dilanjutkan: daftar per jenis akun, unggah dari pemilih berkas Android, persetujuan berjenjang dari dua akun, tutup/buka aplikasi, keluar, koneksi terputus, dan penonaktifan saat sesi terbuka. Bundling tidak membuktikan semua interaksi tersebut bekerja di perangkat.
+
+Audit runtime backend: 0 temuan setelah perbaikan kompatibel. Audit keseluruhan masih mencatat 2 moderate pada nodemon/minimatch pengembangan. Mobile masih mempunyai 13 temuan transitif (2 low, 9 moderate, 2 high) pada tooling/dependensi Expo SDK 57. Perbaikan menyeluruh yang ditawarkan npm mengubah SDK ke 58; jangan menjalankan `npm audit fix --force` tanpa migrasi SDK dan pengujian terpisah. Ini belum merupakan persetujuan siap produksi.
+
+Pemulihan password mandiri, verifikasi email otomatis, transfer sekolah, multi-sekolah per guru, dan multi-HR per industri belum termasuk MVP ini. Lanjutkan ke Tahap 3 untuk portofolio dan validasi bukti karya, bukan menyamakan persetujuan akun dengan validasi keterampilan.

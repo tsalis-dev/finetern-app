@@ -4,8 +4,8 @@ import { colors, spacing, borderRadius } from '../../utils/theme';
 import RoleBadge from './RoleBadge';
 import { useAuthStore } from '../../store/useAuthStore';
 
-export default function ScreenHeader({ title, subtitle, showRoleBadge = true }) {
-  const { user, role, logout } = useAuthStore();
+export default function ScreenHeader({ title, subtitle, showRoleBadge = true, demo = false }) {
+  const { role, logout } = useAuthStore();
 
   return (
     <View style={styles.header}>
@@ -17,10 +17,11 @@ export default function ScreenHeader({ title, subtitle, showRoleBadge = true }) 
         )}
         <Text style={styles.title}>{title}</Text>
         {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
+        {demo && <Text style={styles.demo}>Pratinjau fitur · Data contoh, belum terhubung</Text>}
       </View>
 
       <Pressable
-        onPress={logout}
+        onPress={() => logout().catch(() => {})}
         style={({ pressed }) => [styles.logoutButton, pressed && styles.logoutButtonPressed]}
         accessibilityRole="button"
         accessibilityLabel="Keluar / Ganti Akun"
@@ -32,6 +33,7 @@ export default function ScreenHeader({ title, subtitle, showRoleBadge = true }) 
 }
 
 const styles = StyleSheet.create({
+  demo: { color: colors.primary, fontSize: 12, marginTop: spacing.sm, lineHeight: 18 },
   header: {
     flexDirection: 'row',
     alignItems: 'center',

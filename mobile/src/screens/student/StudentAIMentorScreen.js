@@ -1,12 +1,11 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import React from 'react';
+import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, spacing, borderRadius, shadows } from '../../utils/theme';
 import ScreenHeader from '../../components/common/ScreenHeader';
 import PrimaryButton from '../../components/common/PrimaryButton';
 
 export default function StudentAIMentorScreen() {
-  const [isGenerating, setIsGenerating] = useState(false);
 
   const skillGaps = [
     {
@@ -26,16 +25,12 @@ export default function StudentAIMentorScreen() {
   ];
 
   const handleGenerateModule = (skillName) => {
-    setIsGenerating(true);
-    setTimeout(() => {
-      setIsGenerating(false);
-      alert(`Modul Pembelajaran & 5 Soal Kuis untuk "${skillName}" berhasil digenerate oleh Google Gemini AI!`);
-    }, 1000);
+    Alert.alert('Pratinjau fitur', 'Rekomendasi belajar sedang disiapkan. Belum ada modul atau kuis yang dibuat.');
   };
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <ScreenHeader
+      <ScreenHeader demo
         title="AI Learning Recommender"
         subtitle="Jalur belajar adaptif untuk menutup kesenjangan kompetensi"
       />
@@ -75,7 +70,6 @@ export default function StudentAIMentorScreen() {
 
             <PrimaryButton
               title={`Mulai Learning Sprint: ${gap.skillName}`}
-              loading={isGenerating}
               onPress={() => handleGenerateModule(gap.skillName)}
               style={styles.sprintButton}
             />

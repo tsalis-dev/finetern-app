@@ -1,114 +1,54 @@
 import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import api, { setUnauthorizedHandler } from '../api/axiosClient';
+import { getToken, saveToken, clearToken } from './sessionStorage';
 
 export const useAuthStore = create((set, get) => ({
-  user: null,
-  token: null,
-  role: null, // 'siswa' | 'sekolah' | 'industri'
-  isLoading: true,
-  isAuthenticated: false,
-
-  // Pulihkan sesi login yang tersimpan di AsyncStorage
+  user: null, token: null, role: null, isLoading: true, isAuthenticated: false, sessionError: null, logoutPending: false,
   restoreSession: async () => {
+    set({ isLoading: true, sessionError: null });
     try {
-      set({ isLoading: true });
-      const storedToken = await AsyncStorage.getItem('finetern_token');
-      const storedUser = await AsyncStorage.getItem('finetern_user');
-
-      if (storedToken && storedUser) {
-        const parsedUser = JSON.parse(storedUser);
-        set({
-          token: storedToken,
-          user: parsedUser,
-          role: parsedUser.role,
-          isAuthenticated: true,
-          isLoading: false,
-        });
-      } else {
-        set({
-          user: null,
-          token: null,
-          role: null,
-          isAuthenticated: false,
-          isLoading: false,
-        });
-      }
+      if (get().logoutPending) { await get().logout(); return; }
+      // Token simulator lama tidak boleh dipulihkan sebagai sesi nyata.
+      await AsyncStorage.multiRemove(['finetern_token', 'finetern_user']);
+      const token = await getToken();
+      if (!token) { set({ user: null, token: null, role: null, isAuthenticated: false }); return; }
+      set({ token });
+      await get().refreshProfile();
     } catch (error) {
-      console.warn('[useAuthStore] Gagal memulihkan sesi:', error);
-      set({ isLoading: false, isAuthenticated: false });
+      if (error.status !== 401) set({ sessionError: error.message || 'Penyimpanan sesi tidak dapat diakses.' });
+    } finally { set({ isLoading: false }); }
+  },
+  authenticate: async (mode, values) => {
+    const response = await api.post('/auth/' + mode, values);
+    try { await saveToken(response.data.token); }
+    catch { throw { message: 'Akun dikenali, tetapi sesi tidak dapat disimpan. Coba masuk kembali.' }; }
+    set({ user: response.data.user, token: response.data.token, role: response.data.user.role, isAuthenticated: true, sessionError: null });
+  },
+  refreshProfile: async () => {
+    const token = get().token;
+    if (!token) return;
+    try {
+      const response = await api.get('/profile/me');
+      if (get().token !== token) return;
+      set({ user: response.data, role: response.data.role, isAuthenticated: true, sessionError: null });
+      return response.data;
+    } catch (error) {
+      if (get().token === token && error.status !== 401) set({ sessionError: error.message });
+      throw error;
     }
   },
-
-  // Simpan login ke state dan penyimpanan lokal
-  login: async (userData, token) => {
-    try {
-      await AsyncStorage.setItem('finetern_token', token);
-      await AsyncStorage.setItem('finetern_user', JSON.stringify(userData));
-      set({
-        user: userData,
-        token: token,
-        role: userData.role,
-        isAuthenticated: true,
-      });
-    } catch (error) {
-      console.error('[useAuthStore] Gagal menyimpan login:', error);
-    }
-  },
-
-  // Hapus sesi
   logout: async () => {
-    try {
-      await AsyncStorage.removeItem('finetern_token');
-      await AsyncStorage.removeItem('finetern_user');
-      set({
-        user: null,
-        token: null,
-        role: null,
-        isAuthenticated: false,
-      });
-    } catch (error) {
-      console.error('[useAuthStore] Gagal logout:', error);
+    set({ user: null, token: null, role: null, isAuthenticated: false, sessionError: null, logoutPending: true });
+    try { await clearToken(); set({ logoutPending: false }); }
+    catch {
+      const message = 'Sesi di perangkat belum dapat dihapus. Coba keluar kembali.';
+      set({ sessionError: message });
+      throw { message };
     }
-  },
-
-  // Pengalih peran cepat untuk presentasi & pengujian UI
-  switchRole: (newRole) => {
-    const defaultProfiles = {
-      siswa: {
-        id: 1,
-        nama: 'Ahmad Pratama',
-        email: 'siswa1@finetern.id',
-        role: 'siswa',
-        sekolah: 'SMKN 1 Bandung',
-        jurusan: 'Rekayasa Perangkat Lunak',
-        kelas: 'XII RPL 1',
-      },
-      sekolah: {
-        id: 1,
-        nama: 'Drs. H. Mulyana (Guru Pembimbing)',
-        email: 'guru@smkn1bandung.sch.id',
-        role: 'sekolah',
-        sekolah: 'SMKN 1 Bandung',
-        akreditasi: 'A',
-      },
-      industri: {
-        id: 1,
-        nama: 'PT Digital Kreatif Nusantara',
-        email: 'hrd@digitalkreatif.com',
-        role: 'industri',
-        sektor: 'Teknologi Informasi & Software',
-        kota: 'Bandung',
-      },
-    };
-
-    const normalizedRole =
-      newRole === 'guru_smk' ? 'sekolah' : newRole === 'mitra_industri' ? 'industri' : newRole;
-    const targetUser = defaultProfiles[normalizedRole] || defaultProfiles.siswa;
-    set({
-      user: targetUser,
-      role: normalizedRole,
-      isAuthenticated: true,
-      token: 'dummy_token_' + normalizedRole,
-    });
   },
 }));
+
+setUnauthorizedHandler(token => {
+  if (useAuthStore.getState().token === token) useAuthStore.getState().logout().catch(() => {});
+});

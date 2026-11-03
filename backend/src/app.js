@@ -13,8 +13,17 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '64kb' }));
+app.use(express.urlencoded({ extended: false, limit: '64kb', parameterLimit: 100 }));
+app.use((req, res, next) => {
+  res.set('X-Content-Type-Options', 'nosniff');
+  if (req.path.startsWith('/api')) res.set('Cache-Control', 'no-store');
+  next();
+});
+app.use('/admin', (req, res, next) => {
+  res.set('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' blob:; frame-ancestors 'none'; base-uri 'none'; form-action 'self'");
+  next();
+}, express.static(path.join(__dirname, '../public/admin')));
 
 // Menyajikan berkas statis bukti portofolio
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));

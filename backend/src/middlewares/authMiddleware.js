@@ -1,10 +1,11 @@
 const jwt = require('jsonwebtoken');
-require('dotenv').config();
+const { authConfig } = require('../config/auth');
+const { getIdentity } = require('../services/identityService');
 
 /**
  * Middleware untuk verifikasi JWT Bearer Token
  */
-function verifyToken(req, res, next) {
+async function verifyToken(req, res, next) {
   const authHeader = req.headers['authorization'];
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return res.status(401).json({
@@ -14,11 +15,11 @@ function verifyToken(req, res, next) {
     });
   }
 
-  const token = authHeader.split(' ')[1];
+  const token = authHeader.slice(7);
+  const config = authConfig();
+  let decoded;
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'finetern_development_secret_jwt_key_2026');
-    req.user = decoded; // memuat { userId, role, profileId, email }
-    next();
+    decoded = jwt.verify(token, config.secret, { algorithms: ['HS256'], issuer: config.issuer, audience: config.audience });
   } catch (error) {
     return res.status(401).json({
       success: false,
@@ -26,6 +27,12 @@ function verifyToken(req, res, next) {
       data: {},
     });
   }
+  if (!/^[1-9]\d*$/.test(decoded.sub || '') || !Number.isSafeInteger(Number(decoded.sub))) return res.status(401).json({ success: false, message: 'Sesi tidak valid.', data: {} });
+  const user = await getIdentity(Number(decoded.sub));
+  if (!user?.is_active) return res.status(401).json({ success: false, message: 'Akun tidak aktif atau tidak ditemukan.', data: {} });
+  // Hak akses selalu dibaca ulang dari database, termasuk perubahan setelah JWT diterbitkan.
+  req.user = user;
+  next();
 }
 
 /**

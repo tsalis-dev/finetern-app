@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="id">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Pemeriksaan Institusi · Finetern</title><link rel="icon" href="/admin/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/admin/style.css"><script defer src="/admin/app.js"></script></head>
+<body><main>
+  <header><span class="mark">F</span><div><p class="eyebrow">FINETERN · PENGELOLA</p><h1>Pemeriksaan institusi</h1></div><button id="logout" hidden>Keluar</button></header>
+  <p id="message" role="status" aria-live="polite"></p>
+  <form id="login-form" class="panel narrow">
+    <h2>Masuk sebagai admin</h2><p>Akun disiapkan pengelola melalui terminal. Sesi hanya disimpan selama halaman ini terbuka.</p>
+    <label>Email<input id="email" type="email" autocomplete="username" required></label>
+    <label>Kata sandi<input id="password" type="password" autocomplete="current-password" required></label>
+    <button type="submit" class="primary">Masuk</button>
+  </form>
+  <section id="workspace" hidden>
+    <div class="toolbar"><label>Status<select id="status"><option value="pending">Menunggu pemeriksaan</option><option value="needs_revision">Perlu revisi</option><option value="approved">Disetujui</option><option value="rejected">Ditolak</option></select></label><button id="refresh">Muat ulang</button></div>
+    <div class="columns"><section class="panel"><h2>Antrean sekolah dan industri</h2><div id="queue"></div><div class="toolbar"><button id="previous">Sebelumnya</button><button id="next">Berikutnya</button></div></section>
+    <section class="panel" id="detail"><h2>Pilih pengajuan</h2><p>Periksa identitas institusi dan kewenangan perwakilan sebelum memberikan keputusan.</p></section></div>
+    <section class="panel"><h2>Akses akun</h2><p>Gunakan ID akun pada rincian pengajuan. Akun admin tidak dapat dinonaktifkan melalui formulir ini.</p><form id="account-form" class="toolbar"><label>ID akun<input id="account-id" type="number" min="1" required></label><label>Alasan<input id="account-note" required maxlength="2000"></label><button name="action" value="false">Nonaktifkan akun</button><button name="action" value="true">Aktifkan akun</button></form></section>
+  </section>
+</main></body></html>

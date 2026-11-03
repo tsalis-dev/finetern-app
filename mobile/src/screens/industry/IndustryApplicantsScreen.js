@@ -6,7 +6,7 @@ import ScreenHeader from '../../components/common/ScreenHeader';
 
 export default function IndustryApplicantsScreen() {
   const [activeFilter, setActiveFilter] = useState('all'); // 'all', 'high_match', 'interview', 'accepted'
-  const [applicants, setApplicants] = useState([
+  const [applicants] = useState([
     {
       id: '1',
       name: 'Ahmad Fauzi',
@@ -62,16 +62,7 @@ export default function IndustryApplicantsScreen() {
   ]);
 
   const handleUpdateStatus = (id, newStatus, studentName) => {
-    setApplicants((prev) =>
-      prev.map((app) => (app.id === id ? { ...app, status: newStatus } : app))
-    );
-    const label =
-      newStatus === 'accepted'
-        ? 'Diterima Magang'
-        : newStatus === 'interview'
-        ? 'Dijadwalkan Wawancara'
-        : 'Ditolak';
-    Alert.alert('Status Pelamar Diperbarui', `${studentName} berhasil ditandai sebagai "${label}". Notifikasi resmi dikirim ke siswa dan pihak SMK.`);
+    Alert.alert('Pratinjau pelamar', 'Seleksi pelamar sedang disiapkan. Belum ada perubahan atau pemberitahuan yang dikirim.');
   };
 
   const filteredApplicants = applicants.filter((item) => {
@@ -82,7 +73,7 @@ export default function IndustryApplicantsScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <ScreenHeader
+      <ScreenHeader demo
         title="Daftar Pelamar Magang"
         subtitle="Evaluasi profil siswa dan hasil AI Micro-Skills Matching"
       />

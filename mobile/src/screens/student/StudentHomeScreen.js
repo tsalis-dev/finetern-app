@@ -10,9 +10,9 @@ export default function StudentHomeScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <ScreenHeader
+      <ScreenHeader demo
         title={`Halo, ${user?.nama?.split(' ')[0] || 'Siswa'}! 👋`}
-        subtitle={`${user?.sekolah || 'SMKN 1 Bandung'} • ${user?.jurusan || 'RPL'}`}
+        subtitle={`${user?.sekolah || 'Sekolah'} • ${user?.jurusan || 'Jurusan belum diisi'}`}
       />
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
@@ -61,7 +61,7 @@ export default function StudentHomeScreen({ navigation }) {
         {/* Section: Rekomendasi Lowongan Teratas */}
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Rekomendasi Magang Presisi</Text>
-          <Pressable onPress={() => navigation.navigate('LowonganTab')}>
+          <Pressable onPress={() => navigation.navigate('Eksplorasi')}>
             <Text style={styles.sectionLink}>Eksplorasi</Text>
           </Pressable>
         </View>
@@ -90,7 +90,7 @@ export default function StudentHomeScreen({ navigation }) {
           </View>
 
           <Pressable
-            onPress={() => navigation.navigate('LowonganTab')}
+            onPress={() => navigation.navigate('Eksplorasi')}
             style={({ pressed }) => [styles.applyButton, pressed && { opacity: 0.8 }]}
           >
             <Text style={styles.applyButtonText}>Lihat Detail & Ajukan Lamaran</Text>
@@ -105,7 +105,7 @@ export default function StudentHomeScreen({ navigation }) {
             Dapatkan modul belajar adaptif & kuis 15 menit dari Google Gemini untuk meningkatkan skor Match Rate Anda.
           </Text>
           <Pressable
-            onPress={() => navigation.navigate('AIMentorTab')}
+            onPress={() => navigation.navigate('AIMentor')}
             style={styles.aiButton}
           >
             <Text style={styles.aiButtonText}>Buka AI Mentor</Text>

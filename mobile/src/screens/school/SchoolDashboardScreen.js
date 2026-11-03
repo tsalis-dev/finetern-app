@@ -1,9 +1,8 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Pressable, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, spacing, borderRadius, shadows } from '../../utils/theme';
 import ScreenHeader from '../../components/common/ScreenHeader';
-import RoleBadge from '../../components/common/RoleBadge';
 import { useAuthStore } from '../../store/useAuthStore';
 
 export default function SchoolDashboardScreen({ navigation }) {
@@ -11,13 +10,15 @@ export default function SchoolDashboardScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <ScreenHeader
-        title={`Halo, Pak ${user?.nama?.split(' ')[0] || 'Guru'}! 👨‍🏫`}
-        subtitle={`${user?.sekolah || 'SMKN 1 Bandung'} • Bimbingan & Hubin PKL`}
-        rightAction={<RoleBadge role="guru_smk" />}
+      <ScreenHeader demo
+        title={`Halo, ${user?.nama?.split(' ')[0] || 'Guru'}!`}
+        subtitle={`${user?.sekolah || 'Sekolah'} • Bimbingan & Hubin PKL`}
       />
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        <Pressable style={styles.btnApprove} onPress={() => navigation.navigate('Validasi')}>
+          <Text style={styles.btnApproveText}>Buka verifikasi akun anggota sekolah</Text>
+        </Pressable>
         {/* Ringkasan Metrik Sekolah */}
         <View style={styles.metricsGrid}>
           <View style={[styles.metricCard, styles.metricCardPrimary]}>
@@ -48,7 +49,7 @@ export default function SchoolDashboardScreen({ navigation }) {
             <Text style={styles.sectionTitle}>Validasi Portofolio Menunggu</Text>
             <Text style={styles.sectionSubtitle}>Beri verifikasi untuk meningkatkan match score siswa</Text>
           </View>
-          <Pressable onPress={() => navigation.navigate('Validasi')}>
+          <Pressable onPress={() => Alert.alert('Pratinjau fitur', 'Validasi portofolio sedang disiapkan. Data ini merupakan contoh.')}>
             <Text style={styles.sectionLink}>Semua (8)</Text>
           </Pressable>
         </View>
@@ -103,13 +104,13 @@ export default function SchoolDashboardScreen({ navigation }) {
             <View style={styles.actionRow}>
               <Pressable
                 style={styles.btnApprove}
-                onPress={() => alert(`Portofolio ${item.student} disetujui!`)}
+                onPress={() => Alert.alert('Pratinjau fitur', 'Validasi portofolio sedang disiapkan. Belum ada keputusan yang disimpan.')}
               >
                 <Text style={styles.btnApproveText}>✓ Validasi Keahlian</Text>
               </Pressable>
               <Pressable
                 style={styles.btnReview}
-                onPress={() => navigation.navigate('Validasi')}
+                onPress={() => Alert.alert('Pratinjau fitur', 'Rincian portofolio sedang disiapkan. Data ini merupakan contoh.')}
               >
                 <Text style={styles.btnReviewText}>Detail</Text>
               </Pressable>

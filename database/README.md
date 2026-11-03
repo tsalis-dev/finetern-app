@@ -1,6 +1,6 @@
 # Database Finetern v2
 
-Schema v2 menyiapkan akun guru pribadi dan verifikasi bertingkat. Migrasi sudah diuji di MySQL 8.4.3 pada database terpisah; tidak otomatis dijalankan saat backend menyala.
+Schema v2 mendukung akun guru pribadi dan verifikasi bertingkat. Migrasi diuji di MySQL 8.4.3 pada database terpisah dan sudah diterapkan pada database lokal tanggal 3 November 2026 setelah backup dipulihkan serta diuji pada salinan. Migrasi tidak otomatis dijalankan saat backend menyala.
 
 ## Model identitas
 
@@ -28,15 +28,15 @@ Setiap subjek memiliki satu `verification_requests`, dengan tepat satu kolom tuj
 
 Status dimulai dari `pending`; alternatifnya `approved`, `needs_revision`, dan `rejected`. `is_active` terpisah dari persetujuan: status approved tidak cukup jika akun, institusi, atau keanggotaannya dinonaktifkan.
 
-Saat API dibuat, perubahan status dan penambahan `verification_events` harus menjadi satu transaksi. Perbaikan pengajuan memperbarui status request dan menambah event `resubmitted` dengan snapshot data pengajuan yang relevan; jangan menimpa event lama atau menyertakan hash/password di snapshot. Dokumen bukti direferensikan oleh `evidence_path` ke penyimpanan privat, bukan URL publik `/uploads` portofolio.
+API mengubah status dan menambah `verification_events` dalam satu transaksi. Perbaikan pengajuan memperbarui status request dan menambah event `resubmitted` dengan snapshot data pengajuan yang relevan; event lama dipertahankan tanpa hash/password. Dokumen bukti direferensikan oleh `evidence_path` ke penyimpanan privat, bukan URL publik `/uploads` portofolio.
 
-Event `suspended`/`reactivated` mencatat penonaktifan/pemulihan subjek terkait dan alasan pada `note`; field `is_active` subjek diubah dalam transaksi yang sama. Penonaktifan akun tersimpan pada `users.disabled_by`, `disabled_at`, dan `disabled_reason`. Penghentian guru mengubah keanggotaannya, sedangkan penghentian siswa pada MVP dilakukan pada akunnya.
+Event `suspended`/`reactivated` mencatat penonaktifan/pemulihan institusi dan alasan pada `note`; field `is_active` subjek diubah dalam transaksi yang sama. Penonaktifan akun tersimpan pada `users.disabled_by`, `disabled_at`, dan `disabled_reason`. Penghentian guru/siswa pada UI MVP dilakukan pada akunnya; status aktif keanggotaan juga diperiksa backend, tetapi belum memiliki endpoint pengelolaan tersendiri.
 
-**Batas jaminan schema:** database menjaga relasi, keunikan, dan bentuk pengajuan. Ia belum memeriksa role pemeriksa, larangan menyetujui diri sendiri, kecocokan sekolah, atau urutan perubahan status. Backend Tahap 2 harus memeriksanya, memastikan `applicant_user_id` cocok dengan pemilik subjek, menolak perubahan/hapus riwayat melalui API, dan membaca status terbaru pada aksi terlindungi. Membuat kolom role/status tidak berarti otorisasi sudah berfungsi.
+**Batas jaminan schema:** database menjaga relasi, keunikan, dan bentuk pengajuan. Role pemeriksa, larangan menyetujui diri sendiri, kecocokan sekolah, dan urutan status dijaga service backend serta diuji lewat HTTP. API membuat subjek/pengajuan bersama pemiliknya dalam transaksi dan tidak menyediakan perubahan/hapus riwayat. Perubahan SQL manual dapat melewati aturan aplikasi.
 
 Untuk akses guru: akun aktif, role `sekolah`, keanggotaan aktif dan approved, serta sekolah aktif dan approved. Untuk menyetujui guru lain diperlukan posisi koordinator. Untuk siswa diperlukan akun aktif, pengajuan keanggotaan siswa approved, serta sekolah aktif dan approved. Untuk industri diperlukan akun dan institusi aktif serta pengajuan institusi approved. Token yang masih valid tidak menggantikan pemeriksaan tersebut.
 
-NPSN dan nomor registrasi bersifat nullable agar migrasi tidak mengarang identitas resmi. Nilai non-null harus unik dan tidak boleh kosong. Format, normalisasi, bukti kewenangan perwakilan, dan syarat wajib pada pendaftaran baru ditetapkan sebelum endpoint dibuat; nomor yang unik sendiri bukan bukti institusi sah.
+NPSN dan nomor registrasi bersifat nullable agar migrasi tidak mengarang identitas resmi. Nilai non-null harus unik dan tidak boleh kosong. API pendaftaran baru mewajibkan NPSN 8 angka atau nomor registrasi industri yang dinormalisasi huruf besar. Nomor unik sendiri bukan bukti institusi sah; admin tetap memeriksa identitas dan kewenangan perwakilan.
 
 ## Instalasi baru
 
@@ -54,11 +54,15 @@ Data demo hanya untuk lingkungan pengembangan:
 Get-Content -Raw database/seed.sql | mysql --host=127.0.0.1 --port=3306 --user=root --password
 ```
 
-Seed membuat tujuh akun: dua guru pribadi, tiga siswa, dua industri. Password contoh tetap `password123`; semua pengajuan institusi/keanggotaan pending. Tidak ada akun admin dengan kredensial default. Penyediaan admin operasional dibuat secara eksplisit saat autentikasi diimplementasikan.
+Seed membuat tujuh akun: dua guru pribadi, tiga siswa, dua industri. Password contoh tetap `password123`; semua pengajuan institusi/keanggotaan pending. Tidak ada admin dengan kredensial default. Buat admin secara eksplisit menggunakan `npm run admin:create -- --email <alamat>` dari backend pada terminal interaktif; password disembunyikan dan tidak dikirim ke Git.
 
 Menjalankan ulang seed tidak mengubah keputusan verifikasi atau menggandakan event pengajuan awal. Data contoh profil/lowongan tetap dapat diperbarui oleh seed, sehingga seed bukan alat pemeliharaan database yang berisi data pengguna nyata.
 
 ## Migrasi database v1 yang sudah ada
+
+Jalur yang dipakai pada database lokal: dari backend, jalankan `npm run db:migrate` saat tidak ada penulisan aplikasi. Script membuat dump di `database/backups/`, memulihkannya ke database acak `finetern_restore_test_*`, menguji migrasi/pelestarian seluruh data pada salinan, memastikan sumber tidak berubah, kemudian memigrasi sumber. Hanya salinan yang dibuat run tersebut dibersihkan; backup tetap ada. `MYSQL_BIN_DIR` menunjuk folder executable `mysql` dan `mysqldump` (default Laragon MySQL 8.4.3 Windows). Script yang melihat penanda applied berhenti tanpa mengulang. Lindungi backup karena berisi data akun/pengguna.
+
+Alternatif manual berikut tetap memerlukan uji pemulihan backup sebelum migrasi:
 
 1. Hentikan penulisan aplikasi selama migrasi dan buat backup yang dapat dipulihkan. Folder backup lokal di bawah diabaikan Git.
 2. Pastikan schema sumber masih mengikuti v1 repository. Constraint sekolah lama bernama `schools_ibfk_1` dan index uniknya `user_id`; database yang pernah diubah manual harus diperiksa dahulu. Catat jumlah dan isi data penting sebelum migrasi.
@@ -84,7 +88,7 @@ JOIN school_memberships m ON m.teacher_id=t.id
 JOIN verification_requests r ON r.membership_id=m.id;
 ```
 
-ID dan isi data lama tetap dipertahankan, termasuk kredensial, siswa, karya, lowongan, lamaran, serta pembelajaran. `schools.user_id` dipindahkan menjadi `submitted_by`; guru pribadi dan keanggotaannya dibuat dari relasi lama. Nama pribadi guru yang tidak tersedia dibiarkan NULL agar dilengkapi, bukan dikarang. Migrasi tidak membuat admin, koordinator otomatis, atau keputusan approved. Admin harus memeriksa sekolah dan menetapkan koordinator awal melalui alur verifikasi yang akan dibuat.
+ID dan isi data lama tetap dipertahankan, termasuk kredensial, siswa, karya, lowongan, lamaran, serta pembelajaran. `schools.user_id` dipindahkan menjadi `submitted_by`; guru pribadi dan keanggotaannya dibuat dari relasi lama. Nama pribadi guru yang tidak tersedia dibiarkan NULL agar dilengkapi, bukan dikarang. Migrasi tidak membuat admin, koordinator otomatis, atau keputusan approved. Pemilik melengkapi data/bukti melalui mobile, lalu admin memeriksa sekolah dan menetapkan koordinator awal melalui `/admin/`.
 
 ## Pengujian
 
@@ -97,4 +101,4 @@ Tes memakai dependency yang sudah terpasang dan koneksi MySQL lokal dari `backen
 
 Tes membuat tiga database bernama acak `finetern_test_<acak>_fresh`, `finetern_test_<acak>_migration`, dan `finetern_test_<acak>_partial`, lalu menghapus hanya database yang berhasil dibuat pada run tersebut. Database aplikasi tidak dipilih atau diubah. Fixture v1 dibekukan untuk menguji perpindahan dari schema lama.
 
-Pemeriksaan mencakup instalasi/seed baru, dua guru dalam satu sekolah, status pending, seed ulang tanpa kehilangan keputusan, constraint subjek/keanggotaan/FK/identifier institusi, pelestarian seluruh record lama, kesamaan schema hasil migrasi dan instalasi baru, penolakan migrasi ulang, serta deteksi kegagalan DDL di tengah migrasi. Tes ini belum membuktikan otorisasi API atau alur UI yang belum diimplementasikan.
+Pemeriksaan mencakup instalasi/seed baru, dua guru dalam satu sekolah, status pending, seed ulang tanpa kehilangan keputusan, constraint subjek/keanggotaan/FK/identifier institusi, pelestarian seluruh record lama, kesamaan schema hasil migrasi dan instalasi baru, penolakan migrasi ulang, serta deteksi kegagalan DDL di tengah migrasi. `npm run test:auth` menguji otorisasi HTTP pada database acak `finetern_auth_test_*` dan direktori bukti sementara. `npm test` menjalankan keduanya. Database utama tidak diubah oleh tes; interaksi perangkat mobile tetap perlu diperiksa terpisah.

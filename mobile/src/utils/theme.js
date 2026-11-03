@@ -32,23 +32,23 @@ export const colors = {
   },
 
   // Brand Accent
-  primary: '#2563EB',       // Blue 600
-  primaryDark: '#1D4ED8',   // Blue 700
-  primaryLight: '#EFF6FF',  // Blue 50
-  primaryBorder: '#BFDBFE', // Blue 200
+  primary: '#842D3E',
+  primaryDark: '#63202D',
+  primaryLight: '#F8EDF0',
+  primaryBorder: '#E4BCC5',
 
   // Role Identifiers
   role: {
-    siswa: { text: '#2563EB', bg: '#EFF6FF', border: '#BFDBFE' },
-    guru: { text: '#059669', bg: '#ECFDF5', border: '#A7F3D0' },
-    industri: { text: '#7C3AED', bg: '#F5F3FF', border: '#DDD6FE' },
+    siswa: { text: '#842D3E', bg: '#F8EDF0', border: '#E4BCC5' },
+    guru: { text: '#842D3E', bg: '#F8EDF0', border: '#E4BCC5' },
+    industri: { text: '#842D3E', bg: '#F8EDF0', border: '#E4BCC5' },
   },
-  roleStudent: '#2563EB',
-  roleStudentBg: '#EFF6FF',
-  roleSchool: '#059669',
-  roleSchoolBg: '#ECFDF5',
-  roleIndustry: '#7C3AED',
-  roleIndustryBg: '#F5F3FF',
+  roleStudent: '#842D3E',
+  roleStudentBg: '#F8EDF0',
+  roleSchool: '#842D3E',
+  roleSchoolBg: '#F8EDF0',
+  roleIndustry: '#842D3E',
+  roleIndustryBg: '#F8EDF0',
 
   // Status Colors
   status: {

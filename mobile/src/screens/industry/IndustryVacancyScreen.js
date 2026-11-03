@@ -5,7 +5,7 @@ import { colors, spacing, borderRadius, shadows } from '../../utils/theme';
 import ScreenHeader from '../../components/common/ScreenHeader';
 
 export default function IndustryVacancyScreen({ navigation }) {
-  const [vacancies, setVacancies] = useState([
+  const [vacancies] = useState([
     {
       id: '1',
       title: 'Mobile Developer Intern (React Native)',
@@ -56,16 +56,12 @@ export default function IndustryVacancyScreen({ navigation }) {
   };
 
   const handleToggleStatus = (id, currentStatus) => {
-    const nextStatus = currentStatus === 'active' ? 'closed' : 'active';
-    setVacancies((prev) =>
-      prev.map((v) => (v.id === id ? { ...v, status: nextStatus } : v))
-    );
-    Alert.alert('Status Diperbarui', `Status lowongan berhasil diubah menjadi ${nextStatus.toUpperCase()}.`);
+    Alert.alert('Pratinjau lowongan', 'Pengelolaan lowongan sedang disiapkan. Belum ada perubahan yang disimpan.');
   };
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <ScreenHeader
+      <ScreenHeader demo
         title="Manajemen Lowongan Magang"
         subtitle="Publikasikan posisi dan tentukan standar micro-skills SMK"
       />

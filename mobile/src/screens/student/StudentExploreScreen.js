@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Pressable, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, spacing, borderRadius, shadows } from '../../utils/theme';
 import ScreenHeader from '../../components/common/ScreenHeader';
@@ -40,7 +40,7 @@ export default function StudentExploreScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <ScreenHeader
+      <ScreenHeader demo
         title="Katalog Lowongan Magang"
         subtitle="Pencocokan presisi berbasis micro-skills tervalidasi"
       />
@@ -111,13 +111,13 @@ export default function StudentExploreScreen() {
                 {isEligible ? (
                   <PrimaryButton
                     title="Ajukan Lamaran dengan Portofolio"
-                    onPress={() => alert(`Lamaran berhasil dikirim ke ${vac.company} (Match Rate: ${vac.matchRate}%)`)}
+                    onPress={() => Alert.alert('Pratinjau fitur', 'Pengiriman lamaran sedang disiapkan. Belum ada lamaran yang dikirim.')}
                   />
                 ) : (
                   <PrimaryButton
                     title="Tutup Skill-Gap dengan AI Mentor"
                     variant="secondary"
-                    onPress={() => alert('Membuka modul latihan AI untuk menutup kekurangan skill lowongan ini')}
+                    onPress={() => Alert.alert('Pratinjau fitur', 'Rekomendasi belajar sedang disiapkan. Belum ada modul yang dibuat.')}
                   />
                 )}
               </View>

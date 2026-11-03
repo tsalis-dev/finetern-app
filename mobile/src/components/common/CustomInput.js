@@ -13,6 +13,7 @@ export default function CustomInput({
   error,
   helperText,
   containerStyle,
+  autoComplete,
 }) {
   const [isFocused, setIsFocused] = useState(false);
 
@@ -27,6 +28,8 @@ export default function CustomInput({
         secureTextEntry={secureTextEntry}
         keyboardType={keyboardType}
         autoCapitalize={autoCapitalize}
+        autoComplete={autoComplete}
+        accessibilityLabel={label}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
         style={[
