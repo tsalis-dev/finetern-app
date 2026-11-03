@@ -1,6 +1,6 @@
 # Rancangan Verifikasi Akun dan Institusi
 
-Status: rancangan produk sebelum kode dan migrasi database. Keputusan pengguna: setiap guru memiliki akun sendiri dan terhubung ke sekolah. Pengguna mengusulkan pendaftaran dengan verifikasi siswa oleh sekolah serta verifikasi institusi oleh pengelola platform. Rincian pelaksanaannya di bawah adalah rekomendasi untuk ditinjau, bukan fitur yang sudah diimplementasikan.
+Status: alur produk disetujui pengguna; kode dan migrasi database belum diimplementasikan. Sekolah dan industri diverifikasi admin platform, guru disetujui koordinator sekolah, dan siswa diverifikasi guru sekolahnya. Setiap guru memiliki akun pribadi yang terhubung ke sekolah. Rincian bukti pemeriksaan dan penanggung jawab operasional masih perlu ditetapkan.
 
 ## 1. Prinsip
 
@@ -8,20 +8,22 @@ Pendaftaran menghasilkan akun untuk masuk dan melihat proses pengajuan. Hak menj
 
 Sekolah adalah institusi, sedangkan guru adalah orang yang memiliki akun dan keanggotaan pada sekolah tersebut. Verifikasi sekolah tidak otomatis memverifikasi semua orang yang mengaku sebagai gurunya.
 
-## 2. Pembagian pemeriksa yang disarankan
+## 2. Pembagian pemeriksa yang disepakati
 
 | Pengajuan | Pemeriksa | Hasil setelah disetujui |
 | --- | --- | --- |
 | Institusi sekolah dan perwakilan awal | Admin platform | Sekolah terverifikasi dan perwakilan yang sah ditetapkan sebagai koordinator sekolah |
 | Guru bergabung ke sekolah terverifikasi | Koordinator sekolah tersebut | Guru dapat menjalankan kewenangan sekolah sesuai keanggotaan yang disetujui |
-| Siswa mengaku berasal dari sekolah tertentu | Guru/koordinator yang berwenang di sekolah tersebut | Keanggotaan siswa di sekolah terverifikasi |
+| Siswa mengaku berasal dari sekolah tertentu | Guru yang memiliki keanggotaan disetujui di sekolah tersebut | Keanggotaan siswa di sekolah terverifikasi |
 | Industri dan perwakilannya | Admin platform | Akun industri dapat menerbitkan lowongan serta memproses lamaran |
 
 Koordinator adalah kewenangan tambahan pada keanggotaan sekolah, bukan akun bersama. Guru lain tetap menggunakan akun pribadi. Orang yang pertama mendaftar tidak otomatis menjadi koordinator; penetapan awal dilakukan admin setelah pemeriksaan.
 
 Admin platform diperlukan karena aplikasi tidak dapat mengambil keputusan manual sendiri. Untuk MVP, admin disiapkan oleh pengelola dan tidak memiliki jalur pendaftaran publik. Antrean institusi dapat dikelola melalui halaman internal sederhana; tidak perlu menambahkan tab admin pada aplikasi siswa.
 
-## 3. Alur yang direkomendasikan
+## 3. Alur yang disepakati
+
+Sekolah beserta koordinator awal harus terverifikasi sebelum menyetujui guru; guru harus disetujui sebelum memverifikasi siswa. Pendaftaran/verifikasi industri berjalan mandiri: proses sekolah tidak harus menunggu ada industri yang mendaftar, dan sebaliknya.
 
 ### Sekolah dan guru pertama
 
@@ -91,12 +93,10 @@ Halaman internal untuk admin adalah bagian dari alur verifikasi yang berfungsi, 
 
 Kriteria penting: guru berbeda memiliki sesi sendiri; guru sekolah A tidak dapat menyetujui siswa sekolah B; guru pending tidak dapat memvalidasi; industri pending tidak dapat membuka rekrutmen; pengguna tidak dapat menjadikan diri admin/koordinator lewat request; penonaktifan berlaku walau JWT lama belum kedaluwarsa.
 
-## 8. Keputusan yang sudah jelas dan yang masih usulan
+## 8. Keputusan yang disetujui dan rincian yang belum ditetapkan
 
-**Sudah dipilih pengguna:** akun guru bersifat pribadi dan terhubung ke sekolah.
+**Disetujui pengguna:** akun guru bersifat pribadi dan terhubung ke sekolah; admin platform memverifikasi sekolah dan industri beserta perwakilannya; koordinator sekolah menyetujui guru; guru memverifikasi siswa sekolahnya.
 
-**Usulan pengguna yang didukung rancangan ini:** siswa diverifikasi sekolah; sekolah dan industri diverifikasi pengelola aplikasi.
+**Alur pelaksanaan yang diterima:** pendaftaran dengan akses terbatas sebelum persetujuan dan verifikasi manual bertingkat untuk MVP. Koordinator pertama ditetapkan setelah pemeriksaan admin. Persetujuan akun tidak menggantikan validasi keterampilan berbasis proyek.
 
-**Rekomendasi pelaksanaan untuk dibahas:** pendaftaran terbuka per peran dengan akses terbatas sebelum persetujuan; koordinator sekolah memeriksa guru; admin memeriksa institusi dan koordinator pertama; verifikasi manual untuk MVP.
-
-**Belum dipilih:** siapa admin operasional dalam tim, bukti institusi/perwakilan yang diperlukan, aturan pengajuan ulang setelah penolakan, serta teknologi halaman pemeriksaan internal. Akun guru pribadi sudah pasti; rincian verifikasi jangan dinyatakan final tanpa membahas keputusan tersebut.
+**Belum dipilih:** siapa admin operasional dalam tim, bukti institusi/perwakilan yang diperlukan, aturan pengajuan ulang setelah penolakan, serta teknologi halaman pemeriksaan internal. Jangan menganggap persetujuan alur sebagai bukti bahwa rincian tersebut sudah ditentukan atau fiturnya sudah dibuat.

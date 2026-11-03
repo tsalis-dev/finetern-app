@@ -2,9 +2,9 @@
 
 Dokumen ini disusun sebagai ringkasan teknis menyeluruh (*context & technical handover*) agar AI asisten berikutnya dapat langsung melanjutkan proyek **Finetern** tanpa kehilangan konteks, aturan arsitektur, maupun standar kode yang telah disepakati.
 
-> Catatan peninjauan: rincian implementasi awal di bawah adalah handover historis dan belum seluruhnya cocok dengan nama kolom SQL maupun perilaku UI aktual. Gunakan `database/schema.sql` sebagai acuan schema yang tersedia. Perapian kode fondasi belum diterapkan; revisi burgundy di Figma masih draft. Sebelum menulis fitur Tahap 2, baca [rancangan autentikasi dan profil](docs/TAHAP_2_AUTENTIKASI_DAN_PROFIL.md), termasuk kebijakan pendaftaran dan model akun sekolah yang masih perlu dipastikan.
+> Catatan peninjauan: rincian implementasi awal di bawah adalah handover historis dan belum seluruhnya cocok dengan nama kolom SQL maupun perilaku UI aktual. Gunakan `database/schema.sql` sebagai acuan schema yang tersedia. Perapian kode fondasi belum diterapkan; revisi burgundy di Figma masih draft. Sebelum menulis fitur Tahap 2, baca [rancangan autentikasi dan profil](docs/TAHAP_2_AUTENTIKASI_DAN_PROFIL.md), termasuk keputusan pendaftaran dan akun pribadi guru yang memerlukan revisi schema.
 
-> Kebutuhan terbaru: setiap guru memiliki akun pribadi dan terhubung ke sekolah. Pengguna mengusulkan verifikasi siswa oleh sekolah serta verifikasi sekolah/industri oleh platform. Lihat [rancangan verifikasi akun dan institusi](docs/VERIFIKASI_AKUN_DAN_INSTITUSI.md) untuk keputusan pengguna, rekomendasi pembagian pemeriksa, dan perluasan cakupan Tahap 2. SQL dan kode belum menerapkan kebutuhan baru ini.
+> Keputusan terbaru yang disetujui pengguna: setiap guru memiliki akun pribadi dan terhubung ke sekolah. Admin platform memverifikasi sekolah/industri, koordinator sekolah menyetujui guru, dan guru memverifikasi siswa sekolahnya. Lihat [rancangan verifikasi akun dan institusi](docs/VERIFIKASI_AKUN_DAN_INSTITUSI.md) untuk pembagian pemeriksa dan perluasan cakupan Tahap 2. SQL dan kode belum menerapkan kebutuhan baru ini.
 
 ---
 

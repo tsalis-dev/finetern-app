@@ -2,7 +2,7 @@
 
 Status: rancangan sebelum implementasi. Fitur pada dokumen ini belum selesai dibuat.
 
-> Pembaruan kebutuhan: pengguna memilih setiap guru memiliki akun sendiri dan mengusulkan verifikasi bertingkat untuk siswa, sekolah, dan industri. Baca [rancangan verifikasi akun dan institusi](VERIFIKASI_AKUN_DAN_INSTITUSI.md). Login/sesi/profil tetap diperlukan; cakupan verifikasi memperluas Tahap 2 menjadi 2A, 2B, dan 2C pada dokumen pendamping. Rincian verifikasi masih dibahas sebelum kode dibuat.
+> Keputusan pengguna: setiap guru memiliki akun sendiri; admin platform memverifikasi sekolah/industri; koordinator sekolah menyetujui guru; guru memverifikasi siswa sekolahnya. Baca [rancangan verifikasi akun dan institusi](VERIFIKASI_AKUN_DAN_INSTITUSI.md). Login/sesi/profil tetap diperlukan; cakupan verifikasi memperluas Tahap 2 menjadi 2A, 2B, dan 2C pada dokumen pendamping. Alur sudah disetujui; rincian operasional dan implementasi belum selesai.
 
 Dokumen ini menjabarkan Tahap 2 pada `PROGRES_DAN_PANDUAN_AI.md` berdasarkan kode dan schema yang tersedia. Tujuannya adalah menyepakati perilaku aplikasi sebelum menulis kode fitur.
 
@@ -39,11 +39,11 @@ Profil dasar pada tahap ini berarti membaca dan menampilkan data akun sendiri. P
 
 Role pada database saat ini adalah `siswa`, `sekolah`, dan `industri`. Migrasi perlu mendukung akun guru pribadi, kewenangan koordinator, dan admin platform; representasi teknisnya ditetapkan sebelum implementasi. Alias lama `guru_smk` dan `mitra_industri` perlu dibersihkan dari alur akun nyata. Tab pemilih peran bukan sumber otorisasi.
 
-### Pendaftaran dan verifikasi (rancangan yang diperbarui)
+### Pendaftaran dan verifikasi (alur yang disetujui)
 
 Siswa mengisi nama lengkap, email, kata sandi dan konfirmasinya, sekolah terverifikasi, jurusan, kelas, serta NISN opsional sesuai schema. Backend memvalidasi sekolah dan membuat `users` bersama `students` dalam satu transaksi: keduanya berhasil atau keduanya dibatalkan. Email atau NISN duplikat ditangani sebagai konflik. Keanggotaan siswa menunggu persetujuan sekolah.
 
-Guru memiliki akun sendiri dan mengajukan keanggotaan pada sekolah. Perwakilan sekolah/industri mengajukan institusinya untuk diperiksa admin platform. Rekomendasi pembagian pemeriksa, koordinator sekolah, dan hak akun pending dijelaskan dalam dokumen pendamping. Admin tidak dapat dibuat melalui pendaftaran publik.
+Guru memiliki akun sendiri dan mengajukan keanggotaan pada sekolah untuk disetujui koordinator. Perwakilan sekolah/industri mengajukan institusinya untuk diperiksa admin platform. Guru yang telah disetujui memverifikasi siswa sekolahnya. Pembagian pemeriksa, koordinator sekolah, dan hak akun pending dijelaskan dalam dokumen pendamping. Admin tidak dapat dibuat melalui pendaftaran publik.
 
 Pendaftaran publik tidak langsung memberikan hak memvalidasi siswa/karya atau menerbitkan lowongan. Pemeriksa dan bukti yang diperlukan harus ditetapkan sebelum endpoint pemeriksaan dibuat.
 
@@ -140,6 +140,6 @@ Layar login, pendaftaran, status pengajuan, pemeriksaan, dan profil merupakan fo
 ## 8. Keputusan produk yang diperbarui
 
 1. Setiap guru memiliki akun sendiri yang terhubung ke sekolah, sesuai pilihan pengguna. Schema satu akun institusi per sekolah harus direvisi sebelum implementasi.
-2. Pengguna mengusulkan persetujuan siswa oleh sekolah dan persetujuan institusi oleh pengelola platform. Pembagian pemeriksa dan akses sebelum persetujuan dirinci sebagai rekomendasi dalam dokumen pendamping, bukan keputusan yang sudah selesai diimplementasikan.
+2. Pengguna menyetujui verifikasi bertingkat: admin memeriksa sekolah/industri, koordinator sekolah menyetujui guru, dan guru memverifikasi siswa. Alur ini sudah menjadi keputusan produk; kode, migrasi, dan rincian operasionalnya belum selesai.
 
 Unggah portofolio, validasi guru, matching, lowongan nyata, modul Gemini, kuis, dan status lamaran adalah tahap berikutnya. Semua itu belum menjadi fitur yang selesai hanya dengan berhasil login.
