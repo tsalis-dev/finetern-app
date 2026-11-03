@@ -12,18 +12,22 @@ async function migrate() {
   let clone;
   let cloneCreated = false;
   try {
+    const versions = ['001_identity_verification', '002_portfolio_evidence'];
+    let applied = [];
     const [markers] = await connection.execute("SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA=? AND TABLE_NAME='schema_migrations'", [config.database]);
     if (markers.length) {
-      const [[marker]] = await connection.query("SELECT status FROM schema_migrations WHERE version='001_identity_verification'");
-      if (marker?.status === 'applied') { console.log('Schema v2 sudah diterapkan.'); return; }
-      throw new Error('Penanda migrasi tidak lengkap. Periksa/pulihkan database sebelum melanjutkan.');
+      const [rows] = await connection.query('SELECT version,status FROM schema_migrations');
+      if (rows.some(row => row.status !== 'applied') || !rows.some(row => row.version === versions[0])) throw new Error('Penanda migrasi tidak lengkap. Periksa/pulihkan database sebelum melanjutkan.');
+      applied = rows.map(row => row.version);
     }
+    const pending = versions.filter(version => !applied.includes(version));
+    if (!pending.length) { console.log('Schema v3 sudah diterapkan.'); return; }
     const cliDir = process.env.MYSQL_BIN_DIR || 'C:/laragon/bin/mysql/mysql-8.4.3-winx64/bin';
     const binary = name => path.join(cliDir, process.platform === 'win32' ? name + '.exe' : name);
     if (!fs.existsSync(binary('mysqldump')) || !fs.existsSync(binary('mysql'))) throw new Error('Atur MYSQL_BIN_DIR ke folder mysql dan mysqldump.');
     const [tables] = await connection.query('SHOW TABLES');
-    const names = tables.map(row => Object.values(row)[0]);
-    if (!names.includes('schools') || names.includes('teachers')) throw new Error('Schema sumber bukan v1 yang didukung.');
+    const names = tables.map(row => Object.values(row)[0]).filter(name => name !== 'schema_migrations');
+    if (!names.includes('schools') || names.includes('teachers') !== applied.includes(versions[0])) throw new Error('Schema sumber bukan versi yang didukung.');
     const snapshot = async () => {
       const result = {};
       for (const table of names) {
@@ -35,7 +39,7 @@ async function migrate() {
     };
     const before = await snapshot();
     const backupDir = path.join(__dirname, '../../database/backups'); fs.mkdirSync(backupDir, { recursive: true });
-    const backup = path.join(backupDir, `before-v2-${Date.now()}.sql`);
+    const backup = path.join(backupDir, `before-v3-${Date.now()}.sql`);
     const args = [`--host=${config.host}`, `--port=${config.port}`, `--user=${config.user}`];
     const env = { ...process.env, MYSQL_PWD: config.password };
     const dumpFd = fs.openSync(backup, 'wx');
@@ -52,11 +56,11 @@ async function migrate() {
     try { restore = spawnSync(binary('mysql'), [...args, clone], { env, stdio: [backupFd, 'ignore', 'pipe'], windowsHide: true }); }
     finally { fs.closeSync(backupFd); }
     if (restore.error || restore.status !== 0) throw new Error('Uji pemulihan backup gagal. Database aplikasi tidak dimigrasi.');
-    const migration = fs.readFileSync(path.join(__dirname, '../../database/migrations/001_identity_verification.sql'), 'utf8');
+    const migration = pending.map(version => fs.readFileSync(path.join(__dirname, '../../database/migrations', version + '.sql'), 'utf8')).join('\n');
     const check = async () => {
       for (const [table, oldRows] of Object.entries(before)) {
         const [rows] = await connection.query(`SELECT * FROM \`${table}\` ORDER BY id`);
-        const selected = JSON.parse(JSON.stringify(rows)).map(row => Object.fromEntries(Object.keys(oldRows[0] || {}).map(key => [key, row[table === 'schools' && key === 'user_id' ? 'submitted_by' : key]])));
+        const selected = JSON.parse(JSON.stringify(rows)).map(row => Object.fromEntries(Object.keys(oldRows[0] || {}).map(key => [key, row[table === 'schools' && key === 'user_id' && !applied.includes(versions[0]) ? 'submitted_by' : key]])));
         if (JSON.stringify(selected) !== JSON.stringify(oldRows)) throw new Error(`Validasi pelestarian data gagal: ${table}.`);
       }
     };

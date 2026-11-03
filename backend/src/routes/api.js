@@ -18,6 +18,7 @@ router.get('/schools', async (req, res) => {
   res.json({ success: true, message: 'Sekolah terverifikasi.', data: rows });
 });
 router.use('/verification', require('./verificationRoutes'));
+router.use('/portfolios', require('./portfolioRoutes'));
 router.patch('/admin/accounts/:id/activity', verifyToken, objectBody, require('../controllers/verificationController').accountActivity);
 
 module.exports = router;

@@ -1,6 +1,6 @@
-# Database Finetern v2
+# Database Finetern v3
 
-Schema v2 mendukung akun guru pribadi dan verifikasi bertingkat. Migrasi diuji di MySQL 8.4.3 pada database terpisah dan sudah diterapkan pada database lokal tanggal 3 November 2026 setelah backup dipulihkan serta diuji pada salinan. Migrasi tidak otomatis dijalankan saat backend menyala.
+Schema v3 menambah versi portofolio, penilaian guru, dan riwayat bukti pada fondasi identitas v2. Migrasi 001 dan 002 sudah diterapkan pada database lokal, terakhir 4 November 2026. Backup dipulihkan dan migrasi diuji pada salinan sebelum diterapkan; data lama tetap utuh. Migrasi tidak otomatis dijalankan saat backend menyala.
 
 ## Model identitas
 
@@ -14,9 +14,12 @@ Schema v2 mendukung akun guru pribadi dan verifikasi bertingkat. Migrasi diuji d
 | `industries` | Institusi industri dan akun perwakilannya, nomor registrasi bila tersedia, status aktif |
 | `verification_requests` | Status pengajuan untuk satu sekolah, industri, keanggotaan guru, atau siswa |
 | `verification_events` | Riwayat pengajuan, keputusan, revisi dan penghentian/pemulihan akses |
+| `portfolio_events` | Riwayat versi karya, catatan/penilai, dan snapshot bukti proyek |
 | `schema_migrations` | Penanda migrasi `applying`/`applied` untuk mendeteksi kegagalan dan migrasi berulang |
 
-Tabel keterampilan, karya, lowongan, lamaran, modul, dan asesmen tetap tersedia. Total 16 tabel aplikasi dan satu tabel metadata migrasi.
+Tabel keterampilan, karya, lowongan, lamaran, modul, dan asesmen tetap tersedia. Total 17 tabel aplikasi dan satu tabel metadata migrasi.
+
+`portfolios` kini memuat `revision_number`, `evidence_path`, `assessed_proficiency`, `reviewed_by`, `reviewed_at`, dan `updated_at`; status menambahkan rejected. Versi 0 adalah data legacy: keputusan lama dipertahankan tetapi belum dihitung sebagai penilaian terstruktur. Nilai terbaik dihitung dari karya approved yang memiliki penilai; `student_skills` diperbarui sebagai cache. Matching berikutnya harus memakai sumber bukti terstruktur, bukan flag cache/seed sendirian. [Rincian Tahap 3](../docs/TAHAP_3_PORTOFOLIO_DAN_VALIDASI.md).
 
 Untuk menjaga kompatibilitas, `users.role='sekolah'` berarti akun pribadi guru/perwakilan sekolah; `schools` sendiri bukan akun login. Role `admin` disiapkan untuk pengelola platform dan tidak boleh diterima dari formulir pendaftaran publik. Koordinator adalah posisi pada keanggotaan sekolah, bukan role global.
 
@@ -58,24 +61,27 @@ Seed membuat tujuh akun: dua guru pribadi, tiga siswa, dua industri. Password co
 
 Menjalankan ulang seed tidak mengubah keputusan verifikasi atau menggandakan event pengajuan awal. Data contoh profil/lowongan tetap dapat diperbarui oleh seed, sehingga seed bukan alat pemeliharaan database yang berisi data pengguna nyata.
 
-## Migrasi database v1 yang sudah ada
+## Migrasi database v1/v2 yang sudah ada
 
-Jalur yang dipakai pada database lokal: dari backend, jalankan `npm run db:migrate` saat tidak ada penulisan aplikasi. Script membuat dump di `database/backups/`, memulihkannya ke database acak `finetern_restore_test_*`, menguji migrasi/pelestarian seluruh data pada salinan, memastikan sumber tidak berubah, kemudian memigrasi sumber. Hanya salinan yang dibuat run tersebut dibersihkan; backup tetap ada. `MYSQL_BIN_DIR` menunjuk folder executable `mysql` dan `mysqldump` (default Laragon MySQL 8.4.3 Windows). Script yang melihat penanda applied berhenti tanpa mengulang. Lindungi backup karena berisi data akun/pengguna.
+Jalur yang dipakai pada database lokal: dari backend, jalankan `npm run db:migrate` saat tidak ada penulisan aplikasi. Script memilih migrasi 001/002 yang belum diterapkan, membuat dump di `database/backups/`, memulihkannya ke database acak `finetern_restore_test_*`, menguji migrasi/pelestarian seluruh data pada salinan, memastikan sumber tidak berubah, kemudian memigrasi sumber. Hanya salinan yang dibuat run tersebut dibersihkan; backup tetap ada. `MYSQL_BIN_DIR` menunjuk folder executable `mysql` dan `mysqldump` (default Laragon MySQL 8.4.3 Windows). Jika semua marker applied, script berhenti tanpa mengulang. Lindungi backup karena berisi data akun/pengguna. Backup operasional juga harus menyertakan folder berkas privat; dump SQL tidak menyimpan isi berkas.
 
 Alternatif manual berikut tetap memerlukan uji pemulihan backup sebelum migrasi:
 
 1. Hentikan penulisan aplikasi selama migrasi dan buat backup yang dapat dipulihkan. Folder backup lokal di bawah diabaikan Git.
-2. Pastikan schema sumber masih mengikuti v1 repository. Constraint sekolah lama bernama `schools_ibfk_1` dan index uniknya `user_id`; database yang pernah diubah manual harus diperiksa dahulu. Catat jumlah dan isi data penting sebelum migrasi.
-3. Jalankan file migrasi, bukan `schema.sql` atau seeder baru, pada database v1 yang dipilih secara eksplisit.
-4. Periksa penanda migrasi, jumlah data, pemetaan guru, dan pengajuan pending. Setelah itu baru jalankan kode yang menggunakan model v2.
+2. Pastikan versi sumber mengikuti repository. Untuk v1, constraint sekolah lama bernama `schools_ibfk_1` dan index uniknya `user_id`; untuk v2, marker 001 harus applied. Database yang pernah diubah manual harus diperiksa dahulu. Catat jumlah dan isi data penting sebelum migrasi.
+3. Jalankan 001 lalu 002 untuk v1; hanya 002 untuk v2 yang sudah memiliki marker 001 applied. Jangan menjalankan `schema.sql` atau seeder baru pada database lama.
+4. Periksa marker, jumlah data, pemetaan guru, riwayat karya legacy, dan pengajuan pending. Setelah itu baru jalankan kode yang menggunakan model v3.
 
 Contoh perintah PowerShell dari root repository; sesuaikan host, port, user, dan nama database dengan lingkunganmu:
 
 ```powershell
 New-Item -ItemType Directory -Path database/backups -Force
-mysqldump --host=127.0.0.1 --port=3306 --user=root --password --single-transaction --result-file=database/backups/finetern-before-v2.sql finetern_db
+mysqldump --host=127.0.0.1 --port=3306 --user=root --password --single-transaction --result-file=database/backups/finetern-before-v3.sql finetern_db
 # Lanjutkan hanya jika dump berhasil dan backup dapat dipulihkan.
+# Migrasi 001 hanya untuk sumber v1.
 Get-Content -Raw database/migrations/001_identity_verification.sql | mysql --host=127.0.0.1 --port=3306 --user=root --password finetern_db
+# Untuk sumber v2 dengan marker 001 applied, jalankan hanya migrasi berikut.
+Get-Content -Raw database/migrations/002_portfolio_evidence.sql | mysql --host=127.0.0.1 --port=3306 --user=root --password finetern_db
 ```
 
 MySQL DDL melakukan implicit commit: migrasi ini **bukan transaksi yang dapat di-rollback seluruhnya**. Penanda `applying` ditulis sebelum perubahan dan menjadi `applied` setelah semuanya selesai. Pengulangan migrasi berhenti pada penanda versi yang sudah ada sebelum perubahan schema berikutnya. Jangan menghapus penanda untuk memaksa pengulangan setelah kegagalan; periksa titik kegagalan dan pulihkan dari backup atau siapkan perbaikan terarah. Tidak ada down migration yang membuang data akun guru baru.

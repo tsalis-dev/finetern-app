@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import api, { setUnauthorizedHandler } from '../api/axiosClient';
 import { getToken, saveToken, clearToken } from './sessionStorage';
+import { clearProofCache } from '../utils/portfolioEvidence';
 
 export const useAuthStore = create((set, get) => ({
   user: null, token: null, role: null, isLoading: true, isAuthenticated: false, sessionError: null, logoutPending: false,
@@ -40,9 +41,9 @@ export const useAuthStore = create((set, get) => ({
   },
   logout: async () => {
     set({ user: null, token: null, role: null, isAuthenticated: false, sessionError: null, logoutPending: true });
-    try { await clearToken(); set({ logoutPending: false }); }
+    try { await clearToken(); await clearProofCache(); set({ logoutPending: false }); }
     catch {
-      const message = 'Sesi di perangkat belum dapat dihapus. Coba keluar kembali.';
+      const message = 'Sesi atau berkas sementara di perangkat belum dapat dihapus. Coba keluar kembali.';
       set({ sessionError: message });
       throw { message };
     }

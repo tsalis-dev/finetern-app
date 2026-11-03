@@ -1,6 +1,6 @@
 -- ===================================================================
--- FINETERN DATABASE SCHEMA V2
--- Hanya untuk database baru. Database v1 memakai migrations/001_identity_verification.sql.
+-- FINETERN DATABASE SCHEMA V3
+-- Database lama memakai migrations/001_identity_verification.sql lalu 002_portfolio_evidence.sql.
 -- ===================================================================
 
 CREATE DATABASE IF NOT EXISTS finetern_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -112,9 +112,18 @@ CREATE TABLE portfolios (
     deskripsi TEXT,
     project_url VARCHAR(255),
     image_path VARCHAR(255),
-    status_verifikasi ENUM('pending', 'approved', 'revision') DEFAULT 'pending',
+    status_verifikasi ENUM('pending', 'approved', 'revision', 'rejected') DEFAULT 'pending',
     catatan_guru TEXT,
+    evidence_path VARCHAR(255) NULL,
+    revision_number INT NOT NULL DEFAULT 0,
+    assessed_proficiency INT NULL,
+    reviewed_by INT NULL,
+    reviewed_at TIMESTAMP NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_portfolio_queue (status_verifikasi, created_at, id),
+    CONSTRAINT chk_portfolio_score CHECK (assessed_proficiency IS NULL OR assessed_proficiency BETWEEN 1 AND 100),
+    CONSTRAINT fk_portfolio_reviewer FOREIGN KEY (reviewed_by) REFERENCES users(id) ON DELETE RESTRICT,
     FOREIGN KEY (siswa_id) REFERENCES students(id) ON DELETE CASCADE,
     FOREIGN KEY (skill_id) REFERENCES skills(id) ON DELETE RESTRICT
 ) ENGINE=InnoDB;
@@ -220,6 +229,20 @@ CREATE TABLE verification_events (
     CONSTRAINT fk_events_actor FOREIGN KEY (actor_user_id) REFERENCES users(id) ON DELETE RESTRICT
 ) ENGINE=InnoDB;
 
+CREATE TABLE portfolio_events (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    portfolio_id INT NOT NULL,
+    revision_number INT NOT NULL,
+    actor_user_id INT NOT NULL,
+    action ENUM('legacy_imported', 'submitted', 'resubmitted', 'approved', 'revision', 'rejected') NOT NULL,
+    note TEXT,
+    submission_snapshot JSON NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_portfolio_history (portfolio_id, id),
+    CONSTRAINT fk_portfolio_events_portfolio FOREIGN KEY (portfolio_id) REFERENCES portfolios(id) ON DELETE RESTRICT,
+    CONSTRAINT fk_portfolio_events_actor FOREIGN KEY (actor_user_id) REFERENCES users(id) ON DELETE RESTRICT
+) ENGINE=InnoDB;
+
 CREATE TABLE schema_migrations (
     version VARCHAR(100) PRIMARY KEY,
     status ENUM('applying', 'applied') NOT NULL,
@@ -228,4 +251,5 @@ CREATE TABLE schema_migrations (
 ) ENGINE=InnoDB;
 
 INSERT INTO schema_migrations (version, status, completed_at)
-VALUES ('001_identity_verification', 'applied', CURRENT_TIMESTAMP);
+VALUES ('001_identity_verification', 'applied', CURRENT_TIMESTAMP),
+       ('002_portfolio_evidence', 'applied', CURRENT_TIMESTAMP);

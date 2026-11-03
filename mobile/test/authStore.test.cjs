@@ -16,6 +16,7 @@ function setup(overrides = {}) {
     getToken: async () => stored,
     saveToken: overrides.saveToken || (async token => { stored = token; }),
     clearToken: overrides.clearToken || (async () => { stored = null; }),
+    clearProofCache: async () => {},
     setUnauthorizedHandler: handler => { unauthorized = handler; },
   };
   const source = fs.readFileSync(path.join(__dirname, '../src/store/useAuthStore.js'), 'utf8')

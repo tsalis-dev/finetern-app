@@ -1,6 +1,6 @@
 # Tahap 2: Autentikasi, Profil, dan Verifikasi
 
-Status 3 November 2026: implementasi backend dan mobile tersedia. Database lokal sudah dimigrasi setelah backup dipulihkan dan diuji pada salinan. Pengujian API/database, sesi mobile, dan bundling Android lulus. Uji pada HP fisik masih perlu dilakukan sebelum menyatakan pengalaman perangkat selesai.
+Status 4 November 2026: implementasi akun backend/mobile tersedia; database lokal kini v3 untuk mendukung [Tahap 3](TAHAP_3_PORTOFOLIO_DAN_VALIDASI.md). Migrasi dijalankan setelah backup dipulihkan dan diuji pada salinan. Pengujian otomatis dan bundling Android lulus. Crosscheck HP ditunda sampai akhir pengembangan sesuai arahan pengguna.
 
 ## Hasil tahap ini
 
@@ -12,7 +12,7 @@ Status 3 November 2026: implementasi backend dan mobile tersedia. Database lokal
 - Token native disimpan melalui Expo SecureStore. Identitas selalu diperiksa kembali melalui `GET /api/profile/me` saat pembukaan aplikasi dan saat kembali aktif.
 - HTTP 401 membersihkan sesi terkait. Gangguan jaringan mempertahankan token dan menampilkan pilihan mencoba kembali.
 - Keluar menghapus sesi perangkat. JWT masih stateless: belum ada pencabutan per token atau keluar dari semua perangkat. Penonaktifan akun/institusi tetap diperiksa backend pada setiap permintaan terlindungi.
-- Simulator role dan token dummy telah dihapus. Layar portofolio, lowongan, seleksi, matching, dan AI masih pratinjau berlabel data contoh; tindakannya tidak mengaku menyimpan/mengirim sesuatu.
+- Simulator role dan token dummy telah dihapus. Portofolio kini berjalan melalui Tahap 3; lowongan, seleksi, matching, dan AI masih pratinjau berlabel data contoh.
 
 ## Menjalankan secara lokal
 
@@ -26,7 +26,7 @@ npm run db:migrate
 npm start
 ```
 
-Migrasi hanya untuk v1 yang sudah ada. Instalasi kosong memakai `database/schema.sql`; lihat [panduan database](../database/README.md). Server menolak schema yang belum siap atau JWT secret kosong/contoh. Isi `JWT_SECRET` dengan nilai acak setidaknya 32 byte; durasi default `JWT_EXPIRES_IN=7d`.
+Runner migrasi sekarang mendukung v1/v2 menuju v3 (Tahap 3). Instalasi kosong memakai `database/schema.sql`; lihat [panduan database](../database/README.md). Server menolak schema yang belum siap atau JWT secret kosong/contoh. Isi `JWT_SECRET` dengan nilai acak setidaknya 32 byte; durasi default `JWT_EXPIRES_IN=7d`.
 
 Dari folder mobile:
 
@@ -92,6 +92,6 @@ Dari backend: `npm test` menguji schema/migrasi dan HTTP auth/verifikasi pada da
 
 Uji manual perangkat yang perlu dilanjutkan: daftar per jenis akun, unggah dari pemilih berkas Android, persetujuan berjenjang dari dua akun, tutup/buka aplikasi, keluar, koneksi terputus, dan penonaktifan saat sesi terbuka. Bundling tidak membuktikan semua interaksi tersebut bekerja di perangkat.
 
-Audit runtime backend: 0 temuan setelah perbaikan kompatibel. Audit keseluruhan masih mencatat 2 moderate pada nodemon/minimatch pengembangan. Mobile masih mempunyai 13 temuan transitif (2 low, 9 moderate, 2 high) pada tooling/dependensi Expo SDK 57. Perbaikan menyeluruh yang ditawarkan npm mengubah SDK ke 58; jangan menjalankan `npm audit fix --force` tanpa migrasi SDK dan pengujian terpisah. Ini belum merupakan persetujuan siap produksi.
+Audit runtime backend: 0 temuan setelah perbaikan kompatibel. Audit keseluruhan masih mencatat 2 moderate pada nodemon/minimatch pengembangan. Audit mobile pada 4 November 2026 mencatat 14 temuan transitif (2 low, 10 moderate, 2 high) setelah modul bukti Tahap 3 ditambahkan; expo-sharing ikut bergantung pada tooling konfigurasi Expo yang terdampak. Perbaikan menyeluruh yang ditawarkan npm mengubah SDK ke 58; jangan menjalankan `npm audit fix --force` tanpa migrasi SDK dan pengujian terpisah. Ini belum merupakan persetujuan siap produksi.
 
-Pemulihan password mandiri, verifikasi email otomatis, transfer sekolah, multi-sekolah per guru, dan multi-HR per industri belum termasuk MVP ini. Lanjutkan ke Tahap 3 untuk portofolio dan validasi bukti karya, bukan menyamakan persetujuan akun dengan validasi keterampilan.
+Pemulihan password mandiri, verifikasi email otomatis, transfer sekolah, multi-sekolah per guru, dan multi-HR per industri belum termasuk MVP ini. Portofolio dan validasi bukti karya kini dijelaskan pada [Tahap 3](TAHAP_3_PORTOFOLIO_DAN_VALIDASI.md). Sesuai arahan pengguna 4 November, crosscheck HP Tahap 2/3 ditunda sampai akhir pengembangan.

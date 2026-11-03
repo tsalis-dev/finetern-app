@@ -41,7 +41,7 @@ async function fingerprint(connection, database) {
   return JSON.parse(JSON.stringify({ columns, relations, indexes }));
 }
 
-test('schema v2 and non-destructive v1 migration on isolated MySQL databases', async (t) => {
+test('schema v3 and non-destructive v1/v2 migrations on isolated MySQL databases', async (t) => {
   const host = process.env.TEST_DB_HOST || process.env.DB_HOST || 'localhost';
   assert.ok(['localhost', '127.0.0.1', '::1'].includes(host), 'Database tests require local MySQL.');
   const connection = await mysql.createConnection({
@@ -86,11 +86,17 @@ test('schema v2 and non-destructive v1 migration on isolated MySQL databases', a
         'INSERT INTO verification_events (request_id, actor_user_id, action, note) VALUES (?, ?, ?, ?)',
         [request.id, 1, 'needs_revision', 'Periksa kembali data sekolah.'],
       );
+      await connection.query("UPDATE portfolios SET title='Judul karya yang sudah diperiksa' WHERE id=1");
+      await connection.query('UPDATE student_skills SET proficiency=92 WHERE siswa_id=1 AND skill_id=1');
       await connection.query(isolated(seed));
       const [[state]] = await connection.execute('SELECT status FROM verification_requests WHERE id=?', [request.id]);
       const [[count]] = await connection.query('SELECT COUNT(*) AS total FROM verification_events');
       assert.equal(state.status, 'needs_revision');
       assert.equal(count.total, 9);
+      const [[portfolio]] = await connection.query('SELECT title FROM portfolios WHERE id=1');
+      const [[skill]] = await connection.query('SELECT proficiency FROM student_skills WHERE siswa_id=1 AND skill_id=1');
+      assert.equal(portfolio.title, 'Judul karya yang sudah diperiksa');
+      assert.equal(skill.proficiency, 92);
     });
 
     await t.test('constraints reject ambiguous requests, duplicate membership and orphan references', async () => {
@@ -143,6 +149,7 @@ test('schema v2 and non-destructive v1 migration on isolated MySQL databases', a
     });
 
     await t.test('migrated schema has the same columns, relations and unique indexes as fresh schema', async () => {
+      await connection.query(read(path.join(databaseDir, 'migrations/002_portfolio_evidence.sql')));
       assert.deepEqual(await fingerprint(connection, migrated), await fingerprint(connection, fresh));
     });
 

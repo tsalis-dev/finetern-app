@@ -4,9 +4,9 @@ const { randomUUID } = require('node:crypto');
 const { pool } = require('../config/db');
 const service = require('../services/verificationService');
 const v = require('../utils/validation');
+const files = require('../utils/evidenceFiles');
 
 const privateDir = path.resolve(process.env.VERIFICATION_UPLOAD_DIR || path.join(__dirname, '../../private-verifications'));
-const fileNamePattern = /^[a-f0-9-]{36}\.(pdf|png|jpg)$/;
 
 async function detail(req, res) {
   res.json({ success: true, message: 'Rincian pengajuan.', data: await service.detail(req.user, v.id(req.params.id)) });
@@ -29,9 +29,7 @@ async function activity(req, res) {
 async function upload(req, res) {
   if (!req.file) throw v.problem(400, 'Pilih bukti institusi.');
   const buffer = req.file.buffer;
-  const extension = buffer.subarray(0,5).toString() === '%PDF-' ? 'pdf'
-    : buffer.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10])) ? 'png'
-      : buffer.length >= 3 && buffer[0] === 255 && buffer[1] === 216 && buffer[2] === 255 ? 'jpg' : null;
+  const extension = files.extension(buffer);
   if (!extension) throw v.problem(400, 'Bukti harus berupa berkas PDF, PNG, atau JPG yang valid.');
   const requestId = v.id(req.params.id);
   const name = `${randomUUID()}.${extension}`;
@@ -66,7 +64,7 @@ async function evidence(req, res) {
     const [[event]] = await pool.execute('SELECT submission_snapshot FROM verification_events WHERE request_id=? AND id=?', [requestId, v.id(req.query.eventId)]);
     file = event?.submission_snapshot?.evidence;
   }
-  if (!file || !fileNamePattern.test(file)) throw v.problem(404, 'Bukti belum diunggah.');
+  if (!file || !files.fileNamePattern.test(file)) throw v.problem(404, 'Bukti belum diunggah.');
   res.set('Cache-Control', 'no-store');
   res.set('X-Content-Type-Options', 'nosniff');
   res.download(path.join(privateDir, file), `bukti-pengajuan-${requestId}.${file.split('.').pop()}`);

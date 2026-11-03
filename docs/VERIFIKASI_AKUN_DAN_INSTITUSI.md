@@ -1,6 +1,6 @@
 # Verifikasi akun dan institusi
 
-Status 3 November 2026: alur yang disetujui pengguna sudah diterapkan pada schema v2, API, mobile, dan halaman admin. Pengujian otomatis lulus; pemeriksaan pada HP fisik masih terbuka. [Panduan menjalankan aplikasi dan kontrak API](TAHAP_2_AUTENTIKASI_DAN_PROFIL.md).
+Status 4 November 2026: alur akun yang disetujui pengguna sudah diterapkan pada fondasi identitas v2, API, mobile, dan halaman admin. Schema terbaru v3 juga mendukung [pemeriksaan bukti karya Tahap 3](TAHAP_3_PORTOFOLIO_DAN_VALIDASI.md). Pengujian otomatis lulus; crosscheck HP ditunda sampai akhir sesuai arahan pengguna. [Panduan menjalankan aplikasi dan kontrak API](TAHAP_2_AUTENTIKASI_DAN_PROFIL.md).
 
 ## Prinsip dan pemeriksa
 

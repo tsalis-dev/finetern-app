@@ -72,13 +72,21 @@ INSERT INTO student_skills (siswa_id, skill_id, proficiency, is_validated, valid
 (2, 1, 70, TRUE, NOW()),
 (3, 6, 80, TRUE, NOW()),
 (3, 5, 65, FALSE, NULL)
-ON DUPLICATE KEY UPDATE proficiency=VALUES(proficiency);
+ON DUPLICATE KEY UPDATE id=student_skills.id;
 
 -- 7. Insert Portofolio Siswa
 INSERT INTO portfolios (id, siswa_id, skill_id, title, deskripsi, project_url, status_verifikasi, catatan_guru) VALUES
 (1, 1, 1, 'Aplikasi Katalog Produk SMKN 1', 'Membangun aplikasi mobile katalog produk praktikum siswa berbasis React Native dengan navigasi bersih dan komponen kartu reusable.', 'https://github.com/siswa-smk/katalog-produk', 'approved', 'Hasil karya sangat rapi, struktur kode memenuhi standar praktikum semester ganjil.'),
 (2, 1, 3, 'Integrasi REST API Presensi Siswa', 'Menghubungkan klien seluler ke endpoint backend Express.js menggunakan Axios dan Bearer Token JWT.', 'https://github.com/siswa-smk/presensi-mobile', 'approved', 'Validasi token dan penanganan status error HTTP sudah tepat.')
-ON DUPLICATE KEY UPDATE title=VALUES(title);
+ON DUPLICATE KEY UPDATE id=portfolios.id;
+
+-- Contoh lama tidak dianggap penilaian keterampilan Tahap 3; harus diajukan ulang.
+INSERT INTO portfolio_events (portfolio_id,revision_number,actor_user_id,action,note,submission_snapshot)
+SELECT p.id,0,s.user_id,'legacy_imported','Portofolio contoh sebelum penilaian terstruktur.',
+    JSON_OBJECT('title',p.title,'deskripsi',p.deskripsi,'project_url',p.project_url,
+    'skill_id',p.skill_id,'image_path',p.image_path,'status_verifikasi',p.status_verifikasi,'catatan_guru',p.catatan_guru)
+FROM portfolios p JOIN students s ON s.id=p.siswa_id
+WHERE p.revision_number=0 AND NOT EXISTS (SELECT 1 FROM portfolio_events e WHERE e.portfolio_id=p.id);
 
 -- 8. Insert Lowongan Magang
 INSERT INTO internship_vacancies (id, industri_id, title, deskripsi, kuota, status_aktif, tenggat_waktu) VALUES

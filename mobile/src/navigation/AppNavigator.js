@@ -12,6 +12,8 @@ import SessionRecoveryScreen from '../screens/auth/SessionRecoveryScreen';
 import StudentTabs from './StudentTabs';
 import SchoolTabs from './SchoolTabs';
 import IndustryTabs from './IndustryTabs';
+import PortfolioDetailScreen from '../screens/portfolio/PortfolioDetailScreen';
+import PortfolioFormScreen from '../screens/portfolio/PortfolioFormScreen';
 
 const Stack = createNativeStackNavigator();
 export default function AppNavigator() {
@@ -39,6 +41,8 @@ export default function AppNavigator() {
         <Stack.Screen name="VerificationStatus" component={VerificationStatusScreen} />
         <Stack.Screen name="VerificationDetail" component={VerificationDetailScreen} />
       </> : null}
+      {isAuthenticated && user.canUseApp && ['siswa', 'sekolah'].includes(user.role) ? <Stack.Screen name="PortfolioDetail" component={PortfolioDetailScreen} /> : null}
+      {isAuthenticated && user.canUseApp && user.role === 'siswa' ? <Stack.Screen name="PortfolioForm" component={PortfolioFormScreen} /> : null}
     </Stack.Navigator>
   </NavigationContainer>;
 }

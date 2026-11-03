@@ -10,7 +10,8 @@
     "admin:create": "node scripts/createAdmin.js",
     "test": "node --test test/*.test.js",
     "test:auth": "node --test test/authFlow.test.js",
-    "test:database": "node --test test/databaseMigration.test.js"
+    "test:database": "node --test test/databaseMigration.test.js",
+    "test:portfolio": "node --test test/portfolioFlow.test.js"
   },
   "keywords": [],
   "author": "",

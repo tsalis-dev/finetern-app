@@ -6,6 +6,7 @@ import { colors } from '../utils/theme';
 import SchoolDashboardScreen from '../screens/school/SchoolDashboardScreen';
 import VerificationQueueScreen from '../screens/school/VerificationQueueScreen';
 import SchoolProfileScreen from '../screens/school/SchoolProfileScreen';
+import PortfolioQueueScreen from '../screens/school/PortfolioQueueScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -37,12 +38,17 @@ export default function SchoolTabs() {
         }}
       />
       <Tab.Screen
+        name="Karya"
+        component={PortfolioQueueScreen}
+        options={{
+          tabBarLabel: 'Bukti Karya',
+          tabBarIcon: ({ color }) => <Text style={[styles.tabIcon, { color }]}>📁</Text>,
+        }}
+      />
+      <Tab.Screen
         name="Profil"
         component={SchoolProfileScreen}
-        options={{
-          tabBarLabel: 'Profil Guru',
-          tabBarIcon: ({ color }) => <Text style={[styles.tabIcon, { color }]}>👤</Text>,
-        }}
+        options={{ tabBarLabel: 'Profil Guru', tabBarIcon: ({ color }) => <Text style={[styles.tabIcon, { color }]}>👤</Text> }}
       />
     </Tab.Navigator>
   );

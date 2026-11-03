@@ -14,6 +14,9 @@ export default function CustomInput({
   helperText,
   containerStyle,
   autoComplete,
+  multiline = false,
+  maxLength,
+  editable = true,
 }) {
   const [isFocused, setIsFocused] = useState(false);
 
@@ -29,11 +32,15 @@ export default function CustomInput({
         keyboardType={keyboardType}
         autoCapitalize={autoCapitalize}
         autoComplete={autoComplete}
+        multiline={multiline}
+        maxLength={maxLength}
+        editable={editable}
         accessibilityLabel={label}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
         style={[
           styles.input,
+          multiline && styles.multiline,
           isFocused && styles.inputFocused,
           error && styles.inputError,
         ]}
@@ -48,6 +55,7 @@ export default function CustomInput({
 }
 
 const styles = StyleSheet.create({
+  multiline: { minHeight: 120, textAlignVertical: 'top', paddingVertical: spacing.sm },
   container: {
     marginBottom: spacing.md,
   },
