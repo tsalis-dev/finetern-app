@@ -2,6 +2,8 @@
 
 Dokumen ini disusun sebagai ringkasan teknis menyeluruh (*context & technical handover*) agar AI asisten berikutnya dapat langsung melanjutkan proyek **Finetern** tanpa kehilangan konteks, aturan arsitektur, maupun standar kode yang telah disepakati.
 
+> Catatan peninjauan: rincian implementasi awal di bawah adalah handover historis dan belum seluruhnya cocok dengan nama kolom SQL maupun perilaku UI aktual. Gunakan `database/schema.sql` sebagai acuan schema yang tersedia. Perapian kode fondasi belum diterapkan; revisi burgundy di Figma masih draft. Sebelum menulis fitur Tahap 2, baca [rancangan autentikasi dan profil](docs/TAHAP_2_AUTENTIKASI_DAN_PROFIL.md), termasuk kebijakan pendaftaran dan model akun sekolah yang masih perlu dipastikan.
+
 ---
 
 ## 1. Identitas Proyek & Tim
