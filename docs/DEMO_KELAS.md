@@ -4,6 +4,8 @@ Pemilik memilih **emulator Android Studio** untuk ditampilkan lewat proyektor la
 
 **Persiapan emulator:** AVD tersedia, tetapi percobaan awal berhenti sebelum boot karena belum ada hypervisor yang dapat dipakai. Pemeriksaan menunjukkan AMD Ryzen 5 6600H mendukung virtualisasi dan virtualisasi firmware sudah aktif. Pengguna mengizinkan persiapan emulator dan bersedia restart. Jalur yang dipilih adalah Windows Hypervisor Platform sesuai [panduan resmi Android](https://developer.android.com/studio/run/emulator-acceleration#vm-windows), dengan konfirmasi administrator Windows dan tanpa restart otomatis. Hasil aktivasi lokal dicatat pada backend/.local/finetern_demo_class/emulator-acceleration-status.json. Jangan menyatakan emulator siap sebelum akselerasi dan boot berhasil diperiksa kembali setelah restart.
 
+Percobaan aktivasi 4 November berhenti sebelum script administrator berjalan: Windows melaporkan permintaan dibatalkan. Belum ada perubahan akselerasi dan restart belum diperlukan dari proses ini. Lanjutkan setelah dialog administrator dapat disetujui.
+
 ## Data demonstrasi yang sudah disiapkan
 
 Database `finetern_demo_class` terpisah dari `finetern_db`; backend demo memakai port **5001**, backend utama tetap 5000. Semua nama, institusi, bukti, penilaian, dan lowongan demo adalah simulasi kelas. Alur aplikasi tetap nyata: pendaftaran, persetujuan berjenjang, penilaian guru, matching, kuis, persetujuan berbagi karya, dan seleksi disimpan oleh backend/database.
