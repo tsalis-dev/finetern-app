@@ -2,6 +2,8 @@
 
 Status: rancangan sebelum implementasi. Fitur pada dokumen ini belum selesai dibuat.
 
+> Pembaruan kebutuhan: pengguna memilih setiap guru memiliki akun sendiri dan mengusulkan verifikasi bertingkat untuk siswa, sekolah, dan industri. Baca [rancangan verifikasi akun dan institusi](VERIFIKASI_AKUN_DAN_INSTITUSI.md). Login/sesi/profil tetap diperlukan; cakupan verifikasi memperluas Tahap 2 menjadi 2A, 2B, dan 2C pada dokumen pendamping. Rincian verifikasi masih dibahas sebelum kode dibuat.
+
 Dokumen ini menjabarkan Tahap 2 pada `PROGRES_DAN_PANDUAN_AI.md` berdasarkan kode dan schema yang tersedia. Tujuannya adalah menyepakati perilaku aplikasi sebelum menulis kode fitur.
 
 ## 1. Hasil yang ingin dicapai
@@ -32,18 +34,18 @@ Profil dasar pada tahap ini berarti membaca dan menampilkan data akun sendiri. P
 2. Mobile memvalidasi isian dasar dan menampilkan proses permintaan.
 3. Backend memeriksa input, mencari akun, lalu membandingkan kata sandi dengan hash bcrypt.
 4. Jika sesuai, backend mengembalikan token dan identitas pengguna tanpa hash kata sandi.
-5. Mobile menyimpan sesi dan membuka dashboard berdasarkan role dari backend.
+5. Mobile menyimpan sesi dan menampilkan status pengajuan atau dashboard berdasarkan role, keanggotaan, dan verifikasi yang dikonfirmasi backend.
 6. Jika gagal, formulir menampilkan pesan yang sesuai. Tidak ada perpindahan role atau keberhasilan login palsu.
 
-Role resmi pada database dan API adalah `siswa`, `sekolah`, dan `industri`. Alias lama `guru_smk` dan `mitra_industri` perlu dibersihkan dari alur akun nyata. Tab pemilih peran bukan sumber otorisasi.
+Role pada database saat ini adalah `siswa`, `sekolah`, dan `industri`. Migrasi perlu mendukung akun guru pribadi, kewenangan koordinator, dan admin platform; representasi teknisnya ditetapkan sebelum implementasi. Alias lama `guru_smk` dan `mitra_industri` perlu dibersihkan dari alur akun nyata. Tab pemilih peran bukan sumber otorisasi.
 
-### Pendaftaran siswa (usulan awal, belum keputusan final)
+### Pendaftaran dan verifikasi (rancangan yang diperbarui)
 
-Siswa mengisi nama lengkap, email, kata sandi dan konfirmasinya, sekolah terdaftar, jurusan, kelas, serta NISN opsional sesuai schema. Backend memvalidasi sekolah dan membuat `users` bersama `students` dalam satu transaksi: keduanya berhasil atau keduanya dibatalkan. Email atau NISN duplikat ditangani sebagai konflik.
+Siswa mengisi nama lengkap, email, kata sandi dan konfirmasinya, sekolah terverifikasi, jurusan, kelas, serta NISN opsional sesuai schema. Backend memvalidasi sekolah dan membuat `users` bersama `students` dalam satu transaksi: keduanya berhasil atau keduanya dibatalkan. Email atau NISN duplikat ditangani sebagai konflik. Keanggotaan siswa menunggu persetujuan sekolah.
 
-Usulan paling kecil untuk MVP: hanya siswa mendaftar sendiri; akun sekolah dan industri disiapkan melalui proses pengelola, menggunakan akun seed saat pengembangan. Pengguna umum tidak dapat membuat akun berwenang memvalidasi karya dengan mengirim `role: sekolah` ke endpoint publik.
+Guru memiliki akun sendiri dan mengajukan keanggotaan pada sekolah. Perwakilan sekolah/industri mengajukan institusinya untuk diperiksa admin platform. Rekomendasi pembagian pemeriksa, koordinator sekolah, dan hak akun pending dijelaskan dalam dokumen pendamping. Admin tidak dapat dibuat melalui pendaftaran publik.
 
-Jika semua peran harus bisa mendaftar sendiri, diperlukan rancangan verifikasi institusi sebelum akun sekolah/industri memperoleh akses. Jangan membuat alur itu tanpa menetapkan siapa pemeriksanya.
+Pendaftaran publik tidak langsung memberikan hak memvalidasi siswa/karya atau menerbitkan lowongan. Pemeriksa dan bukti yang diperlukan harus ditetapkan sebelum endpoint pemeriksaan dibuat.
 
 ### Membuka ulang aplikasi dan keluar
 
@@ -58,7 +60,7 @@ Jika semua peran harus bisa mendaftar sendiri, diperlukan rancangan verifikasi i
 | Peran | Data yang ditampilkan berdasarkan schema aktual |
 | --- | --- |
 | Siswa | Nama lengkap, email, NISN bila ada, sekolah, jurusan, kelas, biodata bila ada |
-| Sekolah | Nama institusi, email akun, akreditasi, alamat |
+| Guru / sekolah | Nama dan email guru, sekolah tempat bergabung, kewenangan serta status keanggotaan; identitas institusi sesuai schema hasil migrasi |
 | Industri | Nama perusahaan, email akun, sektor, kota, deskripsi perusahaan |
 
 Data yang belum tersedia ditampilkan sebagai belum diisi. Jangan menampilkan NIP, nama pembimbing, jumlah siswa, website perusahaan, atau status magang contoh seolah berasal dari database.
@@ -70,9 +72,9 @@ Seluruh respons mengikuti `{ success, message, data }`.
 | Endpoint | Akses | Tanggung jawab |
 | --- | --- | --- |
 | `POST /api/auth/login` | Publik | Periksa email/kata sandi; kembalikan JWT dan user |
-| `POST /api/auth/register` | Sesuai kebijakan pendaftaran yang disepakati | Buat akun dan profil siswa dalam transaksi pada usulan MVP |
+| `POST /api/auth/register` | Publik sesuai kebijakan verifikasi yang ditetapkan | Buat akun, profil, dan pengajuan keanggotaan/institusi yang sesuai dalam transaksi |
 | `GET /api/profile/me` | JWT valid | Kembalikan identitas akun dan profil sendiri |
-| `GET /api/schools` | Publik, jika pendaftaran siswa disetujui | Daftar ID dan nama sekolah untuk pilihan formulir; jangan keluarkan data akun institusi |
+| `GET /api/schools` | Publik untuk formulir pendaftaran | Daftar ID dan nama sekolah terverifikasi; jangan keluarkan data akun institusi |
 
 Pola data identitas yang diusulkan:
 
@@ -95,7 +97,7 @@ Pola data identitas yang diusulkan:
 }
 ```
 
-`id` adalah ID `users`; `profileId` adalah ID profil pada tabel peran. Jangan menyamakan keduanya hanya karena data demo memiliki ID yang serupa. Field `nama` dipetakan dari nama siswa, nama sekolah, atau nama industri untuk komponen sapaan yang sudah ada. Seluruh pemanggil `user` di mobile harus disesuaikan dengan kontrak yang sama.
+`id` adalah ID `users`; `profileId` adalah ID profil pada tabel peran. Jangan menyamakan keduanya hanya karena data demo memiliki ID yang serupa. Field `nama` dipetakan dari nama siswa, guru pribadi, atau perwakilan industri sesuai hasil perancangan profil. Contoh di atas belum memuat status verifikasi, keanggotaan, dan kewenangan yang harus ditambahkan untuk kebutuhan terbaru. Seluruh pemanggil `user` di mobile harus disesuaikan dengan kontrak yang sama. Endpoint pemeriksaan admin/koordinator/sekolah dirinci setelah kontrak verifikasi ditetapkan.
 
 Status yang perlu dibedakan: `201` untuk akun baru, `200` untuk login/profil berhasil, `400` untuk input salah, `401` untuk kredensial atau sesi tidak valid, `403` untuk akses yang tidak diizinkan, `409` untuk duplikasi, dan kegagalan jaringan/server untuk kondisi layanan bermasalah.
 
@@ -117,11 +119,11 @@ Perbaikan relasi asesmen ke modul, identitas pemeriksa karya, dan pemisahan nila
 
 1. Selaraskan dokumentasi, kebijakan pendaftaran, kontrak identitas, dan konfigurasi autentikasi.
 2. Buat login serta profil backend; uji tiga peran dan kasus penolakan.
-3. Tambahkan transaksi pendaftaran dan daftar sekolah jika kebijakan pendaftaran telah disepakati.
-4. Sambungkan mobile: formulir login/daftar, konfirmasi sesi, penanganan error, logout, dan profil nyata.
+3. Tambahkan transaksi pendaftaran, daftar sekolah, pengajuan keanggotaan, dan alur pemeriksaan sesuai rancangan verifikasi yang ditetapkan.
+4. Sambungkan mobile: formulir login/daftar, status pengajuan, antrean pemeriksa yang sesuai, konfirmasi sesi, penanganan error, logout, dan profil nyata. Sediakan antrean institusi untuk admin melalui halaman internal sederhana.
 5. Uji alur menyeluruh dan bundling mobile; catat mana yang diuji di perangkat nyata dan mana yang belum.
 
-Layar login, pendaftaran siswa, dan profil merupakan fokus UI tahap ini. Perubahan desain menyeluruh sembilan layar tidak termasuk prasyarat agar backend autentikasi dapat dibuat.
+Layar login, pendaftaran, status pengajuan, pemeriksaan, dan profil merupakan fokus UI tahap ini. Perubahan desain menyeluruh sembilan layar tidak termasuk prasyarat agar backend autentikasi dapat dibuat.
 
 ## 7. Kriteria selesai
 
@@ -131,12 +133,13 @@ Layar login, pendaftaran siswa, dan profil merupakan fokus UI tahap ini. Perubah
 - Pendaftaran yang disepakati menghasilkan akun dan profil yang konsisten. Duplikasi dan kegagalan profil tidak meninggalkan akun setengah jadi.
 - Membuka ulang aplikasi mengonfirmasi sesi; logout membersihkan sesi; gangguan jaringan memberi penjelasan yang benar.
 - Tampilan profil tidak memakai identitas contoh sebagai pengganti data yang belum tersedia.
+- Guru memiliki sesi pribadi; akun pending dan anggota sekolah lain tidak dapat menjalankan aksi pemeriksaan yang bukan kewenangannya. Status institusi/keanggotaan dan penonaktifan diperiksa backend pada aksi terlindungi.
 - Pengujian backend untuk autentikasi/otorisasi dan transaksi lolos; mobile berhasil di-bundle. Hasil uji perangkat dilaporkan apa adanya.
 - Setiap perubahan utuh yang selesai diperiksa di-commit dan di-push ke `origin/develop`; kegagalan push dilaporkan. File `.env`, token, password lokal, dan berkas upload tidak dimasukkan ke commit.
 
-## 8. Keputusan produk yang masih perlu dipastikan
+## 8. Keputusan produk yang diperbarui
 
-1. Apakah pendaftaran publik hanya untuk siswa, atau semua peran dengan verifikasi institusi?
-2. Apakah satu akun institusi per sekolah cukup untuk MVP, atau setiap guru perlu akun sendiri? Pilihan kedua mengubah model pengguna sekolah sebelum implementasi.
+1. Setiap guru memiliki akun sendiri yang terhubung ke sekolah, sesuai pilihan pengguna. Schema satu akun institusi per sekolah harus direvisi sebelum implementasi.
+2. Pengguna mengusulkan persetujuan siswa oleh sekolah dan persetujuan institusi oleh pengelola platform. Pembagian pemeriksa dan akses sebelum persetujuan dirinci sebagai rekomendasi dalam dokumen pendamping, bukan keputusan yang sudah selesai diimplementasikan.
 
 Unggah portofolio, validasi guru, matching, lowongan nyata, modul Gemini, kuis, dan status lamaran adalah tahap berikutnya. Semua itu belum menjadi fitur yang selesai hanya dengan berhasil login.

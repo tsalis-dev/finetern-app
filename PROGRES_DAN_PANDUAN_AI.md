@@ -4,6 +4,8 @@ Dokumen ini disusun sebagai ringkasan teknis menyeluruh (*context & technical ha
 
 > Catatan peninjauan: rincian implementasi awal di bawah adalah handover historis dan belum seluruhnya cocok dengan nama kolom SQL maupun perilaku UI aktual. Gunakan `database/schema.sql` sebagai acuan schema yang tersedia. Perapian kode fondasi belum diterapkan; revisi burgundy di Figma masih draft. Sebelum menulis fitur Tahap 2, baca [rancangan autentikasi dan profil](docs/TAHAP_2_AUTENTIKASI_DAN_PROFIL.md), termasuk kebijakan pendaftaran dan model akun sekolah yang masih perlu dipastikan.
 
+> Kebutuhan terbaru: setiap guru memiliki akun pribadi dan terhubung ke sekolah. Pengguna mengusulkan verifikasi siswa oleh sekolah serta verifikasi sekolah/industri oleh platform. Lihat [rancangan verifikasi akun dan institusi](docs/VERIFIKASI_AKUN_DAN_INSTITUSI.md) untuk keputusan pengguna, rekomendasi pembagian pemeriksa, dan perluasan cakupan Tahap 2. SQL dan kode belum menerapkan kebutuhan baru ini.
+
 ---
 
 ## 1. Identitas Proyek & Tim
