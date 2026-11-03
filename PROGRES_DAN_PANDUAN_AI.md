@@ -2,9 +2,9 @@
 
 Dokumen ini disusun sebagai ringkasan teknis menyeluruh (*context & technical handover*) agar AI asisten berikutnya dapat langsung melanjutkan proyek **Finetern** tanpa kehilangan konteks, aturan arsitektur, maupun standar kode yang telah disepakati.
 
-> Catatan peninjauan: rincian implementasi awal di bawah adalah handover historis dan belum seluruhnya cocok dengan nama kolom SQL maupun perilaku UI aktual. Gunakan `database/schema.sql` sebagai acuan schema yang tersedia. Perapian kode fondasi belum diterapkan; revisi burgundy di Figma masih draft. Sebelum menulis fitur Tahap 2, baca [rancangan autentikasi dan profil](docs/TAHAP_2_AUTENTIKASI_DAN_PROFIL.md), termasuk keputusan pendaftaran dan akun pribadi guru yang memerlukan revisi schema.
+> Catatan peninjauan: rincian Tahap 1 di bawah adalah handover historis. Schema v2 dan migrasi v1 sekarang tersedia dan sudah diuji; database aplikasi belum dimigrasi. Lihat [panduan database](database/README.md) untuk struktur aktual dan prosedur migrasi. Login/sesi/otorisasi API belum dibuat; revisi burgundy di Figma masih draft. Baca [rancangan autentikasi dan profil](docs/TAHAP_2_AUTENTIKASI_DAN_PROFIL.md) sebelum melanjutkan fitur Tahap 2.
 
-> Keputusan terbaru yang disetujui pengguna: setiap guru memiliki akun pribadi dan terhubung ke sekolah. Admin platform memverifikasi sekolah/industri, koordinator sekolah menyetujui guru, dan guru memverifikasi siswa sekolahnya. Lihat [rancangan verifikasi akun dan institusi](docs/VERIFIKASI_AKUN_DAN_INSTITUSI.md) untuk pembagian pemeriksa dan perluasan cakupan Tahap 2. SQL dan kode belum menerapkan kebutuhan baru ini.
+> Keputusan terbaru yang disetujui pengguna: setiap guru memiliki akun pribadi dan terhubung ke sekolah. Admin platform memverifikasi sekolah/industri, koordinator sekolah menyetujui guru, dan guru memverifikasi siswa sekolahnya. Lihat [rancangan verifikasi akun dan institusi](docs/VERIFIKASI_AKUN_DAN_INSTITUSI.md) untuk pembagian pemeriksa dan perluasan cakupan Tahap 2. Fondasi database sudah disiapkan; alur API dan UI belum menerapkannya.
 
 ---
 

@@ -1,44 +1,58 @@
 -- ===================================================================
--- FINETERN DATABASE SCHEMA (12 TABEL RELASIONAL)
--- Sesuai Rancangan ERD Proposal Tugas Besar & Panduan Teknis
+-- FINETERN DATABASE SCHEMA V2
+-- Hanya untuk database baru. Database v1 memakai migrations/001_identity_verification.sql.
 -- ===================================================================
 
-SET FOREIGN_KEY_CHECKS = 0;
-DROP DATABASE IF EXISTS finetern_db;
-CREATE DATABASE finetern_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE IF NOT EXISTS finetern_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE finetern_db;
-
--- Hapus tabel lama secara berurutan untuk menjamin integritas Foreign Key
-DROP TABLE IF EXISTS assessment_records;
-DROP TABLE IF EXISTS learning_modules;
-DROP TABLE IF EXISTS applications;
-DROP TABLE IF EXISTS vacancy_skills;
-DROP TABLE IF EXISTS internship_vacancies;
-DROP TABLE IF EXISTS portfolios;
-DROP TABLE IF EXISTS student_skills;
-DROP TABLE IF EXISTS skills;
-DROP TABLE IF EXISTS industries;
-DROP TABLE IF EXISTS students;
-DROP TABLE IF EXISTS schools;
-DROP TABLE IF EXISTS users;
 
 -- 1. Tabel Induk Pengguna (Users)
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     email VARCHAR(120) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
-    role ENUM('siswa', 'sekolah', 'industri') NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    role ENUM('siswa', 'sekolah', 'industri', 'admin') NOT NULL,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    disabled_at TIMESTAMP NULL,
+    disabled_by INT NULL,
+    disabled_reason TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_users_disabled_by FOREIGN KEY (disabled_by) REFERENCES users(id) ON DELETE RESTRICT
 ) ENGINE=InnoDB;
 
 -- 2. Tabel Institusi Sekolah (Schools)
 CREATE TABLE schools (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL UNIQUE,
+    submitted_by INT NOT NULL,
+    npsn VARCHAR(20) NULL UNIQUE,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
     nama_sekolah VARCHAR(150) NOT NULL,
     akreditasi VARCHAR(10),
     alamat TEXT,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    CONSTRAINT fk_schools_submitted_by FOREIGN KEY (submitted_by) REFERENCES users(id) ON DELETE RESTRICT,
+    CONSTRAINT chk_schools_npsn CHECK (npsn IS NULL OR CHAR_LENGTH(TRIM(npsn)) > 0)
+) ENGINE=InnoDB;
+
+-- Akun per guru; nama NULL hanya untuk akun lama yang belum melengkapi profil.
+CREATE TABLE teachers (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL UNIQUE,
+    nama_lengkap VARCHAR(150) NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_teachers_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE RESTRICT
+) ENGINE=InnoDB;
+
+-- Satu sekolah per guru untuk MVP. Posisi koordinator belum memberi izin tanpa verifikasi.
+CREATE TABLE school_memberships (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    teacher_id INT NOT NULL UNIQUE,
+    sekolah_id INT NOT NULL,
+    posisi ENUM('guru', 'koordinator') NOT NULL DEFAULT 'guru',
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_memberships_school_active (sekolah_id, is_active),
+    CONSTRAINT fk_memberships_teacher FOREIGN KEY (teacher_id) REFERENCES teachers(id) ON DELETE RESTRICT,
+    CONSTRAINT fk_memberships_school FOREIGN KEY (sekolah_id) REFERENCES schools(id) ON DELETE RESTRICT
 ) ENGINE=InnoDB;
 
 -- 3. Tabel Profil Siswa SMK (Students)
@@ -63,6 +77,9 @@ CREATE TABLE industries (
     sektor_industri VARCHAR(100) NOT NULL,
     kota_domisili VARCHAR(100) NOT NULL,
     deskripsi_perusahaan TEXT,
+    nomor_registrasi VARCHAR(64) NULL UNIQUE,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    CONSTRAINT chk_industries_registration CHECK (nomor_registrasi IS NULL OR CHAR_LENGTH(TRIM(nomor_registrasi)) > 0),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
@@ -85,8 +102,6 @@ CREATE TABLE student_skills (
     FOREIGN KEY (siswa_id) REFERENCES students(id) ON DELETE CASCADE,
     FOREIGN KEY (skill_id) REFERENCES skills(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
-
-SET FOREIGN_KEY_CHECKS = 1;
 
 -- 7. Tabel Portofolio Bukti Karya (Portfolios)
 CREATE TABLE portfolios (
@@ -168,4 +183,49 @@ CREATE TABLE assessment_records (
     FOREIGN KEY (skill_id) REFERENCES skills(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
-SET FOREIGN_KEY_CHECKS = 1;
+-- Satu pengajuan per subjek; revisi mengubah status dan menambah event, bukan menghapus riwayat.
+CREATE TABLE verification_requests (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    applicant_user_id INT NOT NULL,
+    sekolah_id INT NULL UNIQUE,
+    industri_id INT NULL UNIQUE,
+    membership_id INT NULL UNIQUE,
+    siswa_id INT NULL UNIQUE,
+    status ENUM('pending', 'approved', 'needs_revision', 'rejected') NOT NULL DEFAULT 'pending',
+    evidence_path VARCHAR(255) NULL,
+    submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_verification_queue (status, submitted_at),
+    CONSTRAINT chk_verification_subject CHECK (
+        (sekolah_id IS NOT NULL) + (industri_id IS NOT NULL) +
+        (membership_id IS NOT NULL) + (siswa_id IS NOT NULL) = 1
+    ),
+    CONSTRAINT fk_verification_applicant FOREIGN KEY (applicant_user_id) REFERENCES users(id) ON DELETE RESTRICT,
+    CONSTRAINT fk_verification_school FOREIGN KEY (sekolah_id) REFERENCES schools(id) ON DELETE RESTRICT,
+    CONSTRAINT fk_verification_industry FOREIGN KEY (industri_id) REFERENCES industries(id) ON DELETE RESTRICT,
+    CONSTRAINT fk_verification_membership FOREIGN KEY (membership_id) REFERENCES school_memberships(id) ON DELETE RESTRICT,
+    CONSTRAINT fk_verification_student FOREIGN KEY (siswa_id) REFERENCES students(id) ON DELETE RESTRICT
+) ENGINE=InnoDB;
+
+CREATE TABLE verification_events (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    request_id INT NOT NULL,
+    actor_user_id INT NOT NULL,
+    action ENUM('submitted', 'approved', 'needs_revision', 'rejected', 'resubmitted', 'suspended', 'reactivated') NOT NULL,
+    note TEXT,
+    submission_snapshot JSON NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_verification_history (request_id, created_at, id),
+    CONSTRAINT fk_events_request FOREIGN KEY (request_id) REFERENCES verification_requests(id) ON DELETE RESTRICT,
+    CONSTRAINT fk_events_actor FOREIGN KEY (actor_user_id) REFERENCES users(id) ON DELETE RESTRICT
+) ENGINE=InnoDB;
+
+CREATE TABLE schema_migrations (
+    version VARCHAR(100) PRIMARY KEY,
+    status ENUM('applying', 'applied') NOT NULL,
+    started_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    completed_at TIMESTAMP NULL
+) ENGINE=InnoDB;
+
+INSERT INTO schema_migrations (version, status, completed_at)
+VALUES ('001_identity_verification', 'applied', CURRENT_TIMESTAMP);

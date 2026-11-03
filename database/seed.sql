@@ -1,6 +1,7 @@
 -- ===================================================================
 -- FINETERN SEED DATA
--- Akun Dummy 3 Peran (Password semua akun: password123)
+-- DATA DEMO LOKAL, bukan data produksi. Password semua akun: password123.
+-- Semua pengajuan dimulai pending; seed tidak memberikan persetujuan admin palsu.
 -- 10 Kamus Micro-Skills, Student Skills, Portofolio, dan Lowongan
 -- ===================================================================
 
@@ -14,13 +15,24 @@ INSERT INTO users (id, email, password, role) VALUES
 (3, 'talent@studionusantara.id', '$2b$10$3JtrpvLRzAi2F7AhhQ/O3.LwfwAEpIpn8JWLGY5LlM45iPLg7yqAW', 'industri'),
 (4, 'siswa1@finetern.id', '$2b$10$3JtrpvLRzAi2F7AhhQ/O3.LwfwAEpIpn8JWLGY5LlM45iPLg7yqAW', 'siswa'),
 (5, 'siswa2@finetern.id', '$2b$10$3JtrpvLRzAi2F7AhhQ/O3.LwfwAEpIpn8JWLGY5LlM45iPLg7yqAW', 'siswa'),
-(6, 'siswa3@finetern.id', '$2b$10$3JtrpvLRzAi2F7AhhQ/O3.LwfwAEpIpn8JWLGY5LlM45iPLg7yqAW', 'siswa')
+(6, 'siswa3@finetern.id', '$2b$10$3JtrpvLRzAi2F7AhhQ/O3.LwfwAEpIpn8JWLGY5LlM45iPLg7yqAW', 'siswa'),
+(7, 'guru2@smkn1bandung.sch.id', '$2b$10$3JtrpvLRzAi2F7AhhQ/O3.LwfwAEpIpn8JWLGY5LlM45iPLg7yqAW', 'sekolah')
 ON DUPLICATE KEY UPDATE email=VALUES(email);
 
 -- 2. Insert Profil Sekolah
-INSERT INTO schools (id, user_id, nama_sekolah, akreditasi, alamat) VALUES
+INSERT INTO schools (id, submitted_by, nama_sekolah, akreditasi, alamat) VALUES
 (1, 1, 'SMKN 1 Bandung', 'A', 'Jl. Wastukancana No.3, Babakan Ciamis, Kec. Sumur Bandung, Kota Bandung, Jawa Barat')
 ON DUPLICATE KEY UPDATE nama_sekolah=VALUES(nama_sekolah);
+
+INSERT INTO teachers (id, user_id, nama_lengkap) VALUES
+(1, 1, 'H. Mulyana'),
+(2, 7, 'Budi Setiawan')
+ON DUPLICATE KEY UPDATE nama_lengkap=VALUES(nama_lengkap);
+
+INSERT INTO school_memberships (id, teacher_id, sekolah_id) VALUES
+(1, 1, 1),
+(2, 2, 1)
+ON DUPLICATE KEY UPDATE id=id;
 
 -- 3. Insert Profil Siswa SMK
 INSERT INTO students (id, user_id, sekolah_id, nisn, nama_lengkap, jurusan, kelas, biodata) VALUES
@@ -84,3 +96,24 @@ INSERT INTO vacancy_skills (lowongan_id, skill_id, importance, weight, min_profi
 (2, 4, 'wajib', 10, 75),       -- UI/UX Slicing Figma
 (2, 1, 'nilai_tambah', 5, 60)  -- React Native UI Slicing
 ON DUPLICATE KEY UPDATE min_proficiency=VALUES(min_proficiency);
+
+-- Pengajuan demo tidak mereset status jika seed dijalankan ulang.
+INSERT INTO verification_requests (applicant_user_id, sekolah_id)
+SELECT submitted_by, id FROM schools
+ON DUPLICATE KEY UPDATE id=verification_requests.id;
+INSERT INTO verification_requests (applicant_user_id, industri_id)
+SELECT user_id, id FROM industries
+ON DUPLICATE KEY UPDATE id=verification_requests.id;
+INSERT INTO verification_requests (applicant_user_id, membership_id)
+SELECT t.user_id, m.id FROM school_memberships m JOIN teachers t ON t.id=m.teacher_id
+ON DUPLICATE KEY UPDATE id=verification_requests.id;
+INSERT INTO verification_requests (applicant_user_id, siswa_id)
+SELECT user_id, id FROM students
+ON DUPLICATE KEY UPDATE id=verification_requests.id;
+
+INSERT INTO verification_events (request_id, actor_user_id, action, note)
+SELECT r.id, r.applicant_user_id, 'submitted', 'Pengajuan contoh untuk pengembangan lokal.'
+FROM verification_requests r
+WHERE NOT EXISTS (
+    SELECT 1 FROM verification_events e WHERE e.request_id=r.id AND e.action='submitted'
+);

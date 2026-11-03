@@ -35,6 +35,9 @@ web-build/
 backend/uploads/*
 !backend/uploads/.gitkeep
 
+# Local database snapshots may contain account and student data
+database/backups/
+
 # Local AI Skills & Internal Documentations (Do not push to GitHub)
 .agents/
 *.pdf

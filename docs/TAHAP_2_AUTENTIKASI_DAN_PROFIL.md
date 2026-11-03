@@ -2,6 +2,8 @@
 
 Status: rancangan sebelum implementasi. Fitur pada dokumen ini belum selesai dibuat.
 
+Progres 2A: schema v2, migrasi dari v1, seed dua guru, dan tes integrasi database sudah tersedia. Panduan ada di [database/README.md](../database/README.md). Migrasi belum diterapkan pada database aplikasi; login, sesi, otorisasi, dan verifikasi melalui API/UI belum dibuat.
+
 > Keputusan pengguna: setiap guru memiliki akun sendiri; admin platform memverifikasi sekolah/industri; koordinator sekolah menyetujui guru; guru memverifikasi siswa sekolahnya. Baca [rancangan verifikasi akun dan institusi](VERIFIKASI_AKUN_DAN_INSTITUSI.md). Login/sesi/profil tetap diperlukan; cakupan verifikasi memperluas Tahap 2 menjadi 2A, 2B, dan 2C pada dokumen pendamping. Alur sudah disetujui; rincian operasional dan implementasi belum selesai.
 
 Dokumen ini menjabarkan Tahap 2 pada `PROGRES_DAN_PANDUAN_AI.md` berdasarkan kode dan schema yang tersedia. Tujuannya adalah menyepakati perilaku aplikasi sebelum menulis kode fitur.
@@ -14,7 +16,7 @@ Contoh hasil: Ahmad masuk menggunakan akun siswa, melihat profil Ahmad dari data
 
 Profil dasar pada tahap ini berarti membaca dan menampilkan data akun sendiri. Pengubahan profil, email, atau kata sandi memerlukan cakupan tersendiri dan belum termasuk kontrak awal tahap ini.
 
-## 2. Kondisi awal yang sudah diperiksa
+## 2. Kondisi awal yang sudah diperiksa (sebelum schema v2)
 
 - Branch pengembangan: `develop`. Remote `origin`: `https://github.com/tsalis-dev/finetern-app.git`.
 - Backend baru memasang `/api/health`. Controller login, register, dan profil belum ada.
@@ -111,7 +113,7 @@ Status yang perlu dibedakan: `201` untuk akun baru, `200` untuk login/profil ber
 - Alamat API mobile dibuat dapat dikonfigurasi untuk HP fisik; `10.0.2.2` saat ini khusus emulator Android.
 - Simulator role dan tombol demo tidak boleh memberi sesi nyata atau mengubah hak akses akun yang sudah masuk.
 - Perbaiki nama tujuan navigasi beranda siswa yang tidak cocok dengan tab terdaftar jika jalur tersebut disentuh ketika integrasi.
-- Jangan menjalankan ulang `schema.sql` untuk perubahan bertahap, karena script tersebut menghapus database.
+- Gunakan file migrasi untuk database yang sudah ada. `schema.sql` v2 hanya untuk instalasi kosong dan tidak lagi menghapus database; versi v1 historis bersifat reset total.
 
 Perbaikan relasi asesmen ke modul, identitas pemeriksa karya, dan pemisahan nilai kuis dari kemahiran tervalidasi tetap dicatat untuk tahap portofolio/pembelajaran. Hal itu belum dikerjakan hanya karena rencana Tahap 2 sudah dibuat.
 

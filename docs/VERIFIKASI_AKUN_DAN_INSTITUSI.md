@@ -1,6 +1,6 @@
 # Rancangan Verifikasi Akun dan Institusi
 
-Status: alur produk disetujui pengguna; kode dan migrasi database belum diimplementasikan. Sekolah dan industri diverifikasi admin platform, guru disetujui koordinator sekolah, dan siswa diverifikasi guru sekolahnya. Setiap guru memiliki akun pribadi yang terhubung ke sekolah. Rincian bukti pemeriksaan dan penanggung jawab operasional masih perlu ditetapkan.
+Status: alur produk disetujui pengguna; schema v2 dan migrasi v1 sudah disiapkan serta diuji di database terpisah. Migrasi belum diterapkan ke database aplikasi. API, pemeriksaan kewenangan, dan UI belum diimplementasikan. Sekolah dan industri diverifikasi admin platform, guru disetujui koordinator sekolah, dan siswa diverifikasi guru sekolahnya. Setiap guru memiliki akun pribadi yang terhubung ke sekolah. Rincian bukti pemeriksaan dan penanggung jawab operasional masih perlu ditetapkan.
 
 ## 1. Prinsip
 
@@ -70,7 +70,7 @@ Dengan demikian, siswa yang sudah disetujui sekolah tetap harus mengajukan bukti
 
 ## 6. Dampak pada schema dan API
 
-Schema aktual belum mendukung alur ini. Perubahan yang dibutuhkan harus dibuat sebagai migrasi yang menjaga data, bukan dengan menjalankan script reset database.
+Schema v2 dan migrasi sudah tersedia pada `database/schema.sql` serta `database/migrations/001_identity_verification.sql`. [Panduan database](../database/README.md) menjelaskan struktur, pemetaan data lama, batas jaminan schema, dan cara pengujian. Database aplikasi yang belum dimigrasi tetap memakai v1.
 
 - Pisahkan `schools` dari kepemilikan satu akun pada `schools.user_id` dan pindahkan hubungan akun lama menjadi keanggotaan yang sesuai.
 - Tambahkan profil guru dan keanggotaan sekolah yang menghubungkan akun, sekolah, kewenangan guru/koordinator, serta status pengajuan. Tidak perlu menambahkan NIP jika alur pemeriksaan tidak membutuhkannya.
@@ -79,7 +79,7 @@ Schema aktual belum mendukung alur ini. Perubahan yang dibutuhkan harus dibuat s
 - Simpan rekam keputusan dan informasi penonaktifan dengan pemeriksa serta waktunya.
 - Respons sesi/profil perlu memuat status verifikasi dan kewenangan sehingga mobile dapat menampilkan halaman menunggu atau fitur yang memang diizinkan. Backend tetap menjadi penentu akses.
 
-Nama tabel/kolom, identifier unik institusi, endpoint pemeriksaan, format bukti, dan batas ukuran berkas ditetapkan pada spesifikasi teknis setelah rancangan produk dipastikan. Jangan menganggap nama-nama konseptual dalam dokumen ini sudah ada pada SQL.
+Tabel baru adalah `teachers`, `school_memberships`, `verification_requests`, dan `verification_events`, ditambah metadata `schema_migrations`. `schools.submitted_by` menggantikan kepemilikan akun lama. NPSN dan nomor registrasi unik tetapi nullable untuk data lama. Format identifier pada pendaftaran baru, endpoint pemeriksaan, format bukti, dan batas ukuran berkas masih perlu ditetapkan saat implementasi API.
 
 ## 7. Pembagian kerja Tahap 2 yang diperbarui
 
