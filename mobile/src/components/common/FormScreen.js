@@ -4,13 +4,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import AppIcon from './AppIcon';
 import { colors, spacing } from '../../utils/theme';
 
-export default function FormScreen({ title, subtitle, children, onBack, backDisabled = false }) {
+export default function FormScreen({ title, subtitle, children, onBack, backDisabled = false, header }) {
   return <SafeAreaView style={styles.safe} edges={['top', 'left', 'right']}>
     <KeyboardAvoidingView style={styles.safe} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.content}>
         {onBack ? <Pressable accessibilityRole="button" accessibilityLabel="Kembali" disabled={backDisabled} onPress={onBack} style={styles.back}><AppIcon name="back" /><Text style={styles.backLabel}>Kembali</Text></Pressable> : <Text style={styles.brand}>finetern</Text>}
-        <Text style={styles.title}>{title}</Text>
-        {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
+        {header || <><Text style={styles.title}>{title}</Text>{subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}</>}
         {children}
       </ScrollView>
     </KeyboardAvoidingView>

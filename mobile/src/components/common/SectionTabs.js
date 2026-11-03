@@ -11,9 +11,9 @@ export default function SectionTabs({ choices, value, onChange }) {
   )}</View>;
 }
 const styles = StyleSheet.create({
-  row: { flexDirection: 'row', marginHorizontal: spacing.lg, marginVertical: spacing.sm, padding: 4, gap: 4, borderRadius: 14, backgroundColor: colors.surfaceElevated },
-  tab: { flex: 1, minHeight: 48, padding: spacing.sm, justifyContent: 'center', borderRadius: 11 },
-  active: { backgroundColor: colors.white },
+  row: { flexDirection: 'row', marginHorizontal: spacing.lg, marginVertical: spacing.sm, padding: 4, gap: 4, borderRadius: 17, backgroundColor: colors.surfaceElevated },
+  tab: { flex: 1, minHeight: 44, padding: spacing.sm, justifyContent: 'center', borderRadius: 13 },
+  active: { backgroundColor: colors.primary },
   label: { textAlign: 'center', color: colors.textSecondary, fontSize: 14 },
-  selected: { color: colors.primary, fontWeight: '700' },
+  selected: { color: colors.white, fontWeight: '700' },
 });

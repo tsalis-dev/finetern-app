@@ -5,11 +5,21 @@ const path=require('node:path');
 const vm=require('node:vm');
 const source=fs.readFileSync(path.join(__dirname,'../src/utils/recruitment.js'),'utf8').replace(/^export /gm,'');
 const moduleContext={exports:{}};
-vm.runInNewContext(source+'\nmodule.exports={vacancyPayload,applicationPayload,selectionPayload,formatAllowance,firstSkillGap};',{module:moduleContext,URL,Intl});
+vm.runInNewContext(source+'\nmodule.exports={vacancyPayload,applicationPayload,selectionPayload,formatAllowance,firstSkillGap,vacancyStatus};',{module:moduleContext,URL,Intl});
 const {vacancyPayload,applicationPayload,selectionPayload,formatAllowance}=moduleContext.exports;
 const {firstSkillGap}=moduleContext.exports;
+const {vacancyStatus}=moduleContext.exports;
 const values={title:' Mobile Intern ',deskripsi:' Belajar implementasi antarmuka dan API ',location:' Bandung ',workMode:'hybrid',allowance:'1500000',quota:'2',deadline:'2027-01-31'};
 const requirements=[{skillId:1,importance:'wajib',weight:'10',minProficiency:'70'}];
+
+test('vacancy cards follow server eligibility even with a high match score and retain application status',()=>{
+  const blocked={match_rate:91.42,can_apply:false,application_id:null};
+  assert.equal(vacancyStatus(blocked).label,'Syarat belum terpenuhi');
+  assert.equal(vacancyStatus({...blocked,match_rate:100}).tone,'warning');
+  assert.equal(vacancyStatus({...blocked,can_apply:true}).label,'Bisa dilamar');
+  for(const can_apply of [true,false])assert.equal(vacancyStatus({...blocked,can_apply,application_id:7}).label,'Sudah dilamar');
+  assert.equal(blocked.can_apply,false);
+});
 
 test('learning guidance prioritizes an unmet mandatory skill without changing requirement order',()=>{
   const extra={skill_id:1,importance:'nilai_tambah',missing_points:20};

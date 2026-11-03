@@ -15,6 +15,9 @@ const paths = {
   check: 'm5 12 4 4L19 6',
   clock: 'M21 12a9 9 0 1 1-18 0 9 9 0 1 1 18 0 M12 7v5l3 2',
   search: 'M18 10a8 8 0 1 1-16 0 8 8 0 1 1 16 0 m-2 6 6 6',
+  arrow: 'M4 12h16 m-6-6 6 6-6 6',
+  pin: 'M19 10c0 5-7 11-7 11S5 15 5 10a7 7 0 1 1 14 0 M14 10a2 2 0 1 1-4 0 2 2 0 1 1 4 0',
+  code: 'm8 7-5 5 5 5 m8-10 5 5-5 5 M14 4l-4 16',
 };
 export default function AppIcon({ name, size = 24, color = colors.primary }) {
   return <Svg width={size} height={size} viewBox="0 0 24 24" accessible={false}>

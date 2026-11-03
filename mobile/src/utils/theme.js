@@ -14,7 +14,7 @@ export const colors = {
 
   textPrimary: '#30262A',
   textSecondary: '#665C60',
-  textMuted: '#94A3B8',     // Slate 400
+  textMuted: '#786D71',
 
   // Neutral scale
   neutral: {
@@ -36,6 +36,10 @@ export const colors = {
   primaryDark: '#63202D',
   primaryLight: '#F8EDF0',
   primaryBorder: '#E4BCC5',
+  onPrimaryMuted: '#F3DDE3',
+  accentWarm: '#F0E3CF',
+  accentWarmText: '#775321',
+  successText: '#276349',
 
   // Role Identifiers
   role: {

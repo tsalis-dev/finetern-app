@@ -3,6 +3,13 @@ export const workModes = { onsite:'Di lokasi',hybrid:'Hybrid',remote:'Jarak jauh
 export const formatAllowance = value => value == null ? 'Uang saku belum dicantumkan' : 'Rp '+new Intl.NumberFormat('id-ID').format(value)+' / bulan';
 export const formatDeadline = value => value ? value.split('-').reverse().join('/') : 'Belum dicantumkan';
 
+export function vacancyStatus(matching) {
+  if (matching.application_id) return { label: 'Sudah dilamar', tone: 'neutral', icon: 'briefcase' };
+  return matching.can_apply
+    ? { label: 'Bisa dilamar', tone: 'success', icon: 'check' }
+    : { label: 'Syarat belum terpenuhi', tone: 'warning', icon: 'clock' };
+}
+
 export function firstSkillGap(requirements) {
   const gaps = requirements.filter(item => item.missing_points > 0);
   return gaps.find(item => item.importance === 'wajib') || gaps[0] || null;
