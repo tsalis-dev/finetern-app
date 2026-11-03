@@ -19,8 +19,8 @@ async function startServer() {
     console.error(`❌ [Database] Gagal terhubung: ${dbStatus.message}`);
     throw new Error('Pastikan Laragon/MySQL aktif dan konfigurasi database benar.');
   }
-  const [[migration]] = await pool.query("SELECT COUNT(*) AS total FROM schema_migrations WHERE version IN ('001_identity_verification','002_portfolio_evidence') AND status='applied'");
-  if (migration.total !== 2) throw new Error('Jalankan npm run db:migrate sebelum memakai aplikasi.');
+  const [[migration]] = await pool.query("SELECT COUNT(*) AS total FROM schema_migrations WHERE version IN ('001_identity_verification','002_portfolio_evidence','003_recruitment_matching') AND status='applied'");
+  if (migration.total !== 3) throw new Error('Jalankan npm run db:migrate sebelum memakai aplikasi.');
 
   const server = app.listen(PORT, () => {
     console.log(`🌐 Server aktif di: http://localhost:${PORT}`);

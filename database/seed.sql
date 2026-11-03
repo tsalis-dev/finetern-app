@@ -92,7 +92,7 @@ WHERE p.revision_number=0 AND NOT EXISTS (SELECT 1 FROM portfolio_events e WHERE
 INSERT INTO internship_vacancies (id, industri_id, title, deskripsi, kuota, status_aktif, tenggat_waktu) VALUES
 (1, 1, 'Junior Mobile React Native Intern', 'Kesempatan magang bagi siswa SMK jurusan RPL untuk berkontribusi langsung pada proyek aplikasi mobile klien. Tanggung jawab meliputi slicing layout Figma ke React Native dan mengintegrasikan REST API backend.', 2, TRUE, '2026-12-31'),
 (2, 2, 'UI/UX Design & Prototyping Apprentice', 'Program magang desain interaktif untuk merancang alur pengguna, membuat komponen design tokens di Figma, dan menyiapkan panduan desain mobile.', 1, TRUE, '2026-12-15')
-ON DUPLICATE KEY UPDATE title=VALUES(title);
+ON DUPLICATE KEY UPDATE id=internship_vacancies.id;
 
 -- 9. Insert Kebutuhan Keahlian Lowongan (Vacancy Skills)
 INSERT INTO vacancy_skills (lowongan_id, skill_id, importance, weight, min_proficiency) VALUES
@@ -103,7 +103,7 @@ INSERT INTO vacancy_skills (lowongan_id, skill_id, importance, weight, min_profi
 -- Lowongan 2 (UI/UX Apprentice):
 (2, 4, 'wajib', 10, 75),       -- UI/UX Slicing Figma
 (2, 1, 'nilai_tambah', 5, 60)  -- React Native UI Slicing
-ON DUPLICATE KEY UPDATE min_proficiency=VALUES(min_proficiency);
+ON DUPLICATE KEY UPDATE id=vacancy_skills.id;
 
 -- Pengajuan demo tidak mereset status jika seed dijalankan ulang.
 INSERT INTO verification_requests (applicant_user_id, sekolah_id)

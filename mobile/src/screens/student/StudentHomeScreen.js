@@ -25,8 +25,11 @@ export default function StudentHomeScreen({ navigation }) {
     </View>
     <Text style={styles.heading}>Keterampilan tervalidasi</Text>
     {data?.skills.length ? <>{data.skills.slice(0, 3).map(skill => <View key={skill.id} style={styles.card}><Text style={styles.heading}>{skill.nama_skill}</Text><Text style={styles.summary}>{skill.proficiency}/100 · {skill.evidence_count} karya disetujui guru</Text></View>)}<PrimaryButton title="Lihat keterampilan di portofolio" variant="outline" onPress={() => navigation.navigate('PortofolioTab')} /></> : <Text style={styles.body}>Keterampilan akan muncul setelah guru menyetujui dan menilai bukti karyamu.</Text>}
-    <View style={styles.card}><Text style={styles.heading}>Langkah berikutnya</Text><Text style={styles.body}>Katalog lowongan, pencocokan keterampilan, dan rekomendasi belajar masih berupa pratinjau. Hasilnya belum dihitung dari akunmu.</Text>
-      <PrimaryButton title="Lihat pratinjau lowongan" variant="outline" onPress={() => navigation.navigate('Eksplorasi')} />
+    <View style={styles.card}><Text style={styles.heading}>Temukan posisi yang sesuai</Text><Text style={styles.body}>Jelajahi lowongan dari industri terverifikasi. Skor kecocokan dihitung dari bukti karyamu; seluruh syarat wajib dan skor minimal 80% perlu terpenuhi untuk melamar.</Text>
+      <PrimaryButton title="Jelajahi lowongan magang" onPress={() => navigation.navigate('Eksplorasi')} />
+      <PrimaryButton title="Pantau lamaran saya" variant="secondary" onPress={() => navigation.navigate('MyApplications')} />
+    </View>
+    <View style={styles.card}><Text style={styles.heading}>Belajar untuk langkah berikutnya</Text><Text style={styles.body}>Rekomendasi belajar Gemini akan tersedia pada tahap berikutnya. Halaman AI Mentor saat ini masih berupa pratinjau.</Text>
       <PrimaryButton title="Lihat pratinjau AI Mentor" variant="outline" onPress={() => navigation.navigate('AIMentor')} />
     </View>
   </FormScreen>;

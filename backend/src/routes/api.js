@@ -19,6 +19,8 @@ router.get('/schools', async (req, res) => {
 });
 router.use('/verification', require('./verificationRoutes'));
 router.use('/portfolios', require('./portfolioRoutes'));
+router.use('/vacancies', require('./recruitmentRoutes').vacancyRouter);
+router.use('/applications', require('./recruitmentRoutes').applicationRouter);
 router.patch('/admin/accounts/:id/activity', verifyToken, objectBody, require('../controllers/verificationController').accountActivity);
 
 module.exports = router;

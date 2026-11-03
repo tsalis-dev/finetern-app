@@ -14,6 +14,10 @@ import SchoolTabs from './SchoolTabs';
 import IndustryTabs from './IndustryTabs';
 import PortfolioDetailScreen from '../screens/portfolio/PortfolioDetailScreen';
 import PortfolioFormScreen from '../screens/portfolio/PortfolioFormScreen';
+import VacancyDetailScreen from '../screens/recruitment/VacancyDetailScreen';
+import VacancyFormScreen from '../screens/recruitment/VacancyFormScreen';
+import ApplicationDetailScreen from '../screens/recruitment/ApplicationDetailScreen';
+import ApplicationListScreen from '../components/common/ApplicationListScreen';
 
 const Stack = createNativeStackNavigator();
 export default function AppNavigator() {
@@ -43,6 +47,14 @@ export default function AppNavigator() {
       </> : null}
       {isAuthenticated && user.canUseApp && ['siswa', 'sekolah'].includes(user.role) ? <Stack.Screen name="PortfolioDetail" component={PortfolioDetailScreen} /> : null}
       {isAuthenticated && user.canUseApp && user.role === 'siswa' ? <Stack.Screen name="PortfolioForm" component={PortfolioFormScreen} /> : null}
+      {isAuthenticated && user.canUseApp && ['siswa','industri'].includes(user.role)?<Stack.Screen name="VacancyDetail" component={VacancyDetailScreen}/>:null}
+      {isAuthenticated && user.canUseApp && user.role==='industri'?<>
+        <Stack.Screen name="VacancyForm" component={VacancyFormScreen}/>
+        <Stack.Screen name="VacancyApplications">{props=><ApplicationListScreen {...props} mode="industry" back/>}</Stack.Screen>
+      </>:null}
+      {isAuthenticated && user.canUseApp && user.role==='siswa'?<Stack.Screen name="MyApplications">{props=><ApplicationListScreen {...props} back/>}</Stack.Screen>:null}
+      {isAuthenticated && user.canUseApp && user.role==='sekolah'?<Stack.Screen name="SchoolApplications">{props=><ApplicationListScreen {...props} mode="school" back/>}</Stack.Screen>:null}
+      {isAuthenticated && user.canUseApp && ['siswa','industri','sekolah'].includes(user.role)?<Stack.Screen name="ApplicationDetail" component={ApplicationDetailScreen}/>:null}
     </Stack.Navigator>
   </NavigationContainer>;
 }

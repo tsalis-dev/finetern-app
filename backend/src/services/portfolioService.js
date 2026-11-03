@@ -195,4 +195,4 @@ async function evidence(user, id, eventId) {
   return { path: path.join(privateDir, file), extension: file.split('.').pop() };
 }
 
-module.exports = { requireAccess, skills, studentSkills, mine, queue, detail, submit, review, evidence };
+module.exports = { privateDir, requireAccess, skills, studentSkills, mine, queue, detail, submit, review, evidence };

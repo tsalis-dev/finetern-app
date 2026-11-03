@@ -33,7 +33,7 @@ test('teacher decisions require a note and an explicit integer assessment only f
   assert.equal(Object.hasOwn(reviewPayload('revision', 'Perjelas peranmu', '', 3), 'proficiency'), false);
 });
 
-function evidenceFixture({ changesSession = false, failsDownload = false } = {}) {
+function evidenceFixture({ changesSession = false, failsDownload = false, application = false } = {}) {
   let credential = 'current-private-token', shared = false, deleted = false, cacheDeleted = false;
   class Directory {
     constructor(parent, name) { assert.equal(parent, 'private-app-cache'); assert.equal(name, 'finetern-proofs'); this.exists = true; }
@@ -41,10 +41,10 @@ function evidenceFixture({ changesSession = false, failsDownload = false } = {})
     delete() { cacheDeleted = true; }
   }
   class File {
-    constructor(directory, name) { assert.ok(directory instanceof Directory); assert.match(name, /^karya-12-/); this.uri = 'file:///private-app-cache/' + name; this.exists = true; }
+    constructor(directory, name) { assert.ok(directory instanceof Directory); assert.match(name, application ? /^lamaran-12-/ : /^karya-12-/); this.uri = 'file:///private-app-cache/' + name; this.exists = true; }
     delete() { deleted = true; }
     static async downloadFileAsync(url, file, options) {
-      assert.equal(url, 'http://example.invalid/api/portfolios/12/evidence?eventId=4');
+      assert.equal(url, application ? 'http://example.invalid/api/applications/12/evidence/4' : 'http://example.invalid/api/portfolios/12/evidence?eventId=4');
       assert.equal(options.headers.Authorization, 'Bearer current-private-token');
       if (changesSession) credential = null;
       if (failsDownload) throw new Error('download failed');
@@ -54,9 +54,9 @@ function evidenceFixture({ changesSession = false, failsDownload = false } = {})
     Platform: { OS: 'android' }, Directory, File, Paths: { cache: 'private-app-cache' },
     getToken: async () => credential,
     API_BASE_URL: 'http://example.invalid/api',
-    api: { get: async url => assert.equal(url, '/portfolios/12') },
+    api: { get: async url => assert.equal(url, application ? '/applications/12' : '/portfolios/12') },
     Sharing: { isAvailableAsync: async () => true, shareAsync: async (uri, options) => { shared = true; assert.match(uri, /^file:\/\/\/private-app-cache\//); assert.equal(options.mimeType, 'application/pdf'); } },
-  }, ['openPortfolioEvidence', 'clearProofCache']);
+  }, ['openPortfolioEvidence', 'openApplicationEvidence', 'clearProofCache']);
   return { ...helpers, shared: () => shared, deleted: () => deleted, cacheDeleted: () => cacheDeleted };
 }
 
@@ -77,4 +77,10 @@ test('failed download removes partial native files without opening another app',
   const fixture = evidenceFixture({ failsDownload: true });
   await assert.rejects(fixture.openPortfolioEvidence(12, 'pdf', 4), /Bukti tidak dapat dibuka/);
   assert.equal(fixture.shared(), false); assert.equal(fixture.deleted(), true);
+});
+
+test('application evidence uses its application-scoped route and never a general portfolio URL', async () => {
+  const fixture = evidenceFixture({ application: true });
+  await fixture.openApplicationEvidence(12, 4, 'pdf');
+  assert.equal(fixture.shared(), true);
 });

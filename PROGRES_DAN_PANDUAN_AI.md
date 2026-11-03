@@ -8,11 +8,13 @@ Finetern adalah platform rekrutmen magang siswa SMK berdasarkan bukti karya, pen
 
 Tahap 1 selesai. Implementasi Tahap 2 tersedia: migrasi identitas guru pribadi, autentikasi nyata, profil, pendaftaran, dan verifikasi bertingkat melalui backend/mobile serta halaman admin. Database lokal sudah dimigrasi setelah backup berhasil dipulihkan dan diuji pada salinan; data lama dipertahankan. Admin lokal disiapkan sesuai pilihan pemilik; kredensial tidak disimpan di repository.
 
-Tahap 3 juga tersedia: siswa mengajukan karya dengan foto/PDF atau tautan untuk satu keterampilan, guru sekolahnya memberi catatan dan penilaian, siswa dapat memperbaiki pengajuan, dan bukti/keputusan tersimpan per versi. Keterampilan tervalidasi hanya berasal dari penilaian karya terstruktur. Database lokal sekarang v3, sudah dicadangkan serta diperiksa pelestarian datanya.
+Tahap 3 tersedia: siswa mengajukan karya dengan foto/PDF atau tautan untuk satu keterampilan, guru sekolahnya memberi catatan dan penilaian, siswa dapat memperbaiki pengajuan, dan bukti/keputusan tersimpan per versi. Keterampilan tervalidasi hanya berasal dari penilaian karya terstruktur.
+
+Tahap 4 tersedia: industri terverifikasi mengelola lowongan, siswa melihat kecocokan dari bukti karya dan melamar dengan persetujuan berbagi, industri mencatat seleksi, dan sekolah memantau status siswa sendiri. Database lokal sekarang v4 setelah backup dipulihkan serta migrasi diperiksa pada salinan. Syarat lamaran yang ditegaskan pengguna: skor minimal 80% **dan seluruh keterampilan wajib memenuhi nilai minimum**.
 
 Pengujian backend/database dan mobile lulus, bundling Android/Hermes berhasil. **Pengguna meminta crosscheck langsung di HP dilakukan pada akhir pengembangan; jangan menjadikannya prasyarat untuk melanjutkan tahap berikutnya.** Revisi desain lengkap di Figma masih draft; warna primer kode burgundy `#842D3E` dengan permukaan putih/netral.
 
-Layar matching, lowongan, lamaran, dan AI masih pratinjau dengan data contoh. Portofolio, beranda siswa, dan dashboard guru sudah memakai alur nyata. Guru mempunyai antrean “Verifikasi Akun” dan “Bukti Karya” yang terpisah. Akun pending hanya dapat membuka status/perbaikan pengajuan akun.
+Hanya AI Mentor yang masih pratinjau. Portofolio, lowongan, matching, lamaran, dan dashboard sudah menggunakan data nyata. Guru mempunyai antrean “Verifikasi Akun”, “Bukti Karya”, serta pemantauan lamaran siswa yang terpisah. Akun pending hanya dapat membuka status/perbaikan pengajuan akun.
 
 ## Keputusan produk dan arsitektur
 
@@ -23,6 +25,7 @@ Layar matching, lowongan, lamaran, dan AI masih pratinjau dengan data contoh. Po
 - Persetujuan akun, konfirmasi email, dan validasi keterampilan proyek adalah hal berbeda.
 - `needs_revision` dapat diperbaiki, `rejected` final dan diarahkan menghubungi pengelola.
 - Satu guru/satu sekolah dan satu perwakilan/satu industri untuk MVP.
+- Industri hanya melihat rincian profil dan karya relevan melalui lamaran dengan persetujuan siswa; akses tersebut berhenti setelah penolakan atau penarikan. Status, catatan, dan skor ringkas tetap menjadi riwayat.
 - Semua perubahan yang selesai diuji harus di-commit dan di-push ke `develop` sesuai instruksi pemilik.
 
 ## Teknologi dan batasan
@@ -35,20 +38,21 @@ Layar matching, lowongan, lamaran, dan AI masih pratinjau dengan data contoh. Po
 | HTTP | Axios; `EXPO_PUBLIC_API_URL` untuk alamat backend di HP |
 | Desain | Token `mobile/src/utils/theme.js`; burgundy, hierarki netral, jarak konsisten |
 | Backend | Node.js, Express 5, controller/service/routes/middleware |
-| Database | MySQL 8, mysql2/promise pool, schema v3; nama kolom aktual di SQL |
+| Database | MySQL 8, mysql2/promise pool, schema v4; nama kolom aktual di SQL |
 | Auth | bcrypt 10, JWT HS256 issuer/audience, pemeriksaan identitas terbaru per permintaan |
 | Bukti institusi | Multer, privat di `backend/private-verifications/`, PDF/JPG/PNG maksimal 5 MB |
 | Portofolio | Berkas privat `backend/private-portfolios/`, versi/riwayat penilaian; ImagePicker, DocumentPicker, FileSystem, Sharing di mobile |
 | AI | `@google/genai`; jangan mengganti dengan SDK `@google/generative-ai` lama |
 | Respons | `{success,message,data}`, kecuali unduhan attachment |
 
-Role SQL `sekolah` berarti guru pribadi, bukan akun institusi bersama. Koordinator adalah posisi pada `school_memberships`. Terdapat 17 tabel aplikasi dan satu tabel metadata migrasi. Jangan memakai nama kolom dari handover lama: siswa menggunakan `sekolah_id`, industri menggunakan `sektor_industri,kota_domisili`; lihat schema aktual.
+Role SQL `sekolah` berarti guru pribadi, bukan akun institusi bersama. Koordinator adalah posisi pada `school_memberships`. Terdapat 19 tabel aplikasi dan satu tabel metadata migrasi. Jangan memakai nama kolom dari handover lama: siswa menggunakan `sekolah_id`, industri menggunakan `sektor_industri,kota_domisili`; lihat schema aktual.
 
 ## Panduan utama
 
 - [Autentikasi, menjalankan aplikasi, admin, kontrak API, dan pengujian](docs/TAHAP_2_AUTENTIKASI_DAN_PROFIL.md)
 - [Aturan verifikasi dan cara pemeriksaan manual](docs/VERIFIKASI_AKUN_DAN_INSTITUSI.md)
 - [Alur karya, aturan nilai keterampilan, bukti privat, dan API Tahap 3](docs/TAHAP_3_PORTOFOLIO_DAN_VALIDASI.md)
+- [Lowongan, matching, persetujuan berbagi bukti, dan seleksi Tahap 4](docs/TAHAP_4_LOWONGAN_MATCHING_DAN_LAMARAN.md)
 - [Model database, migrasi, backup, dan seed](database/README.md)
 
 Backend: `cd backend`, `npm ci`, konfigurasi `.env`, `npm start`. Admin lokal: [http://localhost:5000/admin/](http://localhost:5000/admin/). Jangan membagikan password di chat/Git; buat/reset melalui `npm run admin:create -- --email <alamat> [--reset-password]` pada terminal interaktif.
@@ -62,14 +66,14 @@ Seed khusus pengembangan mempunyai tujuh akun pending dengan password contoh `pa
 - [x] Tahap 1: fondasi, schema awal, dan kerangka navigasi.
 - [x] Tahap 2: implementasi akun nyata, profil, pendaftaran/verifikasi, dan pemeriksaan otomatis; uji HP fisik masih terbuka.
 - [x] Tahap 3: unggah bukti karya, klaim keterampilan, revisi/riwayat, penilaian guru, dan integrasi mobile; crosscheck HP ditunda sampai akhir.
-- [ ] Tahap 4: katalog lowongan nyata, persyaratan keterampilan, matching, dan lamaran.
+- [x] Tahap 4: lowongan, persyaratan, matching, persetujuan berbagi bukti, lamaran/seleksi, kuota, dan pemantauan sekolah; crosscheck HP ditunda sampai akhir.
 - [ ] Tahap 5: modul Gemini dan kuis berdasarkan kesenjangan keterampilan.
 - [ ] Tahap 6: pengujian siklus penuh dan build APK.
 
-Rumus rancangan matching: `sum(min(1, p_i / m_i) * w_i) / sum(w_i) * 100%`. Kebijakan awal batas lamaran 80%. Saat implementasi, tetapkan sumber tingkat keterampilan dan kasus tanpa persyaratan; hasil kuis tidak otomatis memvalidasi bukti proyek.
+Rumus matching: `sum(min(1, p_i / m_i) * w_i) / sum(w_i) * 100%`. Batas lamaran 80% dan semua keterampilan wajib harus memenuhi minimum. Nilai berasal dari karya approved yang dinilai guru; syarat kosong tidak membuat siswa otomatis cocok. Hasil kuis tidak otomatis memvalidasi bukti proyek.
 
 ## Melanjutkan pekerjaan
 
-Baca panduan di atas dan kode terkait sebelum mengubah fitur. Tahap berikutnya adalah katalog lowongan, matching, dan lamaran. Untuk nilai matching gunakan agregasi karya approved di `portfolioService.studentSkills`, bukan flag/nilai seed atau hasil kuis pada `student_skills` saja. Tetap pisahkan antrean akun dari antrean karya dan tetapkan akses industri terhadap bukti siswa sebelum membuka portofolio untuk rekrutmen. Gunakan pemeriksaan `canUseApp` dan sekolah terbaru pada endpoint baru; penyembunyian tab bukan otorisasi.
+Baca panduan di atas dan kode terkait sebelum mengubah fitur. Tahap berikutnya adalah modul Gemini/kuis berdasarkan kesenjangan keterampilan dari lowongan. Hasil kuis adalah progres belajar, bukan validasi proyek; jangan mengubah sumber matching menjadi cache/kuis. Pertahankan izin bukti melalui lamaran, versi lowongan/lamaran, kuota, serta pemeriksaan `canUseApp` di server. Penyembunyian tombol bukan otorisasi.
 
 Jalankan pemeriksaan sesuai perubahan. Jangan commit `.env`, password awal, backup database, berkas privat, artefak build/browser, atau token. Audit Expo SDK 57 masih mempunyai temuan transitif; tindak lanjut upgrade SDK memerlukan pengujian tersendiri, bukan `npm audit fix --force`.

@@ -28,7 +28,7 @@ Nilai satu keterampilan adalah nilai tertinggi dari karya approved yang memiliki
 
 ## Akses dan bukti privat
 
-Hanya siswa pemilik dan guru yang berwenang pada sekolah siswa dapat membaca karya/bukti. Akun siswa, guru, keanggotaan, dan sekolah harus aktif/approved. Status dibaca kembali oleh backend; JWT lama tidak melewati penonaktifan. Industri dan admin belum mempunyai akses portofolio pada MVP ini. Alur publikasi portofolio kepada industri ditetapkan pada tahap rekrutmen berikutnya.
+Akses umum `/portfolios` tetap untuk siswa pemilik dan guru sekolah yang berwenang. Akun, keanggotaan, dan sekolah harus aktif/approved; JWT lama tidak melewati penonaktifan. Industri tidak memperoleh akses umum ini. Tahap 4 menyediakan akses terpisah ke karya relevan melalui lamaran dengan persetujuan siswa; lihat [aturan rekrutmen](TAHAP_4_LOWONGAN_MATCHING_DAN_LAMARAN.md). Admin tidak memiliki akses portofolio umum pada MVP.
 
 Berkas baru tersimpan di `backend/private-portfolios/`, tidak melalui `/uploads`. Backend memeriksa signature PDF/JPG/PNG dan ukuran, lalu mengirim attachment dengan nosniff/no-store. Jalur filesystem tidak diberikan dalam respons. Snapshot serta versi bukti terdahulu dipertahankan; unduhan versi historis harus berasal dari karya yang sama dan tetap melewati pemeriksaan akses saat ini.
 
@@ -58,7 +58,7 @@ Data siswa/role/approved/nilai yang dikirim siswa tidak menentukan pemilik, stat
 
 ## Migrasi dan data contoh
 
-`database/schema.sql` sekarang v3 untuk instalasi kosong. Untuk v1/v2 yang sudah ada, gunakan `npm run db:migrate` dari backend. Runner memilih migrasi yang belum applied, menguji dump pada database salinan, memeriksa pelestarian data, kemudian menerapkan migrasi pada sumber. Hentikan penulisan backend selama proses. Server mensyaratkan marker 001 dan 002 applied.
+Tahap 3 memakai migrasi 002; `database/schema.sql` terbaru sudah v4 untuk instalasi kosong. Untuk database lama, gunakan `npm run db:migrate` dari backend. Runner memilih migrasi 001–003 yang belum applied, menguji dump pada salinan, memeriksa pelestarian data, kemudian menerapkan ke sumber. Hentikan penulisan backend selama proses. Server saat ini mensyaratkan ketiga marker applied.
 
 Migrasi 002 menambah metadata versi/penilai/nilai/berkas pada `portfolios`, status rejected, serta `portfolio_events`. Record dan keputusan lama tetap utuh dan disalin ke riwayat `legacy_imported`. Versi 0 menandai data sebelum penilaian terstruktur; tidak dihitung sebagai keterampilan tervalidasi baru. Siswa dapat melengkapi lalu mengajukan ulang data legacy; barulah guru menilai melalui alur baru.
 
@@ -72,4 +72,4 @@ Seed khusus pengembangan tidak menimpa karya dan cache nilai yang sudah ada. Jan
 
 Tes backend membuat database acak lokal dan folder sementara, lalu membersihkan hanya sumber yang dibuat run tersebut. Cakupan meliputi migrasi v2, legacy, signature berkas, otorisasi lintas sekolah, revisi/versi, persetujuan bersamaan, nilai maksimum, penolakan final, dan penonaktifan dengan JWT yang sama.
 
-Crosscheck HP ditunda sesuai arahan pengguna; tes otomatis/bundling bukan pengganti uji perangkat. Belum ada penghapusan karya, pencabutan keputusan approved, kamera langsung, beberapa lampiran per versi, maupun publikasi bukti kepada industri. Tahap 4 melanjutkan katalog lowongan nyata, matching, dan lamaran memakai keterampilan yang didukung bukti.
+Crosscheck HP ditunda sesuai arahan pengguna; tes otomatis/bundling bukan pengganti uji perangkat. Belum ada penghapusan karya, pencabutan keputusan approved, kamera langsung, atau beberapa lampiran per versi. [Tahap 4](TAHAP_4_LOWONGAN_MATCHING_DAN_LAMARAN.md) kini menyediakan katalog lowongan, matching, dan lamaran dengan akses bukti terikat persetujuan. Portofolio tidak dipublikasikan sebagai direktori siswa terbuka.

@@ -1,6 +1,6 @@
 -- ===================================================================
--- FINETERN DATABASE SCHEMA V3
--- Database lama memakai migrations/001_identity_verification.sql lalu 002_portfolio_evidence.sql.
+-- FINETERN DATABASE SCHEMA V4
+-- Database lama memakai migrations 001, 002, dan 003 berurutan.
 -- ===================================================================
 
 CREATE DATABASE IF NOT EXISTS finetern_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -137,7 +137,14 @@ CREATE TABLE internship_vacancies (
     kuota INT DEFAULT 1,
     status_aktif BOOLEAN DEFAULT TRUE,
     tenggat_waktu DATE,
+    lokasi VARCHAR(150) NULL,
+    tipe_kerja ENUM('onsite', 'hybrid', 'remote') NULL,
+    uang_saku INT NULL,
+    revision_number INT NOT NULL DEFAULT 0,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_vacancy_catalog (status_aktif,tenggat_waktu,created_at,id),
+    INDEX idx_vacancy_owner (industri_id,created_at,id),
     FOREIGN KEY (industri_id) REFERENCES industries(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
@@ -160,9 +167,17 @@ CREATE TABLE applications (
     siswa_id INT NOT NULL,
     lowongan_id INT NOT NULL,
     match_rate DECIMAL(5,2) NOT NULL,
-    status_lamaran ENUM('pending', 'reviewed', 'accepted', 'rejected') DEFAULT 'pending',
+    status_lamaran ENUM('pending', 'reviewed', 'accepted', 'rejected', 'withdrawn') DEFAULT 'pending',
+    revision_number INT NOT NULL DEFAULT 0,
+    submission_snapshot JSON NULL,
+    consented_at TIMESTAMP NULL,
+    consent_revoked_at TIMESTAMP NULL,
+    selection_note TEXT NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE KEY unique_application (siswa_id, lowongan_id),
+    INDEX idx_application_queue (lowongan_id,status_lamaran,id),
+    INDEX idx_student_applications (siswa_id,applied_at,id),
     FOREIGN KEY (siswa_id) REFERENCES students(id) ON DELETE CASCADE,
     FOREIGN KEY (lowongan_id) REFERENCES internship_vacancies(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
@@ -243,6 +258,29 @@ CREATE TABLE portfolio_events (
     CONSTRAINT fk_portfolio_events_actor FOREIGN KEY (actor_user_id) REFERENCES users(id) ON DELETE RESTRICT
 ) ENGINE=InnoDB;
 
+CREATE TABLE application_events (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    application_id INT NOT NULL,
+    actor_user_id INT NOT NULL,
+    action ENUM('legacy_imported', 'submitted', 'reviewed', 'accepted', 'rejected', 'withdrawn') NOT NULL,
+    note TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_application_history (application_id, id),
+    CONSTRAINT fk_application_events_application FOREIGN KEY (application_id) REFERENCES applications(id) ON DELETE RESTRICT,
+    CONSTRAINT fk_application_events_actor FOREIGN KEY (actor_user_id) REFERENCES users(id) ON DELETE RESTRICT
+) ENGINE=InnoDB;
+
+CREATE TABLE application_portfolios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    application_id INT NOT NULL,
+    portfolio_id INT NOT NULL,
+    revision_number INT NOT NULL,
+    portfolio_snapshot JSON NOT NULL,
+    UNIQUE KEY unique_application_portfolio (application_id, portfolio_id),
+    CONSTRAINT fk_shared_application FOREIGN KEY (application_id) REFERENCES applications(id) ON DELETE RESTRICT,
+    CONSTRAINT fk_shared_portfolio FOREIGN KEY (portfolio_id) REFERENCES portfolios(id) ON DELETE RESTRICT
+) ENGINE=InnoDB;
+
 CREATE TABLE schema_migrations (
     version VARCHAR(100) PRIMARY KEY,
     status ENUM('applying', 'applied') NOT NULL,
@@ -252,4 +290,5 @@ CREATE TABLE schema_migrations (
 
 INSERT INTO schema_migrations (version, status, completed_at)
 VALUES ('001_identity_verification', 'applied', CURRENT_TIMESTAMP),
-       ('002_portfolio_evidence', 'applied', CURRENT_TIMESTAMP);
+       ('002_portfolio_evidence', 'applied', CURRENT_TIMESTAMP),
+       ('003_recruitment_matching', 'applied', CURRENT_TIMESTAMP);

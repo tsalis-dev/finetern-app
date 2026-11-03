@@ -41,7 +41,7 @@ export default function IndustryTabs() {
         name="Pelamar"
         component={IndustryApplicantsScreen}
         options={{
-          tabBarLabel: 'Pelamar AI',
+          tabBarLabel: 'Pelamar',
           tabBarIcon: ({ color }) => <Text style={[styles.tabIcon, { color }]}>👥</Text>,
         }}
       />

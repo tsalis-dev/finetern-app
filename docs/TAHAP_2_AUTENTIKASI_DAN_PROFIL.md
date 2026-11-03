@@ -1,6 +1,6 @@
 # Tahap 2: Autentikasi, Profil, dan Verifikasi
 
-Status 4 November 2026: implementasi akun backend/mobile tersedia; database lokal kini v3 untuk mendukung [Tahap 3](TAHAP_3_PORTOFOLIO_DAN_VALIDASI.md). Migrasi dijalankan setelah backup dipulihkan dan diuji pada salinan. Pengujian otomatis dan bundling Android lulus. Crosscheck HP ditunda sampai akhir pengembangan sesuai arahan pengguna.
+Status 4 November 2026: implementasi akun backend/mobile tersedia; database lokal kini v4 untuk mendukung portofolio dan [rekrutmen Tahap 4](TAHAP_4_LOWONGAN_MATCHING_DAN_LAMARAN.md). Migrasi dijalankan setelah backup dipulihkan dan diuji pada salinan. Pengujian otomatis dan bundling Android lulus. Crosscheck HP ditunda sampai akhir sesuai arahan pengguna.
 
 ## Hasil tahap ini
 
@@ -12,7 +12,7 @@ Status 4 November 2026: implementasi akun backend/mobile tersedia; database loka
 - Token native disimpan melalui Expo SecureStore. Identitas selalu diperiksa kembali melalui `GET /api/profile/me` saat pembukaan aplikasi dan saat kembali aktif.
 - HTTP 401 membersihkan sesi terkait. Gangguan jaringan mempertahankan token dan menampilkan pilihan mencoba kembali.
 - Keluar menghapus sesi perangkat. JWT masih stateless: belum ada pencabutan per token atau keluar dari semua perangkat. Penonaktifan akun/institusi tetap diperiksa backend pada setiap permintaan terlindungi.
-- Simulator role dan token dummy telah dihapus. Portofolio kini berjalan melalui Tahap 3; lowongan, seleksi, matching, dan AI masih pratinjau berlabel data contoh.
+- Simulator role dan token dummy telah dihapus. Portofolio berjalan melalui Tahap 3; lowongan, matching, dan seleksi melalui Tahap 4. AI Mentor masih pratinjau berlabel data contoh.
 
 ## Menjalankan secara lokal
 
@@ -26,7 +26,7 @@ npm run db:migrate
 npm start
 ```
 
-Runner migrasi sekarang mendukung v1/v2 menuju v3 (Tahap 3). Instalasi kosong memakai `database/schema.sql`; lihat [panduan database](../database/README.md). Server menolak schema yang belum siap atau JWT secret kosong/contoh. Isi `JWT_SECRET` dengan nilai acak setidaknya 32 byte; durasi default `JWT_EXPIRES_IN=7d`.
+Runner migrasi mendukung v1/v2/v3 menuju v4. Instalasi kosong memakai `database/schema.sql`; lihat [panduan database](../database/README.md). Server menolak schema yang belum siap atau JWT secret kosong/contoh. Isi `JWT_SECRET` dengan nilai acak setidaknya 32 byte; durasi default `JWT_EXPIRES_IN=7d`.
 
 Dari folder mobile:
 
