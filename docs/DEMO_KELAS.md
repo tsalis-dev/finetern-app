@@ -4,7 +4,15 @@ Pemilik memilih **emulator Android Studio** untuk ditampilkan lewat proyektor la
 
 **Persiapan emulator:** AVD tersedia, tetapi percobaan awal berhenti sebelum boot karena belum ada hypervisor yang dapat dipakai. Pemeriksaan menunjukkan AMD Ryzen 5 6600H mendukung virtualisasi dan virtualisasi firmware sudah aktif. Pengguna mengizinkan persiapan emulator dan bersedia restart. Jalur yang dipilih adalah Windows Hypervisor Platform sesuai [panduan resmi Android](https://developer.android.com/studio/run/emulator-acceleration#vm-windows), dengan konfirmasi administrator Windows dan tanpa restart otomatis. Hasil aktivasi lokal dicatat pada backend/.local/finetern_demo_class/emulator-acceleration-status.json. Jangan menyatakan emulator siap sebelum akselerasi dan boot berhasil diperiksa kembali setelah restart.
 
-Percobaan aktivasi 4 November berhenti sebelum script administrator berjalan: Windows melaporkan permintaan dibatalkan. Belum ada perubahan akselerasi dan restart belum diperlukan dari proses ini. Lanjutkan setelah dialog administrator dapat disetujui.
+Aktivasi ulang 4 November berhasil setelah dialog administrator disetujui: HypervisorPlatform berubah dari Disabled menjadi Enabled, virtualisasi firmware aktif, dan konfigurasi boot hypervisor memakai default (tidak diubah). Pemeriksaan menunjukkan RestartNeeded=true dan hypervisor belum berjalan pada sesi Windows saat ini. **Simpan pekerjaan dan restart Windows secara manual sebelum mencoba emulator lagi.** Tidak ada restart otomatis yang dijalankan.
+
+Setelah restart, periksa akselerasi:
+
+```powershell
+& "$env:USERPROFILE/AppData/Local/Android/Sdk/emulator/emulator.exe" -accel-check
+```
+
+Lanjutkan bila hasilnya menyatakan hypervisor terpasang dan dapat digunakan (kode 0). Kemudian nyalakan MySQL, backend demo, dan Expo sesuai langkah di bawah. Boot emulator dan interaksi aplikasi belum diverifikasi sebelum restart ini; fitur Enabled saja bukan bukti emulator sudah siap.
 
 ## Data demonstrasi yang sudah disiapkan
 
