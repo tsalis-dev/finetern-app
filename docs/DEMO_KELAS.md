@@ -4,15 +4,15 @@ Pemilik memilih **emulator Android Studio** untuk ditampilkan lewat proyektor la
 
 **Persiapan emulator:** AVD tersedia, tetapi percobaan awal berhenti sebelum boot karena belum ada hypervisor yang dapat dipakai. Pemeriksaan menunjukkan AMD Ryzen 5 6600H mendukung virtualisasi dan virtualisasi firmware sudah aktif. Pengguna mengizinkan persiapan emulator dan bersedia restart. Jalur yang dipilih adalah Windows Hypervisor Platform sesuai [panduan resmi Android](https://developer.android.com/studio/run/emulator-acceleration#vm-windows), dengan konfirmasi administrator Windows dan tanpa restart otomatis. Hasil aktivasi lokal dicatat pada backend/.local/finetern_demo_class/emulator-acceleration-status.json. Jangan menyatakan emulator siap sebelum akselerasi dan boot berhasil diperiksa kembali setelah restart.
 
-Aktivasi ulang 4 November berhasil setelah dialog administrator disetujui: HypervisorPlatform berubah dari Disabled menjadi Enabled, virtualisasi firmware aktif, dan konfigurasi boot hypervisor memakai default (tidak diubah). Pemeriksaan menunjukkan RestartNeeded=true dan hypervisor belum berjalan pada sesi Windows saat ini. **Simpan pekerjaan dan restart Windows secara manual sebelum mencoba emulator lagi.** Tidak ada restart otomatis yang dijalankan.
+**Hasil setelah restart 4 November:** Windows Hypervisor Platform aktif, pemeriksaan akselerasi memberi kode 0 dengan WHPX installed and usable, AVD Medium_Phone_API_37.0 berhasil boot, Expo Go SDK 57 terpasang, dan Finetern berhasil dibuka. Pengaturan boot hypervisor tetap default. Tidak perlu mengulang aktivasi atau restart untuk sesi yang sudah berjalan ini.
 
-Setelah restart, periksa akselerasi:
+Untuk memeriksa ulang akselerasi bila diperlukan:
 
 ```powershell
 & "$env:USERPROFILE/AppData/Local/Android/Sdk/emulator/emulator.exe" -accel-check
 ```
 
-Lanjutkan bila hasilnya menyatakan hypervisor terpasang dan dapat digunakan (kode 0). Kemudian nyalakan MySQL, backend demo, dan Expo sesuai langkah di bawah. Boot emulator dan interaksi aplikasi belum diverifikasi sebelum restart ini; fitur Enabled saja bukan bukti emulator sudah siap.
+Pemeriksaan ini sudah menghasilkan kode 0 pada laptop ini. Saat menjalankan ulang, nyalakan MySQL, backend demo, dan emulator terlebih dahulu; tunggu Android selesai boot sebelum membuka proyek lewat Expo. Jika muncul device offline karena Android masih boot, tunggu layar beranda Android lalu jalankan ulang Expo.
 
 ## Data demonstrasi yang sudah disiapkan
 
@@ -58,7 +58,7 @@ Pindai QR lewat Expo Go. Jika HP tidak dapat mengakses backend, coba buka `http:
 
 ### Emulator setelah akselerasi siap
 
-Buka Android Studio → Device Manager → jalankan **Medium_Phone_API_37.0**. Laptop ini mempunyai SDK di folder di bawah; sesuaikan bila dipindah ke laptop lain. Dari terminal kedua di root proyek:
+Buka Android Studio → Device Manager → jalankan **Medium_Phone_API_37.0**. Tunggu sampai beranda Android muncul. Laptop ini mempunyai SDK di folder di bawah; sesuaikan bila dipindah ke laptop lain. Dari terminal kedua di root proyek:
 
 ```powershell
 cd mobile
@@ -71,7 +71,13 @@ Untuk proyektor, pilih Duplicate bila layar laptop dan proyektor ingin menampilk
 
 Biarkan kedua terminal dan MySQL berjalan. Jika port dipakai layanan demo yang sudah aktif, gunakan layanan yang berjalan atau hentikan terminal demo sebelumnya dengan Ctrl+C. Jangan mengganti port backend tanpa menyamakan alamat API mobile.
 
-Jika Expo Go terbaru meminta SDK lain, gunakan versi Android untuk SDK 57 dari tautan resmi di atas. Jangan upgrade SDK proyek menjelang presentasi. Jika emulator menampilkan sesi akun lama, keluar lalu masuk dengan akun demo.
+Jika emulator sedang berada di beranda Expo Go, pilih proyek **Finetern** pada Development servers. Sesi siswa demo terbukti pulih ketika proyek dibuka kembali.
+
+Expo Go untuk SDK 57 sudah terpasang pada emulator ini. Jika pada perangkat lain Expo Go terbaru meminta SDK lain, gunakan versi Android untuk SDK 57 dari tautan resmi di atas. Jangan upgrade SDK proyek menjelang presentasi. Jika emulator menampilkan sesi akun lama, keluar lalu masuk dengan akun demo.
+
+Jika jaringan kelas bermasalah, setelah Expo Go terpasang gunakan `npx expo start --offline --go --android --port 8082` dengan alamat API yang sama. Backend/MySQL lokal tetap harus berjalan. Jangan menekan pembuatan materi baru saat offline; gunakan modul tersimpan.
+
+Tombol Tools mengambang di pojok kanan atas berasal dari Expo Go dan dapat menutupi sebagian tombol Keluar pada header. Untuk berganti akun saat presentasi, gunakan tab Profil/Profil Guru, gulir ke bawah, lalu **Keluar dari akun**. Jika panel pengembang terbuka, tutup dengan X/Close; bukan error Finetern.
 
 Database demo **sudah disiapkan**. Untuk instalasi baru saja, dari backend jalankan `npm run demo:prepare`. Opsi `-- --with-ai` menambah satu pembuatan modul Gemini nyata dan memakai kuota provider. Persiapan menolak database/folder demo yang sudah ada, tidak melakukan reset atau menimpa data. Kegagalan persiapan meninggalkan data untuk pemeriksaan; jangan menghapus database utama.
 
@@ -90,8 +96,12 @@ Backend dan MySQL tetap diperlukan saat membuka materi tersimpan. Internet Googl
 
 Alternatif demo singkat: lowongan **UI Mobile Intern (Demo — siap melamar)** sudah cocok 100% sejak awal dan belum dilamar. Cocok untuk menunjukkan persetujuan berbagi dan lamaran tanpa menunggu langkah belajar/penilaian.
 
+Pemeriksaan emulator sudah menyelesaikan satu latihan dengan nilai 100/100. Latihan boleh diulang saat presentasi; matching tetap 91,42%, nilai API guru tetap 55, karya perbaikan tetap pending, dan lamaran contoh tetap dalam proses.
+
 Tindakan demo tersimpan. Setelah karya disetujui atau lamaran dikirim, data tidak kembali ke awal saat aplikasi ditutup. Urutkan presentasi sesuai kondisi latihan terakhir; jangan menjanjikan tombol “lamar” pada lowongan yang sudah dilamar.
 
 ## Batas kesiapan
 
-Persiapan demo dan alur backend diperiksa otomatis; 51 tes backend lulus. Login siswa/guru/industri, modul tiga soal, dan cache pada layanan demo aktif juga lulus pemeriksaan HTTP. Materi Gemini nyata berhasil disimpan. Bundling Android dan 18 tes mobile lulus pada Tahap 5. Percobaan emulator tertahan driver akselerasi; interaksi native belum diverifikasi dan belum ada APK. Latih minimal masuk siswa → lowongan → modul/kuis → guru → lamaran sebelum presentasi.
+Persiapan demo dan alur backend diperiksa otomatis; 51 tes backend lulus. Bundling Android dan 18 tes mobile lulus pada Tahap 5. Pemeriksaan langsung pada emulator mencakup login/logout siswa, guru, dan industri; katalog/rincian lowongan; matching dan pembatas syarat wajib; modul tersimpan; pengiriman tiga jawaban serta hasil/pembahasan 100/100; formulir mini proyek dengan judul/keterampilan terisi; antrean serta formulir catatan/nilai guru; daftar pelamar, profil/karya yang dibagikan, dan formulir keputusan industri. Kuis dari emulator dikonfirmasi tersimpan di backend tanpa mengubah matching atau nilai guru.
+
+Pengajuan bukti melalui pemilih berkas native dan penyimpanan keputusan guru/industri belum diulang melalui UI pada pemeriksaan ini, agar skenario awal presentasi tetap tersedia. Logika penyimpanannya sudah diuji otomatis di backend. Ini belum merupakan crosscheck seluruh Tahap 6 atau build APK. Catatan lokal ada pada backend/.local/finetern_demo_class/native-demo-check.json.
