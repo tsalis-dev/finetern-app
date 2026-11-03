@@ -1,8 +1,8 @@
 # Demo Finetern — 5 November 2026
 
-Gunakan HP Android atau emulator Android Studio dengan Expo Go yang sesuai **SDK 57**, MySQL Laragon, dan backend lokal. Tidak perlu membuat APK untuk demonstrasi melalui Expo Go. Android Studio menyediakan perangkat virtual; Expo menjalankan aplikasi dan backend menyediakan data. Panduan resmi: [menjalankan pada emulator Android](https://docs.expo.dev/workflow/android-studio-emulator/) dan [Expo Go sesuai SDK](https://expo.dev/go?platform=android&device=false&sdkVersion=57).
+Pemilik memilih **emulator Android Studio** untuk ditampilkan lewat proyektor laptop. Gunakan Expo Go yang sesuai **SDK 57**, MySQL Laragon, dan backend lokal. Tidak perlu membuat APK untuk demonstrasi melalui Expo Go. Android Studio menyediakan perangkat virtual; Expo menjalankan aplikasi dan backend menyediakan data. Panduan resmi: [menjalankan pada emulator Android](https://docs.expo.dev/workflow/android-studio-emulator/) dan [Expo Go sesuai SDK](https://expo.dev/go?platform=android&device=false&sdkVersion=57).
 
-**Hasil percobaan emulator pada laptop ini:** AVD tersedia, tetapi berhenti sebelum boot dengan pesan bahwa Android Emulator hypervisor driver belum terpasang. Karena itu tampilan aplikasi belum berhasil diperiksa di emulator. HP Android dengan Expo Go menjadi pilihan praktis untuk demo besok. Bila tetap memakai emulator, ikuti [pengaturan akselerasi resmi Android](https://developer.android.com/studio/run/emulator-acceleration#vm-windows); Windows Hypervisor Platform dapat memerlukan restart. Pengaturan Windows/BIOS belum diubah.
+**Persiapan emulator:** AVD tersedia, tetapi percobaan awal berhenti sebelum boot karena belum ada hypervisor yang dapat dipakai. Pemeriksaan menunjukkan AMD Ryzen 5 6600H mendukung virtualisasi dan virtualisasi firmware sudah aktif. Pengguna mengizinkan persiapan emulator dan bersedia restart. Jalur yang dipilih adalah Windows Hypervisor Platform sesuai [panduan resmi Android](https://developer.android.com/studio/run/emulator-acceleration#vm-windows), dengan konfirmasi administrator Windows dan tanpa restart otomatis. Hasil aktivasi lokal dicatat pada backend/.local/finetern_demo_class/emulator-acceleration-status.json. Jangan menyatakan emulator siap sebelum akselerasi dan boot berhasil diperiksa kembali setelah restart.
 
 ## Data demonstrasi yang sudah disiapkan
 
@@ -33,7 +33,7 @@ cd backend
 npm run demo:start
 ```
 
-### Pilihan HP Android
+### Alternatif HP Android
 
 Hubungkan laptop dan HP ke Wi-Fi/hotspot yang sama. Pasang Expo Go Android untuk SDK 57 sebelum presentasi. Temukan IPv4 adaptor Wi-Fi laptop dengan `ipconfig`, lalu dari terminal kedua di root proyek:
 
@@ -46,7 +46,7 @@ npx expo start --go --port 8082
 
 Pindai QR lewat Expo Go. Jika HP tidak dapat mengakses backend, coba buka `http://<IPv4-laptop>:5001/api/health` di browser HP; pastikan kedua perangkat saling terjangkau. Alamat 10.0.2.2 hanya untuk emulator. Tunnel Expo tidak otomatis menyediakan tunnel untuk backend MySQL/API.
 
-### Pilihan emulator setelah akselerasi siap
+### Emulator setelah akselerasi siap
 
 Buka Android Studio → Device Manager → jalankan **Medium_Phone_API_37.0**. Laptop ini mempunyai SDK di folder di bawah; sesuaikan bila dipindah ke laptop lain. Dari terminal kedua di root proyek:
 
@@ -56,6 +56,8 @@ $env:ANDROID_HOME = Join-Path $env:USERPROFILE 'AppData/Local/Android/Sdk'
 $env:EXPO_PUBLIC_API_URL = 'http://10.0.2.2:5001/api'
 npx expo start --go --android --port 8082
 ```
+
+Untuk proyektor, pilih Duplicate bila layar laptop dan proyektor ingin menampilkan tampilan yang sama, atau Extend lalu pindahkan jendela emulator ke layar proyektor. Tidak perlu menghubungkan HP atau melakukan mirroring.
 
 Biarkan kedua terminal dan MySQL berjalan. Jika port dipakai layanan demo yang sudah aktif, gunakan layanan yang berjalan atau hentikan terminal demo sebelumnya dengan Ctrl+C. Jangan mengganti port backend tanpa menyamakan alamat API mobile.
 
