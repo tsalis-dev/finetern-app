@@ -1,6 +1,6 @@
 # Tahap 4: Lowongan, pencocokan keterampilan, dan lamaran
 
-Status 4 November 2026: implementasi backend/mobile tersedia, schema lokal sudah v4 setelah backup dipulihkan dan migrasi diuji pada salinan. Pengujian otomatis serta bundling Android lulus. Crosscheck langsung di HP tetap ditunda sampai akhir pengembangan sesuai arahan pengguna.
+Status 4 November 2026: implementasi backend/mobile tersedia, schema lokal sudah v5 setelah backup dipulihkan dan migrasi diuji pada salinan. Pengujian otomatis serta bundling Android lulus. Crosscheck langsung di HP tetap ditunda sampai akhir pengembangan sesuai arahan pengguna.
 
 ## Keputusan produk
 
@@ -82,10 +82,10 @@ Body lowongan: `title` maks 150, `deskripsi` maks 5000, `location` maks 150, `wo
 
 ## Migrasi, pengujian, dan kelanjutan
 
-Schema baru v4 menambah metadata posisi, versi lowongan/lamaran, snapshot/persetujuan, status withdrawn, `application_events`, dan `application_portfolios`. `npm run db:migrate` kini memilih migrasi 001–003 yang belum applied, menguji backup pada salinan, kemudian menerapkan ke sumber. Server mensyaratkan ketiganya applied.
+Migrasi 003 (v4) menambah metadata posisi, versi lowongan/lamaran, snapshot/persetujuan, status withdrawn, `application_events`, dan `application_portfolios`. `npm run db:migrate` kini memilih migrasi 001–004 yang belum applied, menguji backup pada salinan, kemudian menerapkan ke sumber. Server mensyaratkan keempat marker applied (termasuk pembelajaran Tahap 5).
 
 Record lama tetap utuh. Versi 0 menandai lowongan/lamaran sebelum alur baru; migrasi tidak membuat persetujuan berbagi otomatis. Lamaran legacy bersifat baca saja, tanpa akses profil/bukti atau keputusan baru. Seed pengembangan tidak menimpa posisi, syarat, karya, ataupun cache nilai yang sudah ada.
 
 Backend: `npm test` atau `npm run test:recruitment`. Tes mencakup migrasi, isolasi industri/sekolah, input, mandatory gate, batas 80%, cache palsu, persetujuan eksplisit, pengajuan ganda, bukti terbatas, snapshot yang tidak berubah, keputusan bersamaan, kuota, penarikan, serta penonaktifan dengan JWT sama. Mobile: `npm test` untuk validasi formulir/versi/persetujuan dan unduhan bukti terikat lamaran. `npx expo export --platform android --output-dir dist` memeriksa bundling/Hermes.
 
-Crosscheck HP dan pengujian siklus penuh dilakukan di akhir sesuai arahan pengguna. Tahap berikutnya adalah modul Gemini dan kuis berdasarkan kekurangan keterampilan. Hasil kuis tidak otomatis menjadi bukti proyek; gunakan kontrak matching serta izin data yang sudah ada.
+Crosscheck HP dan pengujian siklus penuh dilakukan di akhir sesuai arahan pengguna. Modul Gemini dan kuis berdasarkan kekurangan keterampilan tersedia pada [Tahap 5](TAHAP_5_GEMINI_DAN_KUIS.md). Hasil kuis tidak otomatis menjadi bukti proyek; gunakan kontrak matching serta izin data yang sudah ada.

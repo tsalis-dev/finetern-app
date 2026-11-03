@@ -12,7 +12,7 @@ import { colors, spacing, borderRadius } from '../../utils/theme';
 
 export default function PortfolioFormScreen({ route, navigation }) {
   const id = route.params?.id;
-  const [values, setValues] = useState({ title: '', deskripsi: '', skillId: null, projectUrl: '' });
+  const [values, setValues] = useState({ title: route.params?.suggestedTitle || '', deskripsi: '', skillId: route.params?.skillId || null, projectUrl: '' });
   const [original, setOriginal] = useState(null);
   const [skills, setSkills] = useState([]);
   const [query, setQuery] = useState('');

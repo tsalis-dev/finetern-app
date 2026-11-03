@@ -12,7 +12,7 @@ async function migrate() {
   let clone;
   let cloneCreated = false;
   try {
-    const versions = ['001_identity_verification', '002_portfolio_evidence', '003_recruitment_matching'];
+    const versions = ['001_identity_verification', '002_portfolio_evidence', '003_recruitment_matching', '004_adaptive_learning'];
     let applied = [];
     const [markers] = await connection.execute("SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA=? AND TABLE_NAME='schema_migrations'", [config.database]);
     if (markers.length) {
@@ -21,7 +21,7 @@ async function migrate() {
       applied = rows.map(row => row.version);
     }
     const pending = versions.filter(version => !applied.includes(version));
-    if (!pending.length) { console.log('Schema v4 sudah diterapkan.'); return; }
+    if (!pending.length) { console.log('Schema v5 sudah diterapkan.'); return; }
     const cliDir = process.env.MYSQL_BIN_DIR || 'C:/laragon/bin/mysql/mysql-8.4.3-winx64/bin';
     const binary = name => path.join(cliDir, process.platform === 'win32' ? name + '.exe' : name);
     if (!fs.existsSync(binary('mysqldump')) || !fs.existsSync(binary('mysql'))) throw new Error('Atur MYSQL_BIN_DIR ke folder mysql dan mysqldump.');
@@ -39,7 +39,7 @@ async function migrate() {
     };
     const before = await snapshot();
     const backupDir = path.join(__dirname, '../../database/backups'); fs.mkdirSync(backupDir, { recursive: true });
-    const backup = path.join(backupDir, `before-v4-${Date.now()}.sql`);
+    const backup = path.join(backupDir, `before-v5-${Date.now()}.sql`);
     const args = [`--host=${config.host}`, `--port=${config.port}`, `--user=${config.user}`];
     const env = { ...process.env, MYSQL_PWD: config.password };
     const dumpFd = fs.openSync(backup, 'wx');

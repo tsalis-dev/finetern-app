@@ -29,6 +29,7 @@ export default function VacancyDetailScreen({route,navigation}) {
       {(data.matching?.requirements||data.requirements).map(item=><View key={item.skill_id} style={styles.card}>
         <Text style={styles.heading}>{item.nama_skill}</Text><Text style={styles.body}>{item.importance==='wajib'?'Wajib':'Nilai tambah'} · Nilai minimum {item.min_proficiency}/100 · Bobot {item.weight}</Text>
         {data.matching?<Text style={item.meets_requirement?styles.met:styles.body}>Nilai tervalidasimu {item.current_proficiency}/100{item.meets_requirement?' · Memenuhi':` · Kurang ${item.missing_points} poin`}</Text>:null}
+        {role==='siswa'&&item.missing_points>0?<PrimaryButton title="Pelajari keterampilan ini" variant="secondary" disabled={busy} onPress={()=>navigation.navigate('LearningTarget',{vacancyId:id,skillId:item.skill_id})}/>:null}
       </View>)}
       {role==='industri'?<>
         {data.can_edit?<PrimaryButton title="Edit isi dan persyaratan" variant="secondary" disabled={busy} onPress={()=>navigation.navigate('VacancyForm',{id})}/>:<Text style={styles.body}>Persyaratan terkunci karena sudah ada lamaran. Buat lowongan baru untuk kebutuhan berbeda.</Text>}

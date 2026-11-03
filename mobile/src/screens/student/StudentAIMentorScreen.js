@@ -1,143 +1,65 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
+import React, { useCallback, useRef, useState } from 'react';
+import { View, Text, FlatList, Pressable, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { colors, spacing, borderRadius, shadows } from '../../utils/theme';
+import { useFocusEffect } from '@react-navigation/native';
+import api from '../../api/axiosClient';
 import ScreenHeader from '../../components/common/ScreenHeader';
 import PrimaryButton from '../../components/common/PrimaryButton';
+import { learningStatuses } from '../../utils/learning';
+import { colors, spacing, borderRadius } from '../../utils/theme';
 
-export default function StudentAIMentorScreen() {
-
-  const skillGaps = [
-    {
-      id: 1,
-      skillName: 'State Management Zustand',
-      currentProficiency: 60,
-      targetProficiency: 70,
-      targetVacancy: 'Junior Mobile React Native Intern (PT Digital Kreatif)',
-    },
-    {
-      id: 2,
-      skillName: 'UI/UX Slicing Figma',
-      currentProficiency: 50,
-      targetProficiency: 75,
-      targetVacancy: 'UI/UX Design Apprentice (Studio Nusantara)',
-    },
-  ];
-
-  const handleGenerateModule = (skillName) => {
-    Alert.alert('Pratinjau fitur', 'Rekomendasi belajar sedang disiapkan. Belum ada modul atau kuis yang dibuat.');
-  };
-
-  return (
-    <SafeAreaView style={styles.safeArea}>
-      <ScreenHeader demo
-        title="AI Learning Recommender"
-        subtitle="Jalur belajar adaptif untuk menutup kesenjangan kompetensi"
-      />
-
-      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        {/* AI Engine Status Card */}
-        <View style={styles.engineCard}>
-          <View style={styles.engineBadge}><Text style={styles.engineBadgeText}>GOOGLE GEMINI SDK 2.5</Text></View>
-          <Text style={styles.engineTitle}>Asisten Belajar Vokasi Aktif</Text>
-          <Text style={styles.engineSubtitle}>
-            AI mendeteksi kualifikasi lowongan yang belum terpenuhi dan secara dinamis menyusun materi microlearning 15 menit beserta kuis formatif.
-          </Text>
+export default function StudentAIMentorScreen({ navigation }) {
+  const [data, setData] = useState(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+  const [hasMore, setHasMore] = useState(false);
+  const generation = useRef(0);
+  const load = useCallback(async (offset = 0) => {
+    const current = ++generation.current;
+    setBusy(true); setError('');
+    try {
+      const response = await api.get('/ai/modules', { params: { offset } });
+      if (generation.current !== current) return;
+      setData(previous => ({ ...response.data, items: offset ? [...previous.items, ...response.data.items] : response.data.items }));
+      setHasMore(response.data.items.length === 20);
+    } catch (failure) { if (generation.current === current) setError(failure.message); }
+    finally { if (generation.current === current) setBusy(false); }
+  }, []);
+  useFocusEffect(useCallback(() => { load(); return () => { generation.current++; }; }, [load]));
+  return <SafeAreaView style={styles.safe}>
+    <ScreenHeader title="AI Mentor" subtitle="Belajar dari keterampilan yang masih perlu ditingkatkan." />
+    <FlatList data={data?.items || []} keyExtractor={item => String(item.id)}
+      refreshing={busy} onRefresh={() => load()} contentContainerStyle={styles.content}
+      ListHeaderComponent={<View style={styles.header}>
+        <View style={styles.card}>
+          <Text style={styles.title}>Mulai dari tujuan magangmu</Text>
+          <Text style={styles.body}>Buka lowongan, lihat keterampilan yang belum memenuhi kebutuhan, lalu pilih “Pelajari keterampilan ini”. Gemini akan menyiapkan materi singkat, mini proyek, dan tiga soal latihan.</Text>
+          <PrimaryButton title="Pilih lowongan untuk belajar" onPress={() => navigation.navigate('Eksplorasi')} />
+          <Text style={styles.body}>Nilai kuis mencatat progres belajar. Kerjakan mini proyek dan ajukan bukti kepada guru untuk mendapatkan nilai keterampilan tervalidasi.</Text>
         </View>
-
-        {/* Section: Detected Gaps */}
-        <Text style={styles.sectionHeading}>Kesenjangan Keterampilan (Skill-Gap) Terdeteksi</Text>
-
-        {skillGaps.map((gap) => (
-          <View key={gap.id} style={styles.gapCard}>
-            <View style={styles.gapTopRow}>
-              <Text style={styles.gapTitle}>{gap.skillName}</Text>
-              <Text style={styles.gapDiff}>
-                Kekurangan: +{gap.targetProficiency - gap.currentProficiency}%
-              </Text>
-            </View>
-
-            <Text style={styles.gapTarget}>Syarat untuk: {gap.targetVacancy}</Text>
-
-            {/* Progress Visual Bar */}
-            <View style={styles.progressTrack}>
-              <View style={[styles.progressFill, { width: `${gap.currentProficiency}%` }]} />
-            </View>
-            <View style={styles.progressLabels}>
-              <Text style={styles.progressText}>Keahlian Saat Ini: {gap.currentProficiency}%</Text>
-              <Text style={styles.progressTextTarget}>Target: {gap.targetProficiency}%</Text>
-            </View>
-
-            <PrimaryButton
-              title={`Mulai Learning Sprint: ${gap.skillName}`}
-              onPress={() => handleGenerateModule(gap.skillName)}
-              style={styles.sprintButton}
-            />
-          </View>
-        ))}
-
-        {/* Closed-Loop Learning Guarantee */}
-        <View style={styles.infoCard}>
-          <Text style={styles.infoTitle}>💡 Siklus Belajar Tertutup (Closed-Loop):</Text>
-          <Text style={styles.infoDesc}>
-            Pelajari Modul Ringkas → Kerjakan Kuis Evaluasi (Skor ≥ 80) → Unggah Bukti Mini Proyek → Divalidasi Guru → Match Rate Naik Otomatis.
-          </Text>
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
+        {data ? <Text style={styles.body}>Sisa pembuatan baru {data.remaining_requests}/{data.daily_limit} dalam 24 jam. Modul tersimpan dapat dipelajari kembali.</Text> : null}
+        {data && !data.configuration.configured ? <Text style={styles.body}>Pembuatan materi baru belum tersedia. Kamu tetap dapat membuka modul yang sudah tersimpan.</Text> : null}
+        <Text style={styles.title}>Riwayat belajarmu</Text>
+        {error ? <><Text accessibilityLiveRegion="polite" style={styles.error}>{error}</Text><PrimaryButton title="Coba lagi" variant="secondary" disabled={busy} onPress={() => load()} /></> : null}
+      </View>}
+      ListEmptyComponent={<Text style={styles.body}>{busy ? 'Memuat riwayat belajar…' : error ? '' : 'Belum ada modul belajar. Pilih kebutuhan keterampilan dari rincian lowongan untuk memulai.'}</Text>}
+      renderItem={({ item }) => <Pressable accessibilityRole="button" style={styles.card} onPress={() => navigation.navigate('LearningModule', { id: item.id })}>
+        <Text style={styles.status}>{learningStatuses[item.generation_status]}</Text>
+        <Text style={styles.title}>{item.title}</Text><Text style={styles.body}>{item.nama_skill}</Text>
+        {item.source_context ? <Text style={styles.body}>Tujuan: {item.source_context.vacancy.title}</Text> : null}
+        {item.progress.attempt_count > 0 ? <Text style={styles.status}>Nilai latihan terbaik {item.progress.best_score}/100 · {item.progress.attempt_count} latihan</Text> : null}
+        <Text style={styles.status}>Buka materi dan progres →</Text>
+      </Pressable>}
+      ListFooterComponent={hasMore ? <PrimaryButton title="Muat berikutnya" onPress={() => load(data.items.length)} loading={busy} /> : null} />
+  </SafeAreaView>;
 }
-
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: colors.background },
-  scrollContent: { padding: spacing.md },
-  engineCard: {
-    backgroundColor: '#312E81',
-    borderRadius: borderRadius.lg,
-    padding: spacing.md + 2,
-    marginBottom: spacing.lg,
-    ...shadows.card,
-  },
-  engineBadge: {
-    backgroundColor: 'rgba(255,255,255,0.15)',
-    alignSelf: 'flex-start',
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: borderRadius.full,
-    marginBottom: spacing.xs,
-  },
-  engineBadgeText: { color: colors.white, fontSize: 10, fontWeight: '800' },
-  engineTitle: { fontSize: 17, fontWeight: '700', color: colors.white },
-  engineSubtitle: { fontSize: 12, color: '#C7D2FE', marginTop: 4, lineHeight: 17 },
-  sectionHeading: { fontSize: 15, fontWeight: '700', color: colors.textPrimary, marginBottom: spacing.sm + 2 },
-  gapCard: {
-    backgroundColor: colors.white,
-    borderRadius: borderRadius.lg,
-    padding: spacing.md,
-    borderWidth: 1,
-    borderColor: colors.border,
-    marginBottom: spacing.md,
-    ...shadows.card,
-  },
-  gapTopRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  gapTitle: { fontSize: 15, fontWeight: '700', color: colors.textPrimary },
-  gapDiff: { fontSize: 12, fontWeight: '700', color: colors.error },
-  gapTarget: { fontSize: 12, color: colors.textSecondary, marginTop: 2, marginBottom: spacing.sm },
-  progressTrack: { height: 8, backgroundColor: colors.surfaceElevated, borderRadius: borderRadius.full, overflow: 'hidden' },
-  progressFill: { height: '100%', backgroundColor: colors.warning },
-  progressLabels: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 4, marginBottom: spacing.md },
-  progressText: { fontSize: 11, color: colors.textSecondary },
-  progressTextTarget: { fontSize: 11, fontWeight: '700', color: colors.textPrimary },
-  sprintButton: { minHeight: 44 },
-  infoCard: {
-    backgroundColor: colors.surfaceElevated,
-    borderRadius: borderRadius.md,
-    padding: spacing.md,
-    borderWidth: 1,
-    borderColor: colors.border,
-    marginTop: spacing.sm,
-    marginBottom: spacing.xl,
-  },
-  infoTitle: { fontSize: 13, fontWeight: '700', color: colors.textPrimary },
-  infoDesc: { fontSize: 12, color: colors.textSecondary, marginTop: 4, lineHeight: 18 },
+  safe: { flex: 1, backgroundColor: colors.background },
+  content: { padding: spacing.md, gap: spacing.md },
+  header: { gap: spacing.md },
+  card: { backgroundColor: colors.white, borderRadius: borderRadius.lg, padding: spacing.md, gap: spacing.sm },
+  title: { fontSize: 18, fontWeight: '600', color: colors.textPrimary },
+  body: { color: colors.textSecondary, lineHeight: 22 },
+  status: { color: colors.primary, fontWeight: '600', lineHeight: 22 },
+  error: { color: colors.error, lineHeight: 22 },
 });

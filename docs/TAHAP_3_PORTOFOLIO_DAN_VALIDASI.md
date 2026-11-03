@@ -58,7 +58,7 @@ Data siswa/role/approved/nilai yang dikirim siswa tidak menentukan pemilik, stat
 
 ## Migrasi dan data contoh
 
-Tahap 3 memakai migrasi 002; `database/schema.sql` terbaru sudah v4 untuk instalasi kosong. Untuk database lama, gunakan `npm run db:migrate` dari backend. Runner memilih migrasi 001–003 yang belum applied, menguji dump pada salinan, memeriksa pelestarian data, kemudian menerapkan ke sumber. Hentikan penulisan backend selama proses. Server saat ini mensyaratkan ketiga marker applied.
+Tahap 3 memakai migrasi 002; `database/schema.sql` terbaru sudah v5 untuk instalasi kosong. Untuk database lama, gunakan `npm run db:migrate` dari backend. Runner memilih migrasi 001–004 yang belum applied, menguji dump pada salinan, memeriksa pelestarian data, kemudian menerapkan ke sumber. Hentikan penulisan backend selama proses. Server saat ini mensyaratkan keempat marker applied.
 
 Migrasi 002 menambah metadata versi/penilai/nilai/berkas pada `portfolios`, status rejected, serta `portfolio_events`. Record dan keputusan lama tetap utuh dan disalin ke riwayat `legacy_imported`. Versi 0 menandai data sebelum penilaian terstruktur; tidak dihitung sebagai keterampilan tervalidasi baru. Siswa dapat melengkapi lalu mengajukan ulang data legacy; barulah guru menilai melalui alur baru.
 

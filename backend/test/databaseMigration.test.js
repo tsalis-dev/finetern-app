@@ -41,7 +41,7 @@ async function fingerprint(connection, database) {
   return JSON.parse(JSON.stringify({ columns, relations, indexes }));
 }
 
-test('schema v4 and non-destructive v1/v2/v3 migrations on isolated MySQL databases', async (t) => {
+test('schema v5 and non-destructive v1/v2/v3/v4 migrations on isolated MySQL databases', async (t) => {
   const host = process.env.TEST_DB_HOST || process.env.DB_HOST || 'localhost';
   assert.ok(['localhost', '127.0.0.1', '::1'].includes(host), 'Database tests require local MySQL.');
   const connection = await mysql.createConnection({
@@ -151,6 +151,7 @@ test('schema v4 and non-destructive v1/v2/v3 migrations on isolated MySQL databa
     await t.test('migrated schema has the same columns, relations and unique indexes as fresh schema', async () => {
       await connection.query(read(path.join(databaseDir, 'migrations/002_portfolio_evidence.sql')));
       await connection.query(read(path.join(databaseDir, 'migrations/003_recruitment_matching.sql')));
+      await connection.query(read(path.join(databaseDir, 'migrations/004_adaptive_learning.sql')));
       assert.deepEqual(await fingerprint(connection, migrated), await fingerprint(connection, fresh));
     });
 

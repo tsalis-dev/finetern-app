@@ -1,6 +1,6 @@
-# Database Finetern v4
+# Database Finetern v5
 
-Schema v4 menambah lowongan/lamaran berversi, snapshot matching, persetujuan berbagi bukti, dan riwayat seleksi pada fondasi portofolio v3. Migrasi 001–003 sudah diterapkan pada database lokal, terakhir 4 November 2026. Backup dipulihkan dan migrasi diuji pada salinan sebelum diterapkan; data lama tetap utuh. Migrasi tidak otomatis dijalankan saat backend menyala.
+Schema v5 menambah konteks/status/cache modul Gemini dan percobaan kuis formatif pada fondasi portofolio/rekrutmen. Materi lama tetap berstatus legacy; asesmen lama tidak otomatis dihubungkan ke modul baru. Kuis tidak mengubah nilai keterampilan guru. Migrasi 001–004 sudah diterapkan pada database lokal, terakhir 4 November 2026. Backup dipulihkan dan migrasi diuji pada salinan sebelum diterapkan; data lama tetap utuh. Migrasi tidak otomatis dijalankan saat backend menyala.
 
 ## Model identitas
 
@@ -65,29 +65,31 @@ Seed membuat tujuh akun: dua guru pribadi, tiga siswa, dua industri. Password co
 
 Menjalankan ulang seed tidak mengubah keputusan verifikasi atau menggandakan event pengajuan awal. Data contoh profil/lowongan tetap dapat diperbarui oleh seed, sehingga seed bukan alat pemeliharaan database yang berisi data pengguna nyata.
 
-## Migrasi database v1/v2/v3 yang sudah ada
+## Migrasi database v1/v2/v3/v4 yang sudah ada
 
-Jalur yang dipakai pada database lokal: dari backend, jalankan `npm run db:migrate` saat tidak ada penulisan aplikasi. Script memilih migrasi 001–003 yang belum diterapkan, membuat dump di `database/backups/`, memulihkannya ke database acak `finetern_restore_test_*`, menguji migrasi/pelestarian seluruh data pada salinan, memastikan sumber tidak berubah, kemudian memigrasi sumber. Hanya salinan yang dibuat run tersebut dibersihkan; backup tetap ada. `MYSQL_BIN_DIR` menunjuk folder executable `mysql` dan `mysqldump` (default Laragon MySQL 8.4.3 Windows). Jika semua marker applied, script berhenti tanpa mengulang. Lindungi backup karena berisi data akun/pengguna. Backup operasional juga harus menyertakan folder berkas privat; dump SQL tidak menyimpan isi berkas.
+Jalur yang dipakai pada database lokal: dari backend, jalankan `npm run db:migrate` saat tidak ada penulisan aplikasi. Script memilih migrasi 001–004 yang belum diterapkan, membuat dump di `database/backups/`, memulihkannya ke database acak `finetern_restore_test_*`, menguji migrasi/pelestarian seluruh data pada salinan, memastikan sumber tidak berubah, kemudian memigrasi sumber. Hanya salinan yang dibuat run tersebut dibersihkan; backup tetap ada. `MYSQL_BIN_DIR` menunjuk folder executable `mysql` dan `mysqldump` (default Laragon MySQL 8.4.3 Windows). Jika semua marker applied, script berhenti tanpa mengulang. Lindungi backup karena berisi data akun/pengguna. Backup operasional juga harus menyertakan folder berkas privat; dump SQL tidak menyimpan isi berkas.
 
 Alternatif manual berikut tetap memerlukan uji pemulihan backup sebelum migrasi:
 
 1. Hentikan penulisan aplikasi selama migrasi dan buat backup yang dapat dipulihkan. Folder backup lokal di bawah diabaikan Git.
 2. Pastikan versi sumber mengikuti repository. Untuk v1, constraint sekolah lama bernama `schools_ibfk_1` dan index uniknya `user_id`; untuk v2, marker 001 harus applied. Database yang pernah diubah manual harus diperiksa dahulu. Catat jumlah dan isi data penting sebelum migrasi.
-3. Jalankan 001, 002, lalu 003 untuk v1; 002 dan 003 untuk v2; hanya 003 untuk v3. Jangan mengulang migrasi yang sudah applied, menjalankan `schema.sql`, atau memakai seeder baru pada database lama.
-4. Periksa marker, jumlah data, pemetaan guru, riwayat karya/lamaran legacy, dan pengajuan pending. Setelah itu baru jalankan kode yang menggunakan model v4.
+3. Jalankan 001–004 untuk v1; 002–004 untuk v2; 003–004 untuk v3; hanya 004 untuk v4. Jangan mengulang migrasi yang sudah applied, menjalankan `schema.sql`, atau memakai seeder baru pada database lama.
+4. Periksa marker, jumlah data, pemetaan guru, riwayat karya/lamaran legacy, dan pengajuan pending. Setelah itu baru jalankan kode yang menggunakan model v5.
 
 Contoh perintah PowerShell dari root repository; sesuaikan host, port, user, dan nama database dengan lingkunganmu:
 
 ```powershell
 New-Item -ItemType Directory -Path database/backups -Force
-mysqldump --host=127.0.0.1 --port=3306 --user=root --password --single-transaction --result-file=database/backups/finetern-before-v4.sql finetern_db
+mysqldump --host=127.0.0.1 --port=3306 --user=root --password --single-transaction --result-file=database/backups/finetern-before-v5.sql finetern_db
 # Lanjutkan hanya jika dump berhasil dan backup dapat dipulihkan.
 # Migrasi 001 hanya untuk sumber v1.
 Get-Content -Raw database/migrations/001_identity_verification.sql | mysql --host=127.0.0.1 --port=3306 --user=root --password finetern_db
-# Untuk sumber v2 dengan marker 001 applied, jalankan hanya migrasi berikut.
+# Untuk sumber v2 dengan marker 001 applied, jalankan 002–004.
 Get-Content -Raw database/migrations/002_portfolio_evidence.sql | mysql --host=127.0.0.1 --port=3306 --user=root --password finetern_db
-# Untuk sumber v3 dengan 001 dan 002 applied, jalankan hanya 003.
+# Untuk sumber v3 dengan 001 dan 002 applied, jalankan 003 dan 004.
 Get-Content -Raw database/migrations/003_recruitment_matching.sql | mysql --host=127.0.0.1 --port=3306 --user=root --password finetern_db
+# Untuk sumber v4 dengan 001–003 applied, jalankan hanya 004.
+Get-Content -Raw database/migrations/004_adaptive_learning.sql | mysql --host=127.0.0.1 --port=3306 --user=root --password finetern_db
 ```
 
 MySQL DDL melakukan implicit commit: migrasi ini **bukan transaksi yang dapat di-rollback seluruhnya**. Penanda `applying` ditulis sebelum perubahan dan menjadi `applied` setelah semuanya selesai. Pengulangan migrasi berhenti pada penanda versi yang sudah ada sebelum perubahan schema berikutnya. Jangan menghapus penanda untuk memaksa pengulangan setelah kegagalan; periksa titik kegagalan dan pulihkan dari backup atau siapkan perbaikan terarah. Tidak ada down migration yang membuang data akun guru baru.
@@ -113,4 +115,4 @@ Tes memakai dependency yang sudah terpasang dan koneksi MySQL lokal dari `backen
 
 Tes membuat tiga database bernama acak `finetern_test_<acak>_fresh`, `finetern_test_<acak>_migration`, dan `finetern_test_<acak>_partial`, lalu menghapus hanya database yang berhasil dibuat pada run tersebut. Database aplikasi tidak dipilih atau diubah. Fixture v1 dibekukan untuk menguji perpindahan dari schema lama.
 
-Pemeriksaan mencakup instalasi/seed baru, dua guru dalam satu sekolah, status pending, seed ulang tanpa kehilangan keputusan, constraint subjek/keanggotaan/FK/identifier institusi, pelestarian seluruh record lama, kesamaan schema hasil migrasi dan instalasi baru, penolakan migrasi ulang, serta deteksi kegagalan DDL di tengah migrasi. `npm run test:auth` menguji otorisasi HTTP pada database acak `finetern_auth_test_*` dan direktori bukti sementara. `npm test` menjalankan keduanya. Database utama tidak diubah oleh tes; interaksi perangkat mobile tetap perlu diperiksa terpisah.
+Pemeriksaan mencakup instalasi/seed baru, dua guru dalam satu sekolah, status pending, seed ulang tanpa kehilangan keputusan, constraint subjek/keanggotaan/FK/identifier institusi, pelestarian seluruh record lama, kesamaan schema hasil migrasi dan instalasi baru, penolakan migrasi ulang, serta deteksi kegagalan DDL di tengah migrasi. `npm run test:auth` menguji otorisasi HTTP pada database acak `finetern_auth_test_*` dan direktori bukti sementara. `npm test` juga menjalankan pengujian portofolio, rekrutmen, provider Gemini simulasi, serta alur pembelajaran pada database terisolasi. Lihat [Tahap 5](../docs/TAHAP_5_GEMINI_DAN_KUIS.md). Database utama tidak diubah oleh tes; interaksi perangkat mobile tetap perlu diperiksa terpisah.

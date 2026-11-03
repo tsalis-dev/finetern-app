@@ -1,6 +1,6 @@
 # Verifikasi akun dan institusi
 
-Status 4 November 2026: alur akun yang disetujui pengguna diterapkan pada fondasi identitas v2, API, mobile, dan halaman admin. Schema terbaru v4 juga mendukung [bukti karya Tahap 3](TAHAP_3_PORTOFOLIO_DAN_VALIDASI.md) dan [rekrutmen Tahap 4](TAHAP_4_LOWONGAN_MATCHING_DAN_LAMARAN.md). Pengujian otomatis lulus; crosscheck HP ditunda sampai akhir sesuai arahan pengguna. [Panduan menjalankan aplikasi dan kontrak API](TAHAP_2_AUTENTIKASI_DAN_PROFIL.md).
+Status 4 November 2026: alur akun yang disetujui pengguna diterapkan pada fondasi identitas v2, API, mobile, dan halaman admin. Schema terbaru v5 juga mendukung [bukti karya Tahap 3](TAHAP_3_PORTOFOLIO_DAN_VALIDASI.md) dan [rekrutmen Tahap 4](TAHAP_4_LOWONGAN_MATCHING_DAN_LAMARAN.md). Pengujian otomatis lulus; crosscheck HP ditunda sampai akhir sesuai arahan pengguna. [Panduan menjalankan aplikasi dan kontrak API](TAHAP_2_AUTENTIKASI_DAN_PROFIL.md).
 
 ## Prinsip dan pemeriksa
 

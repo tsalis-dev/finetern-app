@@ -1,6 +1,6 @@
 -- ===================================================================
--- FINETERN DATABASE SCHEMA V4
--- Database lama memakai migrations 001, 002, dan 003 berurutan.
+-- FINETERN DATABASE SCHEMA V5
+-- Database lama memakai migrations 001–004 berurutan.
 -- ===================================================================
 
 CREATE DATABASE IF NOT EXISTS finetern_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -191,7 +191,19 @@ CREATE TABLE learning_modules (
     konten_materi LONGTEXT NOT NULL,
     quiz_json JSON NOT NULL,
     estimasi_menit INT DEFAULT 15,
+    lowongan_id INT NULL,
+    source_key CHAR(64) NULL,
+    source_context JSON NULL,
+    provider_model VARCHAR(100) NULL,
+    prompt_version VARCHAR(40) NULL,
+    generation_status ENUM('legacy','generating','ready','failed') NOT NULL DEFAULT 'legacy',
+    last_error_code VARCHAR(40) NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY unique_learning_source(source_key),
+    INDEX idx_learning_owner(siswa_id,created_at,id),
+    INDEX idx_learning_generation(siswa_id,generation_status,created_at),
+    CONSTRAINT fk_learning_vacancy FOREIGN KEY(lowongan_id) REFERENCES internship_vacancies(id) ON DELETE SET NULL,
     FOREIGN KEY (siswa_id) REFERENCES students(id) ON DELETE CASCADE,
     FOREIGN KEY (skill_id) REFERENCES skills(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
@@ -202,7 +214,15 @@ CREATE TABLE assessment_records (
     siswa_id INT NOT NULL,
     skill_id INT NOT NULL,
     skor_kuis INT NOT NULL,
+    module_id INT NULL,
+    answers_json JSON NULL,
+    correct_count INT NULL,
+    attempt_key VARCHAR(64) NULL,
     tanggal_evaluasi TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY unique_quiz_attempt(module_id,attempt_key),
+    INDEX idx_assessment_module(module_id,id),
+    CONSTRAINT chk_assessment_count CHECK(correct_count IS NULL OR correct_count BETWEEN 0 AND 3),
+    CONSTRAINT fk_assessment_module FOREIGN KEY(module_id) REFERENCES learning_modules(id) ON DELETE RESTRICT,
     FOREIGN KEY (siswa_id) REFERENCES students(id) ON DELETE CASCADE,
     FOREIGN KEY (skill_id) REFERENCES skills(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
@@ -291,4 +311,5 @@ CREATE TABLE schema_migrations (
 INSERT INTO schema_migrations (version, status, completed_at)
 VALUES ('001_identity_verification', 'applied', CURRENT_TIMESTAMP),
        ('002_portfolio_evidence', 'applied', CURRENT_TIMESTAMP),
-       ('003_recruitment_matching', 'applied', CURRENT_TIMESTAMP);
+       ('003_recruitment_matching', 'applied', CURRENT_TIMESTAMP),
+       ('004_adaptive_learning', 'applied', CURRENT_TIMESTAMP);

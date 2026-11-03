@@ -29,8 +29,8 @@ export default function StudentHomeScreen({ navigation }) {
       <PrimaryButton title="Jelajahi lowongan magang" onPress={() => navigation.navigate('Eksplorasi')} />
       <PrimaryButton title="Pantau lamaran saya" variant="secondary" onPress={() => navigation.navigate('MyApplications')} />
     </View>
-    <View style={styles.card}><Text style={styles.heading}>Belajar untuk langkah berikutnya</Text><Text style={styles.body}>Rekomendasi belajar Gemini akan tersedia pada tahap berikutnya. Halaman AI Mentor saat ini masih berupa pratinjau.</Text>
-      <PrimaryButton title="Lihat pratinjau AI Mentor" variant="outline" onPress={() => navigation.navigate('AIMentor')} />
+    <View style={styles.card}><Text style={styles.heading}>Belajar untuk langkah berikutnya</Text><Text style={styles.body}>Pelajari keterampilan yang masih kurang untuk lowongan tujuanmu. Kerjakan materi dan kuis dari Gemini, lalu ajukan bukti mini proyek untuk dinilai guru.</Text>
+      <PrimaryButton title="Buka AI Mentor dan riwayat belajar" variant="outline" onPress={() => navigation.navigate('AIMentor')} />
     </View>
   </FormScreen>;
 }
