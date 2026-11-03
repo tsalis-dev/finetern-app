@@ -34,7 +34,7 @@ export default function VacancyFormScreen({route,navigation}) {
       if(id)navigation.goBack();else navigation.replace('VacancyDetail',{id:result.data.id});
     } catch(failure){setError(failure.message);}finally{setBusy(false);}
   };
-  return <FormScreen title={id?'Perbarui lowongan magang':'Buka kesempatan bertumbuh'} subtitle="Tuliskan pekerjaan yang akan dipelajari siswa dan keterampilan yang perlu dibuktikan sebelum melamar.">
+  return <FormScreen onBack={() => navigation.goBack()} backDisabled={busy} title={id?'Perbarui lowongan magang':'Buka kesempatan bertumbuh'} subtitle="Tuliskan pekerjaan yang akan dipelajari siswa dan keterampilan yang perlu dibuktikan sebelum melamar.">
     {error?<Text accessibilityLiveRegion="polite" style={styles.error}>{error}</Text>:null}
     {!ready?<PrimaryButton title="Muat formulir" variant="secondary" onPress={load}/>:<>
       {original?.can_edit===false?<Text style={styles.body}>Lowongan sudah menerima lamaran. Persyaratan terkunci; kamu masih dapat membuka atau menutupnya dari halaman rincian.</Text>:<>
@@ -58,7 +58,6 @@ export default function VacancyFormScreen({route,navigation}) {
         <PrimaryButton title={id?'Simpan perubahan':'Terbitkan lowongan'} onPress={submit} loading={busy}/>
       </>}
     </>}
-    <PrimaryButton title="Kembali" variant="outline" onPress={()=>navigation.goBack()} disabled={busy}/>
     <Modal visible={picker} animationType="slide" onRequestClose={()=>setPicker(false)}><SafeAreaView style={styles.modal}>
       <Text style={styles.heading}>Tambahkan keterampilan</Text><CustomInput label="Cari keterampilan" value={query} onChangeText={setQuery}/>
       <FlatList data={skills.filter(skill=>!requirements.some(item=>item.skillId===skill.id)&&(skill.nama_skill+' '+skill.kategori).toLowerCase().includes(query.toLowerCase()))} keyExtractor={item=>String(item.id)} keyboardShouldPersistTaps="handled" ListEmptyComponent={<Text style={styles.body}>Tidak ada keterampilan lain pada pencarian ini.</Text>}

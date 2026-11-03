@@ -30,7 +30,7 @@ export default function ApplicationDetailScreen({route,navigation}) {
     if(!['http:','https:'].includes(parsed.protocol)||parsed.username||parsed.password)throw new Error('Tautan proyek tidak dapat dibuka.');
     await Linking.openURL(url);
   };
-  return <FormScreen title={data?.vacancy.title||'Rincian lamaran'} subtitle={data?applicationStatuses[data.status_lamaran]:'Memuat lamaran…'}>
+  return <FormScreen onBack={() => navigation.goBack()} backDisabled={busy} title={data?.vacancy.title||'Rincian lamaran'} subtitle={data?applicationStatuses[data.status_lamaran]:'Memuat lamaran…'}>
     {error?<Text accessibilityLiveRegion="polite" style={styles.error}>{error}</Text>:null}
     {message?<Text accessibilityLiveRegion="polite" style={styles.notice}>{message}</Text>:null}
     {data?<>
@@ -58,7 +58,6 @@ export default function ApplicationDetailScreen({route,navigation}) {
       <Text style={styles.heading}>Riwayat lamaran</Text>{data.history.map(event=><View key={event.id} style={styles.card}><Text style={styles.heading}>{actions[event.action]||event.action}</Text><Text style={styles.body}>{new Date(event.created_at).toLocaleString('id-ID')}</Text>{event.note?<Text style={styles.body}>{event.note}</Text>:null}</View>)}
     </>:null}
     <PrimaryButton title="Muat ulang lamaran" variant="secondary" onPress={()=>run(load)} loading={busy}/>
-    <PrimaryButton title="Kembali" variant="outline" onPress={()=>navigation.goBack()} disabled={busy}/>
   </FormScreen>;
 }
 const styles=StyleSheet.create({card:{padding:spacing.md,gap:spacing.sm,backgroundColor:colors.white,borderRadius:borderRadius.lg},heading:{fontSize:17,fontWeight:'600',color:colors.textPrimary},body:{color:colors.textSecondary,lineHeight:22},score:{fontSize:22,fontWeight:'700',color:colors.primary},notice:{color:colors.primary,lineHeight:22},error:{color:colors.error,lineHeight:22}});

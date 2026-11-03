@@ -1,19 +1,19 @@
 /**
  * Finetern Design Tokens
- * Mengadopsi prinsip Toss-Style Design System (Disiplin Spacing, Hirarki Grayscale, dan Warna Semantik)
+ * Burgundy dan permukaan netral hangat untuk alur akademik Finetern.
  */
 
 export const colors = {
   // Grayscale Hierarchy (High-trust, clean)
   white: '#FFFFFF',
-  background: '#F8FAFC',
+  background: '#FAF8F5',
   surface: '#FFFFFF',
-  surfaceElevated: '#F1F5F9',
-  border: '#E2E8F0',
+  surfaceElevated: '#F1ECE8',
+  border: '#E4DDDA',
   borderFocus: '#94A3B8',
 
-  textPrimary: '#0F172A',   // Slate 900
-  textSecondary: '#475569', // Slate 600
+  textPrimary: '#30262A',
+  textSecondary: '#665C60',
   textMuted: '#94A3B8',     // Slate 400
 
   // Neutral scale

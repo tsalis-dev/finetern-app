@@ -3,6 +3,11 @@ export const workModes = { onsite:'Di lokasi',hybrid:'Hybrid',remote:'Jarak jauh
 export const formatAllowance = value => value == null ? 'Uang saku belum dicantumkan' : 'Rp '+new Intl.NumberFormat('id-ID').format(value)+' / bulan';
 export const formatDeadline = value => value ? value.split('-').reverse().join('/') : 'Belum dicantumkan';
 
+export function firstSkillGap(requirements) {
+  const gaps = requirements.filter(item => item.missing_points > 0);
+  return gaps.find(item => item.importance === 'wajib') || gaps[0] || null;
+}
+
 function number(value,label,min,max) {
   const raw=String(value ?? '').trim(),parsed=Number(raw);
   if (!/^\d+$/.test(raw) || !Number.isSafeInteger(parsed) || parsed<min || parsed>max) throw new Error(`${label} harus bilangan bulat ${min}–${max}.`);

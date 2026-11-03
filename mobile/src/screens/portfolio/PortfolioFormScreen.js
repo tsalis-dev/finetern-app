@@ -60,7 +60,7 @@ export default function PortfolioFormScreen({ route, navigation }) {
     finally { setBusy(false); }
   };
   const selectedSkill = skills.find(skill => skill.id === values.skillId);
-  return <FormScreen title={id ? 'Perbaiki bukti karyamu' : 'Ajukan karya terbaikmu'} subtitle="Satu pengajuan untuk satu keterampilan. Jelaskan bagian proyek yang kamu kerjakan sendiri dan bukti yang dapat diperiksa guru.">
+  return <FormScreen onBack={() => navigation.goBack()} backDisabled={busy} title={id ? 'Perbaiki bukti karyamu' : 'Ajukan karya terbaikmu'} subtitle="Satu pengajuan untuk satu keterampilan. Jelaskan bagian proyek yang kamu kerjakan sendiri dan bukti yang dapat diperiksa guru.">
     {error ? <Text accessibilityLiveRegion="polite" style={styles.error}>{error}</Text> : null}
     {!ready ? <PrimaryButton title="Muat formulir" variant="secondary" onPress={load} /> : <>
       <CustomInput label="Judul karya" value={values.title} onChangeText={title => setValues(current => ({ ...current, title }))} maxLength={150} editable={!busy} />
@@ -73,7 +73,6 @@ export default function PortfolioFormScreen({ route, navigation }) {
       <PrimaryButton title="Pilih berkas PDF/JPG/PNG" variant="secondary" onPress={() => choose(false)} disabled={busy} />
       <PrimaryButton title="Ajukan untuk pemeriksaan guru" onPress={submit} loading={busy} />
     </>}
-    <PrimaryButton title="Kembali" variant="outline" onPress={() => navigation.goBack()} disabled={busy} />
     <Modal visible={picker} animationType="slide" onRequestClose={() => setPicker(false)}><SafeAreaView style={styles.modal}>
       <Text style={styles.title}>Pilih keterampilan</Text><CustomInput label="Cari nama atau kategori" value={query} onChangeText={setQuery} />
       <FlatList data={skills.filter(skill => (skill.nama_skill + ' ' + skill.kategori).toLowerCase().includes(query.toLowerCase()))} keyExtractor={item => String(item.id)} keyboardShouldPersistTaps="handled" ListEmptyComponent={<Text style={styles.body}>Keterampilan belum ditemukan.</Text>}

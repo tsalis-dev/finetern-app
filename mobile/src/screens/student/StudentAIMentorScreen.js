@@ -27,14 +27,14 @@ export default function StudentAIMentorScreen({ navigation }) {
   }, []);
   useFocusEffect(useCallback(() => { load(); return () => { generation.current++; }; }, [load]));
   return <SafeAreaView style={styles.safe}>
-    <ScreenHeader title="AI Mentor" subtitle="Belajar dari keterampilan yang masih perlu ditingkatkan." />
+    <ScreenHeader title="Materi belajar" subtitle="Lanjutkan materi untuk tujuan magangmu." onBack={() => navigation.goBack()} />
     <FlatList data={data?.items || []} keyExtractor={item => String(item.id)}
       refreshing={busy} onRefresh={() => load()} contentContainerStyle={styles.content}
       ListHeaderComponent={<View style={styles.header}>
         <View style={styles.card}>
           <Text style={styles.title}>Mulai dari tujuan magangmu</Text>
           <Text style={styles.body}>Buka lowongan, lihat keterampilan yang belum memenuhi kebutuhan, lalu pilih “Pelajari keterampilan ini”. Gemini akan menyiapkan materi singkat, mini proyek, dan tiga soal latihan.</Text>
-          <PrimaryButton title="Pilih lowongan untuk belajar" onPress={() => navigation.navigate('Eksplorasi')} />
+          <PrimaryButton title="Pilih lowongan untuk belajar" onPress={() => navigation.popTo('StudentRoot', { screen: 'Eksplorasi', params: { view: 'vacancies' } })} />
           <Text style={styles.body}>Nilai kuis mencatat progres belajar. Kerjakan mini proyek dan ajukan bukti kepada guru untuk mendapatkan nilai keterampilan tervalidasi.</Text>
         </View>
         {data ? <Text style={styles.body}>Sisa pembuatan baru {data.remaining_requests}/{data.daily_limit} dalam 24 jam. Modul tersimpan dapat dipelajari kembali.</Text> : null}

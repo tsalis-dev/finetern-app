@@ -6,6 +6,8 @@ Finetern adalah platform rekrutmen magang siswa SMK berdasarkan bukti karya, pen
 
 ## Status saat ini
 
+Perapian UI/UX sesuai wireframe yang disetujui sudah diterapkan. Pengguna tanpa sesi membuka perkenalan → pilih Siswa/Guru/Industri → login sesuai peran; peran respons server diperiksa sebelum token disimpan. Siswa memiliki empat tab mengambang Beranda/Magang/Karya/Profil, dengan Cari lowongan dan Lamaran saya di tab Magang. Riwayat belajar dibuka dari Beranda atau kebutuhan lowongan. Ikon SVG garis menggantikan emoji pada navigasi semua peran. Detail lowongan mengutamakan kelayakan melamar dan kekurangan syarat wajib, diikuti tindakan belajar, kemudian skor total. Halaman detail/form memakai tombol kembali di atas. Burgundy tetap #842D3E dengan permukaan netral hangat. Dependensi react-native-svg mengikuti Expo SDK 57. Seluruh 20 tes mobile serta bundling Android/Hermes lulus; alur perkenalan, login tiga peran, navbar, tab lamaran, jalur materi ke lowongan, dan detail kekurangan diperiksa pada emulator. Tampilan iOS belum diperiksa.
+
 Tahap 1 selesai. Implementasi Tahap 2 tersedia: migrasi identitas guru pribadi, autentikasi nyata, profil, pendaftaran, dan verifikasi bertingkat melalui backend/mobile serta halaman admin. Database lokal sudah dimigrasi setelah backup berhasil dipulihkan dan diuji pada salinan; data lama dipertahankan. Admin lokal disiapkan sesuai pilihan pemilik; kredensial tidak disimpan di repository.
 
 Tahap 3 tersedia: siswa mengajukan karya dengan foto/PDF atau tautan untuk satu keterampilan, guru sekolahnya memberi catatan dan penilaian, siswa dapat memperbaiki pengajuan, dan bukti/keputusan tersimpan per versi. Keterampilan tervalidasi hanya berasal dari penilaian karya terstruktur.

@@ -5,6 +5,9 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useAuthStore } from '../store/useAuthStore';
 import { colors } from '../utils/theme';
 import LoginScreen from '../screens/auth/LoginScreen';
+import WelcomeScreen from '../screens/auth/WelcomeScreen';
+import RoleSelectionScreen from '../screens/auth/RoleSelectionScreen';
+import StudentAIMentorScreen from '../screens/student/StudentAIMentorScreen';
 import RegisterScreen from '../screens/auth/RegisterScreen';
 import VerificationStatusScreen from '../screens/auth/VerificationStatusScreen';
 import VerificationDetailScreen from '../screens/auth/VerificationDetailScreen';
@@ -37,7 +40,10 @@ export default function AppNavigator() {
   return <NavigationContainer key={isAuthenticated ? user.id + ':' + user.role + ':' + user.canUseApp : 'guest'}>
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       {!isAuthenticated ? <>
-        <Stack.Screen name="Login" component={LoginScreen} /><Stack.Screen name="Register" component={RegisterScreen} />
+        <Stack.Screen name="Welcome" component={WelcomeScreen} />
+        <Stack.Screen name="RoleSelection" component={RoleSelectionScreen} />
+        <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="Register" component={RegisterScreen} />
       </> : user.role === 'admin' ? <Stack.Screen name="Admin">{() => <SessionRecoveryScreen admin />}</Stack.Screen>
         : !user.canUseApp ? <Stack.Screen name="Pending" component={VerificationStatusScreen} />
           : user.role === 'sekolah' ? <Stack.Screen name="SchoolRoot" component={SchoolTabs} />
@@ -57,6 +63,7 @@ export default function AppNavigator() {
       {isAuthenticated && user.canUseApp && user.role==='siswa'?<Stack.Screen name="MyApplications">{props=><ApplicationListScreen {...props} back/>}</Stack.Screen>:null}
       {isAuthenticated && user.canUseApp && user.role==='siswa'?<>
         <Stack.Screen name="LearningTarget" component={LearningTargetScreen}/>
+        <Stack.Screen name="AIMentor" component={StudentAIMentorScreen}/>
         <Stack.Screen name="LearningModule" component={LearningModuleScreen}/>
       </>:null}
       {isAuthenticated && user.canUseApp && user.role==='sekolah'?<Stack.Screen name="SchoolApplications">{props=><ApplicationListScreen {...props} mode="school" back/>}</Stack.Screen>:null}

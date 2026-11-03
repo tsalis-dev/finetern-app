@@ -77,6 +77,17 @@ test('failed credential storage does not admit user to authenticated routes', as
   assert.equal(store.getState().token, null);
 });
 
+test('the chosen login role is checked before credentials are stored', async () => {
+  const fixture = setup();
+  await assert.rejects(fixture.store.getState().authenticate('login', {}, 'sekolah'),
+    error => /Ganti peran/.test(error.message));
+  assert.equal(fixture.stored(), null);
+  assert.equal(fixture.store.getState().isAuthenticated, false);
+  await fixture.store.getState().authenticate('login', {}, 'siswa');
+  assert.equal(fixture.stored(), 'new-token');
+  assert.equal(fixture.store.getState().role, 'siswa');
+});
+
 test('failed logout blocks access and retry removes credentials instead of restoring them', async () => {
   let attempts = 0;
   const { store, api } = setup({ token: 'saved-token', clearToken: async () => { if (++attempts === 1) throw new Error('Locked'); } });

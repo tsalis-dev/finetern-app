@@ -15,7 +15,7 @@ export default function VerificationStatusScreen({ navigation }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const reload = async () => { setBusy(true); setError(''); try { await refresh(); } catch (failure) { setError(failure.message); } finally { setBusy(false); } };
-  return <FormScreen title="Status verifikasi" subtitle={user?.accessMessage || 'Pantau pengajuan dan catatan pemeriksaan akunmu.'}>
+  return <FormScreen title="Status verifikasi" subtitle={user?.accessMessage || 'Pantau pengajuan dan catatan pemeriksaan akunmu.'} onBack={navigation.canGoBack() ? () => navigation.goBack() : undefined} backDisabled={busy}>
     <Text style={styles.name}>{user?.nama}</Text>
     {(user?.verification || []).map(request => <View key={request.id} style={styles.card}>
       <Text style={styles.name}>{requestTitle(request)}</Text>
@@ -25,7 +25,6 @@ export default function VerificationStatusScreen({ navigation }) {
     </View>)}
     {error ? <Text style={{ color: colors.error }}>{error}</Text> : null}
     <PrimaryButton title="Periksa status terbaru" onPress={reload} loading={busy} />
-    {user?.canUseApp ? <PrimaryButton title="Kembali" variant="secondary" onPress={() => navigation.goBack()} /> : null}
     <PrimaryButton title="Keluar dari akun" variant="outline" onPress={() => logout().catch(failure => setError(failure.message))} />
   </FormScreen>;
 }

@@ -8,7 +8,7 @@ import PrimaryButton from './PrimaryButton';
 import {applicationStatuses} from '../../utils/recruitment';
 import {colors,spacing,borderRadius} from '../../utils/theme';
 
-export default function ApplicationListScreen({navigation,route,mode='student',back=false}) {
+export default function ApplicationListScreen({navigation,route,mode='student',back=false,embedded=false}) {
   const [status,setStatus]=useState(''),[data,setData]=useState({items:[],summary:{}}),[busy,setBusy]=useState(false),[error,setError]=useState(''),[hasMore,setHasMore]=useState(false);
   const generation=useRef(0),vacancyId=route.params?.vacancyId;
   const load=useCallback(async(offset=0)=>{
@@ -21,11 +21,10 @@ export default function ApplicationListScreen({navigation,route,mode='student',b
     finally{if(current===generation.current)setBusy(false);}
   },[mode,status,vacancyId]);
   useFocusEffect(useCallback(()=>{load();return()=>{generation.current++;};},[load]));
-  return <SafeAreaView style={styles.safe}>
-    <ScreenHeader title={mode==='industry'?'Pelamar magang':mode==='school'?'Lamaran siswa sekolah':'Perjalanan lamaranmu'} subtitle={mode==='industry'?'Periksa lamaran dan bukti yang dibagikan siswa, lalu catat hasil seleksi.':'Pantau status dan catatan seleksi yang tercatat di Finetern.'}/>
+  return <SafeAreaView style={styles.safe} edges={embedded?[]:['top','left','right']}>
+    {!embedded?<ScreenHeader title={mode==='industry'?'Pelamar':mode==='school'?'Lamaran siswa':'Lamaran saya'} subtitle="Pantau status dan catatan seleksi." onBack={back?()=>navigation.goBack():undefined}/>:null}
     <FlatList data={data.items} keyExtractor={item=>String(item.id)} contentContainerStyle={styles.content} refreshing={busy} onRefresh={()=>load()}
       ListHeaderComponent={<View style={styles.header}>
-        {back?<PrimaryButton title="Kembali" variant="outline" onPress={()=>navigation.goBack()}/>:null}
         <Text style={styles.body}>Total {data.summary.total||0} · Menunggu {data.summary.pending||0} · Diterima {data.summary.accepted||0}</Text>
         <View style={styles.filters}>{[['','Semua'],...Object.entries(applicationStatuses)].map(([key,label])=><Pressable key={key} accessibilityRole="tab" accessibilityState={{selected:status===key}} style={[styles.filter,status===key&&styles.selected]} onPress={()=>setStatus(key)}><Text style={styles.link}>{label}</Text></Pressable>)}</View>
         {error?<><Text style={styles.error}>{error}</Text><PrimaryButton title="Coba lagi" variant="secondary" onPress={()=>load()} disabled={busy}/></>:null}

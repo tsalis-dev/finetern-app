@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet } from 'react-native';
 import { colors, spacing, borderRadius } from '../../utils/theme';
+import AppIcon from './AppIcon';
 
 export default function CustomInput({
   label,
@@ -17,13 +18,14 @@ export default function CustomInput({
   multiline = false,
   maxLength,
   editable = true,
+  icon,
 }) {
   const [isFocused, setIsFocused] = useState(false);
 
   return (
     <View style={[styles.container, containerStyle]}>
       {label && <Text style={styles.label}>{label}</Text>}
-      <TextInput
+      <View style={styles.inputWrap}><TextInput
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
@@ -40,11 +42,12 @@ export default function CustomInput({
         onBlur={() => setIsFocused(false)}
         style={[
           styles.input,
+          icon && styles.inputWithIcon,
           multiline && styles.multiline,
           isFocused && styles.inputFocused,
           error && styles.inputError,
         ]}
-      />
+      />{icon ? <View pointerEvents="none" style={styles.icon}><AppIcon name={icon} size={20} color={colors.textSecondary} /></View> : null}</View>
       {error ? (
         <Text style={styles.errorText}>{error}</Text>
       ) : helperText ? (
@@ -55,9 +58,12 @@ export default function CustomInput({
 }
 
 const styles = StyleSheet.create({
+  inputWrap: { position: 'relative' },
+  inputWithIcon: { paddingLeft: 48 },
+  icon: { position: 'absolute', left: 16, top: 0, bottom: 0, justifyContent: 'center' },
   multiline: { minHeight: 120, textAlignVertical: 'top', paddingVertical: spacing.sm },
   container: {
-    marginBottom: spacing.md,
+    marginBottom: 0,
   },
   label: {
     fontSize: 13,

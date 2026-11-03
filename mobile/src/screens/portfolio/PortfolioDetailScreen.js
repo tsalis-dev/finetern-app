@@ -47,7 +47,7 @@ export default function PortfolioDetailScreen({ route, navigation }) {
   };
   const own = role === 'siswa';
   const editable = own && data && (data.legacy || ['pending', 'revision'].includes(data.status_verifikasi));
-  return <FormScreen title={data?.title || 'Rincian bukti karya'} subtitle={data ? `${data.nama_skill} · ${data.legacy ? 'Data lama, perlu diajukan ulang' : portfolioStatuses[data.status_verifikasi] + ' · Versi ' + data.revision_number}` : 'Memuat karya…'}>
+  return <FormScreen onBack={() => navigation.goBack()} backDisabled={busy} title={data?.title || 'Rincian bukti karya'} subtitle={data ? `${data.nama_skill} · ${data.legacy ? 'Data lama, perlu diajukan ulang' : portfolioStatuses[data.status_verifikasi] + ' · Versi ' + data.revision_number}` : 'Memuat karya…'}>
     {error ? <Text accessibilityLiveRegion="polite" style={styles.error}>{error}</Text> : null}
     {message ? <Text accessibilityLiveRegion="polite" style={styles.success}>{message}</Text> : null}
     {data ? <>
@@ -79,7 +79,6 @@ export default function PortfolioDetailScreen({ route, navigation }) {
       </View>)}
     </> : null}
     <PrimaryButton title="Muat ulang karya" variant="secondary" onPress={() => run(load)} loading={busy} />
-    <PrimaryButton title="Kembali" variant="outline" onPress={() => navigation.goBack()} disabled={busy} />
   </FormScreen>;
 }
 const styles = StyleSheet.create({ card: { padding: spacing.md, borderRadius: borderRadius.lg, backgroundColor: colors.white, gap: spacing.md }, body: { color: colors.textSecondary, lineHeight: 22 }, heading: { color: colors.textPrimary, fontSize: 16, fontWeight: '600' }, error: { color: colors.error, lineHeight: 22 }, success: { color: colors.primary, lineHeight: 22 } });

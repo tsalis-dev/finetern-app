@@ -1,37 +1,64 @@
 import React, { useCallback, useState } from 'react';
-import { Text, View, StyleSheet } from 'react-native';
+import { Text, View, Pressable, StyleSheet } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import FormScreen from '../../components/common/FormScreen';
 import PrimaryButton from '../../components/common/PrimaryButton';
+import AppIcon from '../../components/common/AppIcon';
 import { useAuthStore } from '../../store/useAuthStore';
 import api from '../../api/axiosClient';
-import { colors, spacing, borderRadius } from '../../utils/theme';
+import { colors, spacing } from '../../utils/theme';
 
 export default function StudentHomeScreen({ navigation }) {
   const user = useAuthStore(state => state.user);
-  const [data, setData] = useState(null);
+  const [portfolio, setPortfolio] = useState(null);
+  const [module, setModule] = useState(null);
   const [error, setError] = useState('');
   useFocusEffect(useCallback(() => {
     let active = true;
-    api.get('/portfolios/mine').then(response => { if (active) { setData(response.data); setError(''); } }).catch(failure => { if (active) setError(failure.message); });
+    Promise.allSettled([api.get('/portfolios/mine'), api.get('/ai/modules')]).then(([proofs, learning]) => {
+      if (!active) return;
+      if (proofs.status === 'fulfilled') setPortfolio(proofs.value.data);
+      if (learning.status === 'fulfilled') setModule(learning.value.data.items.find(item => item.generation_status === 'ready') || null);
+      setError(proofs.status === 'rejected' || learning.status === 'rejected' ? 'Sebagian ringkasan belum dapat diperbarui. Buka menu terkait untuk mencoba lagi.' : '');
+    });
     return () => { active = false; };
   }, []));
-  return <FormScreen title={'Halo, ' + (user?.nama?.split(' ')[0] || 'Siswa') + '.'} subtitle={(user?.sekolah || 'Sekolah') + ' · ' + (user?.kelas || '')}>
-    {error ? <Text style={styles.error}>{error}</Text> : null}
-    <View style={styles.card}><Text style={styles.heading}>Buktikan kemampuanmu lewat karya</Text><Text style={styles.body}>Kumpulkan proyek yang kamu kerjakan, jelaskan peranmu, dan ajukan untuk pemeriksaan guru.</Text>
-      {data ? <Text style={styles.summary}>{data.summary.approved} disetujui · {data.summary.pending} menunggu · {data.summary.revision} perlu perbaikan</Text> : <Text style={styles.body}>{error ? 'Ringkasan belum dapat diperbarui.' : 'Memuat ringkasan karyamu…'}</Text>}
-      <PrimaryButton title="+ Ajukan karya" onPress={() => navigation.navigate('PortfolioForm')} />
-      <PrimaryButton title="Lihat portofolio dan catatan guru" variant="secondary" onPress={() => navigation.navigate('PortofolioTab')} />
+  return <FormScreen title={'Halo, ' + (user?.nama?.split(' ')[0] || 'Siswa') + '.'} subtitle="Apa langkahmu hari ini?">
+    {error ? <Text style={styles.body} accessibilityLiveRegion="polite">{error}</Text> : null}
+    <View style={styles.feature}>
+      <View style={styles.row}><AppIcon name={module ? 'book' : 'briefcase'} size={20} /><Text style={styles.eyebrow}>{module ? 'LANJUTKAN BELAJAR' : 'MULAI DARI TUJUANMU'}</Text></View>
+      <Text style={styles.heading}>{module?.nama_skill || 'Temukan tempat magangmu'}</Text>
+      <Text style={styles.body}>{module ? 'Untuk ' + (module.source_context?.vacancy.title || 'keterampilanmu') : 'Pilih lowongan untuk melihat keterampilan yang dibutuhkan industri.'}</Text>
+      <PrimaryButton title={module ? 'Buka materi' : 'Cari lowongan'} onPress={() => module ? navigation.navigate('LearningModule', { id: module.id }) : navigation.navigate('Eksplorasi', { view: 'vacancies' })} />
     </View>
-    <Text style={styles.heading}>Keterampilan tervalidasi</Text>
-    {data?.skills.length ? <>{data.skills.slice(0, 3).map(skill => <View key={skill.id} style={styles.card}><Text style={styles.heading}>{skill.nama_skill}</Text><Text style={styles.summary}>{skill.proficiency}/100 · {skill.evidence_count} karya disetujui guru</Text></View>)}<PrimaryButton title="Lihat keterampilan di portofolio" variant="outline" onPress={() => navigation.navigate('PortofolioTab')} /></> : <Text style={styles.body}>Keterampilan akan muncul setelah guru menyetujui dan menilai bukti karyamu.</Text>}
-    <View style={styles.card}><Text style={styles.heading}>Temukan posisi yang sesuai</Text><Text style={styles.body}>Jelajahi lowongan dari industri terverifikasi. Skor kecocokan dihitung dari bukti karyamu; seluruh syarat wajib dan skor minimal 80% perlu terpenuhi untuk melamar.</Text>
-      <PrimaryButton title="Jelajahi lowongan magang" onPress={() => navigation.navigate('Eksplorasi')} />
-      <PrimaryButton title="Pantau lamaran saya" variant="secondary" onPress={() => navigation.navigate('MyApplications')} />
+    <Text style={styles.heading}>Perjalananmu</Text>
+    <View style={styles.row}>
+      <Pressable accessibilityRole="button" style={styles.shortcut} onPress={() => navigation.navigate('PortofolioTab')}>
+        <AppIcon name="folder" /><Text style={styles.cardTitle}>Karya saya</Text><Text style={styles.body}>{portfolio ? portfolio.summary.pending + ' menunggu penilaian' : 'Bukti dan catatan guru'}</Text>
+      </Pressable>
+      <Pressable accessibilityRole="button" style={styles.shortcut} onPress={() => navigation.navigate('Eksplorasi', { view: 'applications' })}>
+        <AppIcon name="briefcase" /><Text style={styles.cardTitle}>Lamaran saya</Text><Text style={styles.body}>Pantau proses seleksi</Text>
+      </Pressable>
     </View>
-    <View style={styles.card}><Text style={styles.heading}>Belajar untuk langkah berikutnya</Text><Text style={styles.body}>Pelajari keterampilan yang masih kurang untuk lowongan tujuanmu. Kerjakan materi dan kuis dari Gemini, lalu ajukan bukti mini proyek untuk dinilai guru.</Text>
-      <PrimaryButton title="Buka AI Mentor dan riwayat belajar" variant="outline" onPress={() => navigation.navigate('AIMentor')} />
+    <View style={styles.card}>
+      <Text style={styles.cardTitle}>Keterampilan tervalidasi</Text>
+      {portfolio?.skills.length ? portfolio.skills.slice(0, 3).map(skill => <View key={skill.id} style={styles.row}>
+        <Text style={[styles.body, styles.flex]}>{skill.nama_skill}</Text><Text style={styles.value}>{skill.proficiency}/100</Text>
+      </View>) : <Text style={styles.body}>Ajukan bukti karya untuk mendapatkan penilaian guru.</Text>}
+      <PrimaryButton title="Lihat karya dan penilaian" variant="outline" onPress={() => navigation.navigate('PortofolioTab')} />
     </View>
+    <PrimaryButton title="Semua materi belajar" variant="secondary" onPress={() => navigation.navigate('AIMentor')} />
   </FormScreen>;
 }
-const styles = StyleSheet.create({ card: { padding: spacing.md, backgroundColor: colors.white, borderRadius: borderRadius.lg, gap: spacing.md }, heading: { fontSize: 18, fontWeight: '600', color: colors.textPrimary }, body: { color: colors.textSecondary, lineHeight: 22 }, summary: { color: colors.primary, fontWeight: '600', lineHeight: 24 }, error: { color: colors.error } });
+const styles = StyleSheet.create({
+  feature: { padding: spacing.lg, gap: spacing.md, backgroundColor: colors.primaryLight, borderRadius: 24 },
+  row: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  eyebrow: { color: colors.primary, fontSize: 11, fontWeight: '700', letterSpacing: 1 },
+  heading: { fontSize: 22, lineHeight: 29, fontWeight: '700', color: colors.textPrimary },
+  cardTitle: { fontSize: 17, lineHeight: 24, fontWeight: '600', color: colors.textPrimary },
+  body: { fontSize: 14, color: colors.textSecondary, lineHeight: 22 },
+  shortcut: { flex: 1, alignSelf: 'stretch', gap: spacing.sm, backgroundColor: colors.white, borderRadius: 20, padding: spacing.md },
+  card: { padding: spacing.lg, gap: spacing.md, backgroundColor: colors.white, borderRadius: 20 },
+  value: { color: colors.primary, fontWeight: '700' },
+  flex: { flex: 1 },
+});

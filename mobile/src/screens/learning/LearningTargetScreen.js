@@ -22,7 +22,7 @@ export default function LearningTargetScreen({route,navigation}){
       navigation.replace('LearningModule',{id:result.data.id});
     }catch(failure){setError(failure.message);}finally{setBusy(false);}
   };
-  return <FormScreen title={gap?.nama_skill||'Siapkan langkah belajarmu'} subtitle={data?data.vacancy.title+' · '+data.vacancy.nama_industri:'Memuat kebutuhan keterampilan…'}>
+  return <FormScreen onBack={() => navigation.goBack()} backDisabled={busy} title={gap?.nama_skill||'Siapkan langkah belajarmu'} subtitle={data?data.vacancy.title+' · '+data.vacancy.nama_industri:'Memuat kebutuhan keterampilan…'}>
     {error?<Text accessibilityLiveRegion="polite" style={styles.error}>{error}</Text>:null}
     {gap?<>
       <View style={styles.card}><Text style={styles.heading}>Nilai tervalidasi {gap.current_proficiency}/100</Text><Text style={styles.body}>Target lowongan {gap.target_proficiency}/100 · Masih kurang {gap.missing_points} poin</Text><Text style={styles.body}>{gap.importance==='wajib'?'Keterampilan ini wajib memenuhi nilai minimum.':'Keterampilan ini menjadi nilai tambah pada kecocokan total.'}</Text></View>
@@ -34,7 +34,6 @@ export default function LearningTargetScreen({route,navigation}){
       {busy?<Text accessibilityLiveRegion="polite" style={styles.body}>Materi sedang disiapkan. Proses dapat memerlukan beberapa saat.</Text>:null}
     </>:data?<Text style={styles.body}>Keterampilan ini sudah memenuhi kebutuhan, atau tidak menjadi kekurangan pada lowongan tersebut. Pilih kekurangan lain dari rincian lowongan.</Text>:null}
     <PrimaryButton title="Periksa kebutuhan terbaru" variant="secondary" disabled={busy} onPress={async()=>{setError('');try{await load();}catch(failure){setError(failure.message);}}}/>
-    <PrimaryButton title="Kembali" variant="outline" disabled={busy} onPress={()=>navigation.goBack()}/>
   </FormScreen>;
 }
 const styles=StyleSheet.create({card:{padding:spacing.md,gap:spacing.sm,backgroundColor:colors.white,borderRadius:borderRadius.lg},heading:{fontSize:18,fontWeight:'600',color:colors.textPrimary},body:{color:colors.textSecondary,lineHeight:22},error:{color:colors.error,lineHeight:22}});

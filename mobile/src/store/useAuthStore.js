@@ -20,8 +20,11 @@ export const useAuthStore = create((set, get) => ({
       if (error.status !== 401) set({ sessionError: error.message || 'Penyimpanan sesi tidak dapat diakses.' });
     } finally { set({ isLoading: false }); }
   },
-  authenticate: async (mode, values) => {
+  authenticate: async (mode, values, expectedRole) => {
     const response = await api.post('/auth/' + mode, values);
+    if (expectedRole && response.data.user.role !== expectedRole) {
+      throw { message: 'Akun ini terdaftar dengan peran berbeda. Pilih Ganti peran untuk masuk melalui menu yang sesuai.' };
+    }
     try { await saveToken(response.data.token); }
     catch { throw { message: 'Akun dikenali, tetapi sesi tidak dapat disimpan. Coba masuk kembali.' }; }
     set({ user: response.data.user, token: response.data.token, role: response.data.user.role, isAuthenticated: true, sessionError: null });

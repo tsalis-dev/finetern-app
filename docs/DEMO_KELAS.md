@@ -77,7 +77,7 @@ Expo Go untuk SDK 57 sudah terpasang pada emulator ini. Jika pada perangkat lain
 
 Jika jaringan kelas bermasalah, setelah Expo Go terpasang gunakan `npx expo start --offline --go --android --port 8082` dengan alamat API yang sama. Backend/MySQL lokal tetap harus berjalan. Jangan menekan pembuatan materi baru saat offline; gunakan modul tersimpan.
 
-Tombol Tools mengambang di pojok kanan atas berasal dari Expo Go dan dapat menutupi sebagian tombol Keluar pada header. Untuk berganti akun saat presentasi, gunakan tab Profil/Profil Guru, gulir ke bawah, lalu **Keluar dari akun**. Jika panel pengembang terbuka, tutup dengan X/Close; bukan error Finetern.
+Tombol Tools mengambang di pojok kanan atas berasal dari Expo Go. Untuk berganti akun saat presentasi, gunakan tab Profil, gulir ke bawah, lalu **Keluar dari akun**. Jika panel pengembang terbuka, tutup dengan X/Close.
 
 Database demo **sudah disiapkan**. Untuk instalasi baru saja, dari backend jalankan `npm run demo:prepare`. Opsi `-- --with-ai` menambah satu pembuatan modul Gemini nyata dan memakai kuota provider. Persiapan menolak database/folder demo yang sudah ada, tidak melakukan reset atau menimpa data. Kegagalan persiapan meninggalkan data untuk pemeriksaan; jangan menghapus database utama.
 
@@ -85,9 +85,11 @@ Backend dan MySQL tetap diperlukan saat membuka materi tersimpan. Internet Googl
 
 ## Urutan demo 7–10 menit
 
+Versi UI terbaru membuka layar perkenalan saat sesi kosong. Tekan Masuk, pilih Siswa/Guru/Industri, lalu isi akun demo yang sesuai. Akun dengan peran berbeda mendapat pesan untuk mengganti pilihan. Navbar berbentuk panel mengambang dengan ikon garis. Untuk siswa, tab Magang memuat Cari lowongan dan Lamaran saya; riwayat belajar tersedia dari Beranda melalui Semua materi belajar. Untuk berganti akun, buka Profil → Keluar dari akun.
+
 1. **Masuk sebagai siswa.** Tunjukkan profil Alya (Demo), portofolio dan nilai guru: UI 85, API 55, Git 75.
-2. **Buka lowongan Mobile Developer Intern.** Skor awal 91,42%, tetapi belum bisa melamar karena API wajib minimal 70. Jelaskan skor total 80% saja belum cukup.
-3. **Pilih Pelajari keterampilan ini pada API.** Buka modul yang sudah tersimpan. Materi ini benar-benar dibuat Gemini saat persiapan; akun dan lowongannya fiktif. Tunjukkan tujuan, materi, mini proyek, tiga soal, hasil dan pembahasan kuis. Nilai kuis tidak menaikkan nilai guru.
+2. **Buka lowongan Mobile Developer Intern.** Status Belum bisa melamar tampil terlebih dahulu, dengan nilai API 55 dari target 70 dan kekurangan 15 poin. Kecocokan 91,42% tampil sebagai informasi pendukung.
+3. **Pilih Pelajari RESTful API Integration.** Buka modul yang sudah tersimpan. Materi ini benar-benar dibuat Gemini saat persiapan; akun dan lowongannya fiktif. Tunjukkan tujuan, materi, mini proyek, tiga soal, hasil dan pembahasan kuis. Nilai kuis tidak menaikkan nilai guru.
 4. **Tunjukkan pengajuan mini proyek.** Tombol membuka formulir karya dengan judul/keterampilan terisi. Bila waktu terbatas, gunakan karya pending **Perbaikan Integrasi API (Demo — nilai guru saat presentasi)** yang sudah disiapkan.
 5. **Keluar dan masuk sebagai guru.** Di Bukti Karya, periksa karya pending tersebut. Beri catatan dan setujui dengan nilai **85**. Ini adalah penilaian simulasi kelas.
 6. **Kembali sebagai siswa.** Buka ulang lowongan utama. Nilai API kini 85 dan kecocokan 100%. Setujui pembagian bukti yang relevan, lalu lamar.

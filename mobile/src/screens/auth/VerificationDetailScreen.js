@@ -51,7 +51,7 @@ export default function VerificationDetailScreen({ route, navigation }) {
   const fields = [['nama', 'Nama lengkap'], ...(data?.kind === 'student' ? [['jurusan', 'Jurusan'], ['kelas', 'Kelas'], ['nisn', 'NISN (opsional)']] : []),
     ...(data?.kind === 'school' ? [['schoolName', 'Nama sekolah'], ['npsn', 'NPSN'], ['alamat', 'Alamat sekolah'], ['contactPhone', 'Telepon perwakilan']] : []),
     ...(data?.kind === 'industry' ? [['companyName', 'Nama industri'], ['sektor', 'Sektor'], ['kota', 'Kota'], ['nomorRegistrasi', 'Nomor registrasi'], ['contactPhone', 'Telepon perwakilan']] : [])];
-  return <FormScreen title={data?.title || 'Rincian pengajuan'} subtitle={data ? statusLabels[data.status] : 'Memuat data…'}>
+  return <FormScreen onBack={() => navigation.goBack()} backDisabled={busy} title={data?.title || 'Rincian pengajuan'} subtitle={data ? statusLabels[data.status] : 'Memuat data…'}>
     {error ? <Text accessibilityLiveRegion="polite" style={styles.error}>{error}</Text> : null}
     {message ? <Text accessibilityLiveRegion="polite" style={styles.success}>{message}</Text> : null}
     {data ? <>
@@ -76,7 +76,6 @@ export default function VerificationDetailScreen({ route, navigation }) {
       </> : null}
     </> : null}
     <PrimaryButton title="Muat ulang rincian" variant="secondary" onPress={load} disabled={busy} />
-    <PrimaryButton title="Kembali" variant="outline" onPress={() => navigation.goBack()} />
   </FormScreen>;
 }
 const styles = StyleSheet.create({ error: { color: colors.error }, success: { color: colors.success }, body: { color: colors.textSecondary, lineHeight: 22 }, heading: { fontSize: 16, fontWeight: '600', color: colors.textPrimary }, history: { padding: spacing.md, backgroundColor: colors.white, borderRadius: borderRadius.md, gap: spacing.sm } });

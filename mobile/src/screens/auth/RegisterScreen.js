@@ -8,8 +8,8 @@ import { useAuthStore } from '../../store/useAuthStore';
 import { colors, spacing, borderRadius } from '../../utils/theme';
 
 const choices = [['siswa', 'Siswa'], ['guru', 'Guru'], ['school', 'Sekolah baru'], ['industri', 'Industri']];
-export default function RegisterScreen({ navigation }) {
-  const [kind, setKind] = useState('siswa');
+export default function RegisterScreen({ route, navigation }) {
+  const [kind, setKind] = useState(route.params?.role === 'sekolah' ? 'guru' : route.params?.role || 'siswa');
   const [school, setSchool] = useState(null);
   const [values, setValues] = useState({});
   const [error, setError] = useState('');
@@ -28,7 +28,7 @@ export default function RegisterScreen({ navigation }) {
     catch (failure) { setError(failure.message); }
     finally { setBusy(false); }
   };
-  return <FormScreen title="Mulai langkahmu." subtitle="Pilih jenis akun. Hak akses dibuka setelah pengajuan disetujui pemeriksa yang berwenang.">
+  return <FormScreen title="Buat akun Finetern" subtitle="Lengkapi identitasmu untuk mengajukan verifikasi." onBack={() => navigation.goBack()} backDisabled={busy}>
     <View style={styles.choices}>{choices.map(([key, label]) => <Pressable key={key} accessibilityRole="tab" accessibilityState={{ selected: kind === key }} disabled={busy} onPress={() => { setKind(key); setError(''); }} style={[styles.choice, kind === key && styles.active]}><Text style={{ color: kind === key ? colors.primary : colors.textSecondary }}>{label}</Text></Pressable>)}</View>
     {kind === 'siswa' || kind === 'guru' ? <SchoolPicker value={school} onChange={setSchool} /> : null}
     {kind === 'school' ? <Text style={styles.hint}>Perwakilan sekolah membuat akun guru pribadi. Admin Finetern memeriksa institusi dan menunjuk perwakilan yang sah sebagai koordinator.</Text> : null}

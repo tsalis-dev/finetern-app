@@ -5,10 +5,23 @@ const path=require('node:path');
 const vm=require('node:vm');
 const source=fs.readFileSync(path.join(__dirname,'../src/utils/recruitment.js'),'utf8').replace(/^export /gm,'');
 const moduleContext={exports:{}};
-vm.runInNewContext(source+'\nmodule.exports={vacancyPayload,applicationPayload,selectionPayload,formatAllowance};',{module:moduleContext,URL,Intl});
+vm.runInNewContext(source+'\nmodule.exports={vacancyPayload,applicationPayload,selectionPayload,formatAllowance,firstSkillGap};',{module:moduleContext,URL,Intl});
 const {vacancyPayload,applicationPayload,selectionPayload,formatAllowance}=moduleContext.exports;
+const {firstSkillGap}=moduleContext.exports;
 const values={title:' Mobile Intern ',deskripsi:' Belajar implementasi antarmuka dan API ',location:' Bandung ',workMode:'hybrid',allowance:'1500000',quota:'2',deadline:'2027-01-31'};
 const requirements=[{skillId:1,importance:'wajib',weight:'10',minProficiency:'70'}];
+
+test('learning guidance prioritizes an unmet mandatory skill without changing requirement order',()=>{
+  const extra={skill_id:1,importance:'nilai_tambah',missing_points:20};
+  const mandatory={skill_id:2,importance:'wajib',missing_points:15};
+  const met={skill_id:3,importance:'wajib',missing_points:0};
+  const items=[extra,met,mandatory];
+  assert.equal(firstSkillGap(items),mandatory);
+  assert.equal(items[0],extra);
+  assert.equal(firstSkillGap([met,extra]),extra);
+  assert.equal(firstSkillGap([met]),null);
+  assert.equal(firstSkillGap([]),null);
+});
 
 test('vacancy form sends complete numeric requirements and preserves legacy edit version zero',()=>{
   const body=vacancyPayload(values,requirements,0);

@@ -22,7 +22,7 @@ export default function LearningModuleScreen({route,navigation}){
     catch(failure){setError(failure.message);}finally{setBusy(false);}
   };
   const content=data?.content;
-  return <FormScreen title={data?.title||'Modul belajar'} subtitle={data?data.nama_skill+' · '+learningStatuses[data.generation_status]:'Memuat materi…'}>
+  return <FormScreen onBack={() => navigation.goBack()} backDisabled={busy} title={data?.title||'Modul belajar'} subtitle={data?data.nama_skill+' · '+learningStatuses[data.generation_status]:'Memuat materi…'}>
     {error?<Text accessibilityLiveRegion="polite" style={styles.error}>{error}</Text>:null}
     {message?<Text accessibilityLiveRegion="polite" style={styles.notice}>{message}</Text>:null}
     {data?.source_context?<Text style={styles.body}>Untuk {data.source_context.vacancy.title}. Kebutuhan saat modul dibuat: {data.source_context.skill.current_proficiency} → {data.source_context.skill.target_proficiency}/100.</Text>:null}
@@ -40,7 +40,6 @@ export default function LearningModuleScreen({route,navigation}){
       {data.last_attempt?<View style={styles.card}><Text style={styles.heading}>Hasil terakhir: {data.last_attempt.score}/100</Text><Text style={styles.body}>{data.last_attempt.passed?'Latihan selesai dengan nilai lulus.':'Pelajari kembali bagian yang perlu ditingkatkan, lalu coba latihan lagi.'} Nilai terbaik {data.progress.best_score}/100 dari {data.progress.attempt_count} latihan.</Text>{data.last_attempt.feedback.map((item,index)=><View key={item.questionId} style={styles.feedback}><Text style={styles.heading}>Soal {index+1}: {item.isCorrect?'Benar':'Perlu dipelajari lagi'}</Text><Text style={styles.body}>Jawaban yang tepat: {String.fromCharCode(65+item.correctIndex)}. {data.quiz[index].options[item.correctIndex]}</Text><Text style={styles.body}>{item.explanation}</Text></View>)}</View>:null}
     </>:null}
     <PrimaryButton title="Muat ulang modul" variant="secondary" disabled={busy} onPress={async()=>{setError('');try{await load();}catch(failure){setError(failure.message);}}}/>
-    <PrimaryButton title="Kembali" variant="outline" disabled={busy} onPress={()=>navigation.goBack()}/>
   </FormScreen>;
 }
 const styles=StyleSheet.create({card:{padding:spacing.md,gap:spacing.md,backgroundColor:colors.white,borderRadius:borderRadius.lg},heading:{fontSize:17,fontWeight:'600',color:colors.textPrimary},body:{color:colors.textSecondary,lineHeight:22},option:{minHeight:48,padding:spacing.md,justifyContent:'center',borderWidth:1,borderColor:colors.border,borderRadius:borderRadius.md},selected:{backgroundColor:colors.primaryLight,borderColor:colors.primary},feedback:{gap:spacing.sm,paddingTop:spacing.sm},notice:{color:colors.primary,lineHeight:22},error:{color:colors.error,lineHeight:22}});
