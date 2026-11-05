@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
-import { View, ActivityIndicator, StyleSheet, Text, AppState } from 'react-native';
+import { View, ActivityIndicator, StyleSheet, AppState } from 'react-native';
+import BrandLogo from '../components/common/BrandLogo';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useAuthStore } from '../store/useAuthStore';
@@ -35,7 +36,7 @@ export default function AppNavigator() {
     });
     return () => subscription.remove();
   }, [restoreSession]);
-  if (isLoading) return <View style={styles.loading}><Text style={styles.brand}>finetern</Text><ActivityIndicator size="large" color={colors.primary} /></View>;
+  if (isLoading) return <View style={styles.loading}><BrandLogo size={48} /><ActivityIndicator size="large" color={colors.primary} /></View>;
   if (sessionError) return <SessionRecoveryScreen />;
   return <NavigationContainer key={isAuthenticated ? user.id + ':' + user.role + ':' + user.canUseApp : 'guest'}>
     <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -71,4 +72,4 @@ export default function AppNavigator() {
     </Stack.Navigator>
   </NavigationContainer>;
 }
-const styles = StyleSheet.create({ loading: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.background, gap: 24 }, brand: { fontSize: 28, fontWeight: '700', color: colors.primary } });
+const styles = StyleSheet.create({ loading: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.background, gap: 24 } });

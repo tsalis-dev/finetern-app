@@ -3,6 +3,7 @@ import { Text, View, Pressable, ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import AppIcon from '../../components/common/AppIcon';
+import BrandLogo from '../../components/common/BrandLogo';
 import LearningIllustration from '../../components/common/LearningIllustration';
 import { useAuthStore } from '../../store/useAuthStore';
 import api from '../../api/axiosClient';
@@ -27,7 +28,7 @@ export default function StudentHomeScreen({ navigation }) {
   return <SafeAreaView style={styles.safe} edges={['top', 'left', 'right']}>
     <ScrollView contentContainerStyle={styles.content}>
       <View style={styles.topbar}>
-        <View style={styles.brandRow}><View style={styles.brandMark}><AppIcon name="school" size={20} color={colors.white} /></View><Text style={styles.brand}>finetern</Text></View>
+        <BrandLogo size={34} />
         <Pressable accessibilityRole="button" accessibilityLabel="Buka profil" onPress={() => navigation.navigate('Profil')} style={styles.avatar}><Text style={styles.initial}>{firstName[0]}</Text></Pressable>
       </View>
       <View style={styles.greeting}><Text style={styles.title}>Halo, {firstName}.</Text><Text style={styles.body}>Selangkah lebih dekat ke magang impianmu.</Text></View>
@@ -70,9 +71,6 @@ const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.background },
   content: { padding: spacing.lg, paddingTop: spacing.md, paddingBottom: spacing.xl, gap: 20 },
   topbar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  brandRow: { flexDirection: 'row', alignItems: 'center', gap: 9 },
-  brandMark: { width: 31, height: 31, borderRadius: 10, backgroundColor: colors.primary, alignItems: 'center', justifyContent: 'center' },
-  brand: { color: colors.primary, fontSize: 23, fontWeight: '700', letterSpacing: -0.8 },
   avatar: { width: 44, height: 44, borderRadius: 22, borderWidth: 3, borderColor: colors.white, backgroundColor: colors.accentWarm, alignItems: 'center', justifyContent: 'center' },
   initial: { color: colors.primaryDark, fontWeight: '700', fontSize: 17 },
   greeting: { gap: 5 },

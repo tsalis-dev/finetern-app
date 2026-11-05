@@ -1,32 +1,36 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import PrimaryButton from '../../components/common/PrimaryButton';
-import AppIcon from '../../components/common/AppIcon';
-import { colors, spacing } from '../../utils/theme';
+import BrandLogo from '../../components/common/BrandLogo';
+import { colors } from '../../utils/theme';
 
 export default function WelcomeScreen({ navigation }) {
-  return <SafeAreaView style={styles.safe}><View style={styles.content}>
-    <Text style={styles.brand}>finetern</Text>
-    <View style={styles.illustration}>
-      <View style={styles.emblem}><AppIcon name="school" size={76} /></View>
-      <Text style={styles.caption}>Karya hari ini. Peluang esok hari.</Text>
+  return <SafeAreaView style={styles.safe}><ScrollView contentContainerStyle={styles.content}>
+    <BrandLogo size={40} />
+    <View style={styles.feature}>
+      <Text style={styles.eyebrow}>DARI KARYA KE KARIER</Text>
+      <View style={styles.symbol}><BrandLogo markOnly size={140} color={colors.white} /></View>
+      <Text style={styles.caption}>Karya hari ini.{ '\n' }Peluang esok hari.</Text>
     </View>
     <View style={styles.message}>
-      <Text style={styles.title}>Temukan tempat magangmu.</Text>
-      <Text style={styles.body}>Tunjukkan kemampuan lewat karya. Temukan industri yang membutuhkannya.</Text>
+      <Text style={styles.title}>Temukan tempat{ '\n' }bertumbuh.</Text>
+      <Text style={styles.body}>Belajar, tunjukkan karya, dan temukan magang yang sesuai dengan kemampuanmu.</Text>
     </View>
-    <PrimaryButton title="Masuk" onPress={() => navigation.navigate('RoleSelection')} />
-  </View></SafeAreaView>;
+    <PrimaryButton title="Masuk" onPress={() => navigation.navigate('RoleSelection')} style={styles.button} />
+    <Text style={styles.footer}>Untuk siswa, guru, dan industri.</Text>
+  </ScrollView></SafeAreaView>;
 }
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.background },
-  content: { flex: 1, padding: spacing.lg, gap: spacing.lg },
-  brand: { fontSize: 28, fontWeight: '700', color: colors.primary },
-  illustration: { flex: 1, minHeight: 110, backgroundColor: colors.primaryLight, borderRadius: 28, alignItems: 'center', justifyContent: 'center', gap: spacing.md },
-  emblem: { padding: spacing.md, backgroundColor: colors.white, borderRadius: 24 },
-  caption: { color: colors.primary, fontSize: 13, paddingHorizontal: 12, textAlign: 'center' },
-  message: { gap: spacing.md },
-  title: { fontSize: 36, lineHeight: 43, fontWeight: '700', color: colors.textPrimary },
-  body: { fontSize: 16, lineHeight: 25, color: colors.textSecondary },
+  content: { flexGrow: 1, padding: 24, gap: 24 },
+  feature: { flexGrow: 1, minHeight: 290, backgroundColor: colors.primary, borderRadius: 30, borderCurve: 'continuous', alignItems: 'center', justifyContent: 'space-between', padding: 26, gap: 24 },
+  eyebrow: { color: colors.onPrimaryMuted, fontSize: 10, fontWeight: '700', letterSpacing: 2 },
+  symbol: { paddingVertical: 12 },
+  caption: { color: colors.white, fontSize: 20, fontWeight: '600', lineHeight: 27, textAlign: 'center', letterSpacing: -0.3 },
+  message: { gap: 12 },
+  title: { fontSize: 34, lineHeight: 41, fontWeight: '700', color: colors.textPrimary, letterSpacing: -0.9 },
+  body: { fontSize: 15, lineHeight: 24, color: colors.textSecondary },
+  button: { borderRadius: 16, minHeight: 52 },
+  footer: { color: colors.textMuted, fontSize: 12, lineHeight: 18, textAlign: 'center', marginTop: -10 },
 });

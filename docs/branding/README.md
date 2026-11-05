@@ -4,7 +4,24 @@ Dibuat 5 November 2026 menggunakan tool imagegen bawaan. Pemilik meminta logo de
 
 Simbol F dibentuk dari gestur lipatan halaman dan gerak maju: pendidikan, karya, serta langkah menuju kesempatan magang. Papan memperlihatkan logo lengkap, simbol mandiri, aplikasi pada bidang persegi membulat, dan versi terang di atas burgundy. Arah warna mengikuti burgundy `#842D3E` serta putih tulang `#FAF8F5` milik Finetern.
 
-Ini aset konsep raster untuk peninjauan visual. Belum menjadi master vektor, aset adaptive icon Android, atau perubahan komponen logo/login aplikasi. Bentuk dan warna akhir perlu dipastikan ketika menyiapkan aset produksi.
+Pemilik menyetujui konsep dan meminta penerapan ke aplikasi pada 5 November 2026. Simbol digambar ulang sebagai dua bidang vektor dengan warna solid agar tajam dan konsisten pada ukuran kecil; wordmark di aplikasi memakai teks native yang disesuaikan proporsinya.
+
+## Aset aplikasi
+
+- Sumber geometri: `mobile/assets/brand/mark.json`. Komponen `BrandLogo` membaca sumber ini untuk logo lengkap atau simbol saja, dalam burgundy maupun putih.
+- Master SVG: `mobile/assets/brand/mark.svg`, diekspor dari geometri yang sama. File konsep PNG dipertahankan sebagai referensi persetujuan.
+- Ikon umum 1024×1024 dan favicon 64×64: `mobile/assets/icon.png` dan `mobile/assets/favicon.png`.
+- Layer Android 1024×1024: foreground/monochrome transparan, latar burgundy penuh. Simbol foreground berada dalam lingkaran aman di tengah canvas sehingga tidak terpotong pada mask launcher bulat. PNG dirender dari sumber vektor; favicon diperkecil dengan alat gambar bawaan Expo tanpa menambah dependensi aplikasi.
+
+Logo digunakan pada pembuka, pemilihan peran, login, Beranda siswa, header form utama, dan layar pemulihan sesi awal/loading. Login menggunakan panel burgundy dengan watermark logo, penanda peran serta aksi Ganti, formulir email/kata sandi berikon, tombol tampilkan/sembunyikan sandi, dan tautan daftar. Pemeriksaan peran server sebelum penyimpanan token tetap berlaku.
+
+Perubahan ikon launcher native baru diterapkan ketika membuat build Android/iOS berikutnya. Expo Go dipakai untuk memeriksa antarmuka dan logo dalam proyek, bukan untuk mengganti ikon launcher milik Expo Go. Native splash screen belum diberi konfigurasi plugin baru.
+
+Referensi login: [Simple Login — Saad Shaikh](https://www.figma.com/community/file/1300432160609727073/simple-login-mobile-auth-ui-kit) dan [Login & Register — Ali Husni Majid](https://www.figma.com/community/file/1370757927948360864/20-screen-login-register-mobile-app). Yang diadaptasi adalah arah komposisinya; komponen dan ilustrasi template tidak disalin.
+
+## Pemeriksaan implementasi
+
+Seluruh 24 tes mobile dan bundling Android/Hermes lulus (1.048 modul, HBC 2,5 MB). Tes aset memeriksa PNG opaque 1024px, favicon 64px, transparansi foreground, area aman lingkaran, layer monochrome, dan kesesuaian warna latar dengan konfigurasi Expo. Pemeriksaan emulator mencakup pembuka/pilih peran/login, default sandi tersamarkan, toggle yang mempertahankan teks, validasi kosong, tautan daftar yang memilih peran siswa, login/logout guru dan industri, serta login siswa sampai Beranda berlogo baru. Pemeriksaan memakai akun demo sintetis; tidak membuat akun atau mengirim karya/kuis/permintaan Gemini baru. Screenshot tersimpan lokal dan diabaikan Git. iOS, tampilan launcher pada APK, dan perangkat fisik belum diperiksa.
 
 ## Prompt generasi
 

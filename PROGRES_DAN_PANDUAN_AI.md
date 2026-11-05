@@ -1,10 +1,12 @@
 # Handover pengembangan Finetern
 
-Diperbarui: 4 November 2026. Repository: [tsalis-dev/finetern-app](https://github.com/tsalis-dev/finetern-app), branch pengembangan `develop`; `main` untuk rilis stabil.
+Diperbarui: 5 November 2026. Repository: [tsalis-dev/finetern-app](https://github.com/tsalis-dev/finetern-app), branch pengembangan `develop`; `main` untuk rilis stabil.
 
 Finetern adalah platform rekrutmen magang siswa SMK berdasarkan bukti karya, pencocokan keahlian mikro, dan rekomendasi belajar adaptif melalui Gemini. Proyek IK300 Mobile Programming, Universitas Pendidikan Indonesia. Nama aplikasi yang dipakai kode dan dokumentasi adalah Finetern.
 
 ## Status saat ini
+
+Logo F lipatan halaman yang disetujui pemilik diterapkan sebagai vektor `BrandLogo`, dengan sumber `mobile/assets/brand/mark.json` dan master SVG. Pembuka, pemilihan peran, dan login memakai identitas burgundy baru; logo juga tampil pada Beranda siswa, header form utama, serta loading sesi. Login menyediakan penanda peran/Ganti dan toggle sandi; autentikasi serta pemetaan role server tetap sama. Ikon umum, adaptive Android (termasuk monochrome), serta favicon diekspor dari geometri yang sama. Seluruh 24 tes mobile dan bundling Android/Hermes lulus. Pembuka/pilih peran/login, toggle sandi dengan teks dan keyboard, validasi kosong, tautan daftar, serta login tiga peran diperiksa di emulator. [Panduan aset dan referensi login](docs/branding/README.md). Perubahan ikon launcher perlu build native berikutnya; iOS serta build APK belum diperiksa pada perubahan ini.
 
 Perombakan visual lanjutan berdasarkan referensi Task Management dan Ajheryuk yang disetujui pemilik diterapkan pada tiga halaman siswa: Beranda, daftar Magang, dan Detail Materi. Beranda memakai kartu burgundy, ilustrasi SVG milik Finetern, ringkasan karya dan nilai guru; daftar lowongan memakai pencarian ringkas dan status kelayakan terpisah dari skor; materi memakai hierarki tujuan/materi/mini proyek/kuis. Navbar tetap mengambang. Referensi, token, dan batas penerapan ada pada [panduan desain visual](docs/DESAIN_VISUAL_BURGUNDY.md). Tidak ada dependensi baru atau perubahan API/aturan penilaian. Seluruh 21 tes mobile dan bundling Android/Hermes lulus, termasuk regresi status lowongan yang harus mengikuti kelayakan server. Beranda, pencarian, tab lamaran, materi, pilihan kuis, dan isian awal formulir mini proyek diperiksa di emulator; tidak ada kuis/karya baru dikirim atau panggilan Gemini baru.
 
