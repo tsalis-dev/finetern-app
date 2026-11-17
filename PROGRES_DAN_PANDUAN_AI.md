@@ -1,10 +1,12 @@
 # Handover pengembangan Finetern
 
-Diperbarui: 5 November 2026. Repository: [tsalis-dev/finetern-app](https://github.com/tsalis-dev/finetern-app), branch pengembangan `develop`; `main` untuk rilis stabil.
+Diperbarui: 17 November 2026. Repository: [tsalis-dev/finetern-app](https://github.com/tsalis-dev/finetern-app), branch pengembangan `develop`; `main` untuk rilis stabil.
 
 Finetern adalah platform rekrutmen magang siswa SMK berdasarkan bukti karya, pencocokan keahlian mikro, dan rekomendasi belajar adaptif melalui Gemini. Proyek IK300 Mobile Programming, Universitas Pendidikan Indonesia. Nama aplikasi yang dipakai kode dan dokumentasi adalah Finetern.
 
 ## Status saat ini
+
+Layar pembuka dirombak pada 17 November atas permintaan pemilik. Komposisi baru memakai judul dua warna, foto kolaborasi siswa yang dibuat dengan imagegen bawaan, urutan Karya/Penilaian/Magang, dan tombol Masuk menuju pemilihan peran. Aset lokal serta prompt tercatat di [panduan branding](docs/branding/README.md). Foto berada di `mobile/assets/onboarding/students-collaborating-v1.png`.
 
 Perapian susunan 5 November mengganti pengulangan kartu besar pada Beranda siswa, daftar lowongan, karya, lamaran, serta Detail Materi dengan baris berpemisah tipis dan isi seperti artikel. Mini proyek dan kontrol kuis tetap memiliki penekanan; burgundy, logo, serta navbar mengambang dipertahankan. Referensi terbaru yang disetujui: Things, Linear Mobile, dan Readwise Reader. Filter status mendatar, catatan panjang tersedia di detail, dan pintasan Bekal keterampilan → Lihat semua langsung membuka tab Keterampilan. Komponen daftar bersama juga dipakai antrean guru dan lowongan/pelamar industri. Seluruh 24 tes mobile dan bundling Android/Hermes final lulus; pintasan, filter, akses detail/catatan, formulir mini proyek, radio kuis, antrean guru, kuota industri, serta batas akses pelamar ditarik diperiksa di emulator. Tidak ada pengiriman kuis/karya/keputusan atau permintaan Gemini baru. Rincian dan batas pemeriksaan ada pada [panduan desain visual](docs/DESAIN_VISUAL_BURGUNDY.md).
 
