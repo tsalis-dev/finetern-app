@@ -23,9 +23,19 @@ Referensi login: [Simple Login — Saad Shaikh](https://www.figma.com/community/
 
 Seluruh 24 tes mobile dan bundling Android/Hermes lulus (1.048 modul, HBC 2,5 MB). Tes aset memeriksa PNG opaque 1024px, favicon 64px, transparansi foreground, area aman lingkaran, layer monochrome, dan kesesuaian warna latar dengan konfigurasi Expo. Pemeriksaan emulator mencakup pembuka/pilih peran/login, default sandi tersamarkan, toggle yang mempertahankan teks, validasi kosong, tautan daftar yang memilih peran siswa, login/logout guru dan industri, serta login siswa sampai Beranda berlogo baru. Pemeriksaan memakai akun demo sintetis; tidak membuat akun atau mengirim karya/kuis/permintaan Gemini baru. Screenshot tersimpan lokal dan diabaikan Git. iOS, tampilan launcher pada APK, dan perangkat fisik belum diperiksa.
 
-## Layar pembuka 17 November 2026
+## Layar pembuka isometrik 18 November 2026
 
-Pemilik meminta komposisi baru untuk layar pembuka. `WelcomeScreen` memakai logo kecil, judul dua warna, foto kolaborasi siswa dengan sudut asimetris, urutan Karya/Penilaian/Magang berikon garis, serta tombol Masuk di bagian bawah. Isi dapat digulir pada layar pendek. Tombol Masuk membuka pemilihan peran melalui `RoleSelection`.
+Pemilik memberikan rekaman pembuka dengan ilustrasi isometrik yang tersusun dan bergerak, teks singkat di bawah visual, serta dua tombol di bagian bawah. Versi terbaru mengadaptasi pola tersebut melalui `WelcomeScene`: buku karya berlogo F, perisai penilaian, dan koper magang di atas bidang grid dalam palet burgundy. Komponen SVG mengikuti sumber geometri logo yang tersedia. Foto versi sebelumnya tersimpan sebagai arsip aset dan tidak dipakai oleh layar terbaru.
+
+`useWelcomeMotion` mengatur satu siklus 6,4 detik memakai Animated native driver. Objek masuk dan keluar secara bertahap. Animasi berhenti saat layar kehilangan fokus atau aplikasi berada di latar. Pengaturan Reduce motion menampilkan komposisi lengkap yang diam. Pembacaan preferensi yang terlambat tidak dapat memulai kembali animasi pada layar yang sudah ditinggalkan atau menimpa perubahan preferensi yang lebih baru.
+
+Tombol Masuk membuka tiga pilihan peran. Tombol Buat akun baru membuka formulir pendaftaran. Tautan Masuk pada formulir pendaftaran menuju pilihan peran sehingga kedua pintasan dari pembuka mempunyai tujuan yang sesuai. Teks dan kontrol dapat digulir pada layar pendek.
+
+Pemeriksaan versi isometrik: 28 tes mobile dan export Android/Hermes final lulus (1.049 modul, HBC 2,5 MB). Pengujian tambahan memeriksa native driver, pembersihan animasi/listener ketika blur, pergantian latar/aktif, preferensi Reduce motion, serta hasil pembacaan preferensi yang terlambat. Perbandingan frame emulator memastikan scene diam ketika Reduce motion aktif dan berubah ketika animasi aktif. Navigasi Masuk, Buat akun baru, dan tautan Masuk dari pendaftaran diperiksa melalui UI. Kedua tindakan terjangkau pada viewport 320×640 dp. Resolusi dan preferensi animasi emulator dipulihkan setelah pemeriksaan. Pratinjau gerakan aktual tersimpan lokal pada folder demo yang diabaikan Git. HP fisik dan iOS belum diperiksa untuk versi ini.
+
+## Versi foto sebelumnya
+
+Komposisi awal pada 17 November memakai logo kecil, judul dua warna, foto kolaborasi siswa dengan sudut asimetris, urutan Karya/Penilaian/Magang berikon garis, serta tombol Masuk di bagian bawah. Versi ini kemudian digantikan pembuka isometrik sesuai rekaman referensi pemilik.
 
 Pemeriksaan versi ini: 24 tes mobile dan export Android/Hermes final lulus, dengan 1.048 modul dan HBC 2,5 MB. Layar pembuka serta tombol menuju tiga peran diperiksa di emulator Android. Pada viewport 320×640 dp tombol Masuk dapat dijangkau dengan menggulir. Resolusi emulator dipulihkan setelah pemeriksaan. Tampilan iOS dan HP fisik belum diperiksa untuk desain pembuka ini.
 

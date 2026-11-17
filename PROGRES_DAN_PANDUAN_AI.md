@@ -1,12 +1,12 @@
 # Handover pengembangan Finetern
 
-Diperbarui: 17 November 2026. Repository: [tsalis-dev/finetern-app](https://github.com/tsalis-dev/finetern-app), branch pengembangan `develop`; `main` untuk rilis stabil.
+Diperbarui: 18 November 2026. Repository: [tsalis-dev/finetern-app](https://github.com/tsalis-dev/finetern-app), branch pengembangan `develop`; `main` untuk rilis stabil.
 
 Finetern adalah platform rekrutmen magang siswa SMK berdasarkan bukti karya, pencocokan keahlian mikro, dan rekomendasi belajar adaptif melalui Gemini. Proyek IK300 Mobile Programming, Universitas Pendidikan Indonesia. Nama aplikasi yang dipakai kode dan dokumentasi adalah Finetern.
 
 ## Status saat ini
 
-Layar pembuka dirombak pada 17 November atas permintaan pemilik. Komposisi baru memakai judul dua warna, foto kolaborasi siswa yang dibuat dengan imagegen bawaan, urutan Karya/Penilaian/Magang, dan tombol Masuk menuju pemilihan peran. Aset lokal serta prompt tercatat di [panduan branding](docs/branding/README.md). Foto berada di `mobile/assets/onboarding/students-collaborating-v1.png`.
+Layar pembuka terbaru selesai pada 18 November mengikuti rekaman referensi pemilik: ilustrasi isometrik buku karya, perisai penilaian, dan koper magang tersusun secara bertahap, disusul teks singkat serta tombol Masuk/Buat akun baru. `WelcomeScene` memakai SVG dan `useWelcomeMotion` memakai Animated native driver dengan siklus 6,4 detik. Animasi berhenti ketika layar tidak aktif dan mengikuti Reduce motion. Tombol Masuk membuka pilihan peran, sedangkan tautan Masuk dari formulir pendaftaran juga menuju pilihan peran. Versi foto sebelumnya menjadi arsip aset. Seluruh 28 tes mobile dan export Android/Hermes final lulus. Gerakan dan Reduce motion diperiksa melalui perbandingan frame native, serta kedua jalur navigasi diperiksa pada emulator. Rincian ada pada [panduan branding](docs/branding/README.md).
 
 Perapian susunan 5 November mengganti pengulangan kartu besar pada Beranda siswa, daftar lowongan, karya, lamaran, serta Detail Materi dengan baris berpemisah tipis dan isi seperti artikel. Mini proyek dan kontrol kuis tetap memiliki penekanan; burgundy, logo, serta navbar mengambang dipertahankan. Referensi terbaru yang disetujui: Things, Linear Mobile, dan Readwise Reader. Filter status mendatar, catatan panjang tersedia di detail, dan pintasan Bekal keterampilan → Lihat semua langsung membuka tab Keterampilan. Komponen daftar bersama juga dipakai antrean guru dan lowongan/pelamar industri. Seluruh 24 tes mobile dan bundling Android/Hermes final lulus; pintasan, filter, akses detail/catatan, formulir mini proyek, radio kuis, antrean guru, kuota industri, serta batas akses pelamar ditarik diperiksa di emulator. Tidak ada pengiriman kuis/karya/keputusan atau permintaan Gemini baru. Rincian dan batas pemeriksaan ada pada [panduan desain visual](docs/DESAIN_VISUAL_BURGUNDY.md).
 

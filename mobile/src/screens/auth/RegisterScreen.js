@@ -35,7 +35,7 @@ export default function RegisterScreen({ route, navigation }) {
     {fields.map(([key, label]) => <CustomInput key={key} label={label} value={values[key] || ''} onChangeText={value => setValues(current => ({ ...current, [key]: value }))} secureTextEntry={key.startsWith('password')} keyboardType={key === 'email' ? 'email-address' : ['npsn', 'nisn', 'contactPhone'].includes(key) ? 'phone-pad' : 'default'} autoCapitalize={['nama', 'schoolName', 'companyName', 'alamat'].includes(key) ? 'words' : 'none'} />)}
     {error ? <Text accessibilityLiveRegion="polite" style={{ color: colors.error }}>{error}</Text> : null}
     <PrimaryButton title="Daftar dan ajukan verifikasi" onPress={submit} loading={busy} />
-    <PrimaryButton title="Sudah punya akun? Masuk" onPress={() => navigation.goBack()} variant="secondary" disabled={busy} />
+    <PrimaryButton title="Sudah punya akun? Masuk" onPress={() => navigation.navigate('RoleSelection')} variant="secondary" disabled={busy} />
   </FormScreen>;
 }
 const styles = StyleSheet.create({ choices: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }, choice: { minHeight: 44, padding: spacing.sm, borderWidth: 1, borderColor: colors.border, borderRadius: borderRadius.sm, justifyContent: 'center' }, active: { backgroundColor: colors.primaryLight, borderColor: colors.primary }, hint: { color: colors.textSecondary, lineHeight: 22 } });
