@@ -1,4 +1,12 @@
-# Demo Finetern — 5 November 2026
+# Demo Finetern
+
+## Pemeriksaan ulang 17 November 2026
+
+Untuk presentasi 18 November, implementasi terakhir berada pada commit `6568683` di branch `develop`. Tahap 1–5 tersedia, sedangkan Tahap 6 mencakup pengujian siklus penuh pada perangkat fisik dan build APK. Pembaruan terakhir meliputi logo, login sesuai peran, navbar mengambang, daftar tanpa kartu besar, dan materi dengan susunan artikel.
+
+MySQL, backend demo port 5001, Expo Metro port 8082, dan emulator Medium_Phone_API_37.0 berhasil dinyalakan kembali. Login siswa berhasil. Seluruh 24 tes mobile dan 51 tes backend kembali lulus. Modul Gemini tersimpan berstatus siap. Pembuatan materi baru melalui provider belum diperiksa ulang pada sesi ini.
+
+Kondisi data saat diperiksa: tiga karya approved dan satu pending, nilai UI 85/API 55/Git 75, lowongan Mobile Developer Intern dengan matching 91,42% dan syarat wajib belum terpenuhi. Lamaran Frontend Intern berstatus dalam proses. Lamaran UI Mobile Intern berstatus ditarik dan tetap tercatat sebagai sudah dilamar. Pakai lowongan utama untuk alur penilaian lalu melamar. Password berada pada berkas kredensial lokal yang disebutkan di bawah.
 
 Pemilik memilih **emulator Android Studio** untuk ditampilkan lewat proyektor laptop. Gunakan Expo Go yang sesuai **SDK 57**, MySQL Laragon, dan backend lokal. Tidak perlu membuat APK untuk demonstrasi melalui Expo Go. Android Studio menyediakan perangkat virtual; Expo menjalankan aplikasi dan backend menyediakan data. Panduan resmi: [menjalankan pada emulator Android](https://docs.expo.dev/workflow/android-studio-emulator/) dan [Expo Go sesuai SDK](https://expo.dev/go?platform=android&device=false&sdkVersion=57).
 
@@ -96,7 +104,7 @@ Versi UI terbaru membuka layar perkenalan saat sesi kosong. Tekan Masuk, pilih S
 7. **Masuk sebagai industri.** Buka pelamar, profil dan karya yang dibagikan, lalu catat seleksi. Tersedia pula lamaran contoh pada **Frontend Intern (Demo — contoh seleksi)** yang sudah berstatus ditinjau.
 8. Jika masih ada waktu, sebagai guru buka Verifikasi Akun dan setujui **Raka (Demo Pending)** untuk menunjukkan verifikasi siswa.
 
-Alternatif demo singkat: lowongan **UI Mobile Intern (Demo — siap melamar)** sudah cocok 100% sejak awal dan belum dilamar. Cocok untuk menunjukkan persetujuan berbagi dan lamaran tanpa menunggu langkah belajar/penilaian.
+Alternatif demo singkat: buka lamaran **Frontend Intern (Demo — contoh seleksi)** yang berstatus dalam proses untuk menunjukkan status seleksi dan akses industri ke bukti terkait. Lowongan **UI Mobile Intern (Demo — siap melamar)** memiliki judul data contoh lama. Lamaran pada lowongan itu sudah ditarik dan tercatat sebagai sudah dilamar, sehingga gunakan lowongan utama setelah penilaian guru untuk memperagakan pengiriman lamaran baru.
 
 Pemeriksaan emulator sudah menyelesaikan satu latihan dengan nilai 100/100. Latihan boleh diulang saat presentasi; matching tetap 91,42%, nilai API guru tetap 55, karya perbaikan tetap pending, dan lamaran contoh tetap dalam proses.
 
