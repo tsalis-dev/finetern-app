@@ -1,5 +1,7 @@
 # Demo Finetern
 
+Arahan pemilik 18 November 2026: Tahap 6 berupa pengujian siklus penuh dan build APK ditunda sampai ada perintah eksplisit dari pemilik. Prioritas pengembangan saat ini adalah perombakan UI/UX. Panduan demo ini menjelaskan penggunaan versi yang tersedia.
+
 ## Pemeriksaan ulang 17 November 2026
 
 Untuk presentasi 18 November, implementasi terakhir berada pada commit `6568683` di branch `develop`. Tahap 1–5 tersedia, sedangkan Tahap 6 mencakup pengujian siklus penuh pada perangkat fisik dan build APK. Pembaruan terakhir meliputi logo, login sesuai peran, navbar mengambang, daftar tanpa kartu besar, dan materi dengan susunan artikel.
