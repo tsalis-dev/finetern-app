@@ -27,6 +27,7 @@ export default function ApplicationListScreen({navigation,route,mode='student',b
     <FlatList data={data.items} keyExtractor={item=>String(item.id)} contentContainerStyle={styles.content} refreshing={busy} onRefresh={()=>load()}
       ListHeaderComponent={<View style={styles.header}>
         <Text style={styles.body}>Total {data.summary.total||0} · Menunggu {data.summary.pending||0} · Diterima {data.summary.accepted||0}</Text>
+        {mode==='student'?<Text style={styles.body}>Buka lamaran untuk membaca catatan seleksi atau menarik lamaran yang masih aktif.</Text>:null}
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filters}>{[['','Semua'],...Object.entries(applicationStatuses)].map(([key,label])=><Pressable key={key} accessibilityRole="tab" accessibilityState={{selected:status===key}} style={[styles.filter,status===key&&styles.selected]} onPress={()=>setStatus(key)}><Text style={[styles.filterLabel,status===key&&styles.activeLabel]}>{label}</Text></Pressable>)}</ScrollView>
         {error?<><Text style={styles.error}>{error}</Text><PrimaryButton title="Coba lagi" variant="secondary" onPress={()=>load()} disabled={busy}/></>:null}
       </View>}
@@ -39,6 +40,7 @@ export default function ApplicationListScreen({navigation,route,mode='student',b
           {mode!=='student'?<Text style={styles.body}>{item.profile?item.profile.nama_lengkap+' · '+item.profile.kelas:'Profil pelamar tidak tersedia melalui lamaran ini.'}</Text>:null}
           <Text style={styles.caption}>Dilamar {new Date(item.applied_at).toLocaleDateString('id-ID')} · Skor {item.match_rate.toFixed(2)}%</Text>
           {item.selection_note?<Text style={styles.caption}>Catatan seleksi tersedia di detail</Text>:null}
+          {mode==='student'?<Text style={styles.manageLabel}>{item.can_withdraw?'Lihat detail atau tarik lamaran':'Lihat rincian dan riwayat'}</Text>:null}
         </View><AppIcon name="next" size={18} color={colors.textMuted}/>
       </Pressable>}
       ListFooterComponent={hasMore?<PrimaryButton title="Muat berikutnya" onPress={()=>load(data.items.length)} loading={busy}/>:null}/>
@@ -60,6 +62,7 @@ const styles=StyleSheet.create({
   body:{fontSize:13,color:colors.textSecondary,lineHeight:21},
   caption:{fontSize:12,color:colors.textMuted,lineHeight:19},
   status:{fontSize:12,lineHeight:19,color:colors.primary,fontWeight:'600'},
+  manageLabel:{fontSize:13,lineHeight:21,color:colors.primary,fontWeight:'600',marginTop:3},
   error:{color:colors.error,lineHeight:22},
   pressed:{opacity:0.65},
 });
